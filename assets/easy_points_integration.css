@@ -1,0 +1,127 @@
+:root {
+  --ep-white:           #FFF;
+  --ep-black:           #000;
+  --ep-red:             #E53E3E;
+  --ep-color-text:      #000;
+  --ep-color-points:    #8C8C8C;
+  --ep-font-size:         14px;
+  --ep-spacer-1:          10px;
+  --ep-spacer-2:          20px;
+  --ep-spacer-3:          30px;
+}
+
+.easy-points {
+  font-size: var(--ep-font-size);
+  color: var(--ep-color-points);
+}
+
+.easy-points [data-loyal-target="point-exclusion"] + .easy-points__text {
+  display: none;
+}
+
+.easy-points [data-loyal-target="point-exclusion-product"] + .easy-points__text{
+  display: none;
+}
+
+.easy-points-balance__container {
+  margin-bottom: var(--ep-spacer-3);
+}
+
+.easy-points-balance__container .easy-points {
+  color: inherit;
+  font-size: inherit;
+}
+
+.easy-points-balance__container [data-loyal-target="balance-expiration"] {
+  font-size: 80%;
+  opacity: 50%;
+  margin-left: var(--ep-spacer-1);
+}
+
+.easy-points-form__container {
+  margin-bottom: var(--ep-spacer-3);
+}
+
+.easy-points-form__balance {
+  text-align: right;
+}
+
+.easy-points-form__inner {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.easy-points-form__input input, .easy-points-form__discount {
+  text-align: center;
+  width: 85px;
+  height: 100%;
+  max-width: 100%;
+  padding: 0;
+  margin: 0;
+  margin-right: var(--ep-spacer-1);
+}
+
+@media only screen and (max-width: 749px) {
+  .easy-points-form__input input, .easy-points-form__discount {
+    width: 100px;
+  }
+}
+
+.easy-points-form__input input {
+  -moz-appearance: textfield;
+  -webkit-appearance: none;
+}
+
+.easy-points-form__input input[type=number]::-webkit-inner-spin-button,
+.easy-points-form__input input[type=number]::-webkit-outer-spin-button {
+  -moz-appearance: textfield;
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.easy-points-form__input input:disabled {
+  color: var(--ep-black);
+  border: none;
+}
+
+.easy-points-form__input input.invalid {
+  border-color: var(--ep-red);
+  box-shadow: none;
+}
+
+.easy-points-form__discount {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  color: var(--ep-black);
+}
+
+.easy-points-form__discount:not(.easy-points-hide) + input {
+  display: none;
+}
+
+.easy-points-form__container button {
+  min-width: 140px;
+}
+
+@media only screen and (max-width: 749px) {
+  .easy-points-form__container button {
+    width: 100%;
+    min-width: auto;
+  }
+}
+
+/* [data-loyal-target="subtotal"] .easy-points,
+[data-loyal-target="subtotal"] [data-loyal-target="total_price"] {
+  display: inline-block;
+  min-width: 140px;
+  margin-left: var(--ep-spacer-1);
+}
+
+[data-loyal-clone="subtotal"] .easy-points,
+[data-loyal-clone="subtotal"] [data-loyal-target="total_price"] {
+  display: inline-block;
+  min-width: 140px;
+  margin-left: var(--ep-spacer-1);
+} */

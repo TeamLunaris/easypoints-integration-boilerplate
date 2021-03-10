@@ -1,0 +1,18 @@
+{%- comment -%} START EASYPOINTS - DO NOT MODIFY! 変更しないでください! INFO @ https://bit.ly/2Dn7ESM {%- endcomment -%}
+  {%- if shop.metafields.loyalty['stealth_mode'] == "false" -%}
+    <h2>{{ 'easypoints.points_balance' | t }}</h2>
+    <div class="easy-points-balance__container">
+      <p>
+        <span class="easy-points">
+          <span data-loyal-target="balance">-</span> <span class="easy-points__text">{{ 'easypoints.points' | t }}</span>
+        </span>
+        <span data-loyal-target="balance-expiration" class="easy-points-hide">
+          <span>{{ 'easypoints.expiration_date' | t }}</span>
+          <span data-loyal-target="balance-expiration__yy">-</span>{{ 'easypoints.date_year' | t }}
+          <span data-loyal-target="balance-expiration__mm">-</span>{{ 'easypoints.date_month' | t }}
+          <span data-loyal-target="balance-expiration__dd">-</span>{{ 'easypoints.date_day' | t }}
+        </span>
+      </p>
+    </div>
+  {%- endif -%}
+{%- comment -%} END EASYPOINTS {%- endcomment -%}
