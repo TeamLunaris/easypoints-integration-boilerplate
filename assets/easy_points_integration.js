@@ -1,5 +1,5 @@
 /**
- * v1.70
+ * v1.71
  *
  * Required functions from `easy_points.js`
  *  - updateLoyaltyTargets/0
