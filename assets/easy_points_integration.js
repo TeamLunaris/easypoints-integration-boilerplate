@@ -1,5 +1,5 @@
 /**
- * v1.70
+ * v1.71
  *
  * Required functions from `easy_points.js`
  *  - updateLoyaltyTargets/0
@@ -160,6 +160,12 @@ var EasyPoints = {
           insertPointValue(node);
 
           var totalPoints = parseInt(node.innerText.replace(/\D/g, ''));
+        
+          // hack: some themes innerText returns empty string
+          if (isNaN(totalPoints)) {
+            totalPoints = parseInt(node.textContent.replace(/\D/g, ''));
+          }
+          
           totalPoints += Math.round(EasyPoints.Points.getTotalBonusPoints());
           insertPointValueIntoElement(node, totalPoints);
         });
