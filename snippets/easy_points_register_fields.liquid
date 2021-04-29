@@ -1,6 +1,11 @@
 {%- comment -%} START EASYPOINTS - DO NOT MODIFY! 変更しないでください! INFO @ https://bit.ly/2Dn7ESM {%- endcomment -%}
-  {%- comment -%} TODO: check if our reward features is active. {%- endcomment -%}
-  {%- if shop.metafields.loyalty['stealth_mode'] == "false" -%}
+  {%- assign reward_points_active = false -%}
+  {%- for key_value in shop.metafields.loyalty['features'] -%}
+    {%- if key_value[0] == "reward_points" and key_value[1] == true -%}
+      {%- assign reward_points_active = true -%}
+    {%- endif -%}
+  {%- endfor -%}
+  {%- if shop.metafields.loyalty['stealth_mode'] == "false" and reward_points_active -%}
     {%- assign class_label = class_label | default: '' -%}
     {%- assign class_input = class_input | default: '' -%}
     <label for="birthday" class="{{ class_label }}">
