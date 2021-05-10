@@ -5,7 +5,13 @@
       {%- assign reward_points_active = true -%}
     {%- endif -%}
   {%- endfor -%}
-  {%- if shop.metafields.loyalty['stealth_mode'] == "false" and reward_points_active -%}
+  {%- assign birthday_points = false -%}
+  {%- for key_value in shop.metafields.loyalty['rewards'] -%}
+    {%- if key_value[0] == "birthday" and key_value[1] == true -%}
+      {%- assign birthday_points = true -%}
+    {%- endif -%}
+  {%- endfor -%}
+  {%- if shop.metafields.loyalty['stealth_mode'] == "false" and reward_points_active and birthday_points -%}
     {%- assign class_input = class_input | default: '' -%}
     {%- assign class_button = class_button | default: 'btn' -%}
     <h2>

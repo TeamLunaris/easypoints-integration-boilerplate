@@ -5,12 +5,18 @@
       {%- assign reward_points_active = true -%}
     {%- endif -%}
   {%- endfor -%}
-  {%- if shop.metafields.loyalty['stealth_mode'] == "false" and reward_points_active -%}
+  {%- assign birthday_points = false -%}
+  {%- for key_value in shop.metafields.loyalty['rewards'] -%}
+    {%- if key_value[0] == "birthday" and key_value[1] == true -%}
+      {%- assign birthday_points = true -%}
+    {%- endif -%}
+  {%- endfor -%}
+  {%- if shop.metafields.loyalty['stealth_mode'] == "false" and reward_points_active and birthday_points -%}
     {%- assign class_label = class_label | default: '' -%}
     {%- assign class_input = class_input | default: '' -%}
     <label for="birthday" class="{{ class_label }}">
       {{ 'easypoints.note_form.birthday' | t }}
     </label>
-    <input class="{{ class_input }}" type="date" value="" name="customer[note][birthday]" id="birthday" />
+    <input class="{{ class_input }}" type="date" value="" name="customer[note][birthday]" />
   {%- endif -%}
 {%- comment -%} END EASYPOINTS {%- endcomment -%}
