@@ -38,6 +38,14 @@
   margin-left: var(--ep-spacer-1);
 }
 
+.easy-points__note-form button[name="commit"] {
+  visibility: hidden;
+}
+
+.easy-points__note-form.easy-points__form--changed button[name="commit"] {
+  visibility: visible;
+}
+
 .easy-points-form__container {
   margin-bottom: var(--ep-spacer-3);
 }
