@@ -13,7 +13,7 @@
   {%- endfor -%}
   {%- if shop.metafields.loyalty['stealth_mode'] == "false" and reward_points_active and birthday_points -%}
     {%- assign class_label = class_label | default: '' -%}
-    {%- assign class_input = class_input | default: '' -%}
+    {%- assign class_input = class_input | default: 'easy-points__input-date' -%}
     <label for="birthday" class="{{ class_label }}">
       {{ 'easypoints.note_form.birthday' | t }}
     </label>
