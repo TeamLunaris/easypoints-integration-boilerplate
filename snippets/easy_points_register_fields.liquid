@@ -15,7 +15,7 @@
     {%- assign class_label = class_label | default: '' -%}
     {%- assign class_input = class_input | default: 'easy-points__input-date' -%}
     {%- assign show_label = show_label | default: 'true' -%}
-
+  {%- endif -%}
     {%- if show_label -%}
       <label for="birthday" class="{{ class_label }}">
         {{ 'easypoints.note_form.birthday' | t }}
