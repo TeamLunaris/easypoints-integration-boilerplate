@@ -118,6 +118,21 @@
     width: 100%;
     min-width: auto;
   }
+
+  /* .easy-points-form__container {
+    display: flex;
+    flex-direction: column;
+    max-width: 20rem;
+    margin: 0 auto;
+    margin-bottom: var(--ep-spacer-3);
+  }
+
+  .cart-subtotal {
+    display: flex;
+    justify-content: space-between;
+    max-width: 20rem;
+    margin: 0 auto;
+  } */
 }
 
 .easy-points__input-date {
@@ -136,4 +151,22 @@
   display: inline-block;
   min-width: 140px;
   margin-left: var(--ep-spacer-1);
+} */
+
+/* .easy-points__product-points {
+  margin-left: var(--ep-spacer-1);;
+} */
+
+/* .easy-points__cart-item-points .easy-points {
+  font-size: 80%;
+  margin: unset;
+} */
+
+/* .easy-points-form__balance {
+  margin-bottom: 5px;
+} */
+
+/* .easy-points__cart-points .easy-points {
+  color: inherit;
+  font-size: 95%;
 } */
