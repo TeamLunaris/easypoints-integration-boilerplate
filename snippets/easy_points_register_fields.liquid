@@ -18,24 +18,25 @@
     {%- assign show_label = show_label | default: 'true' -%}
 
     {%- if show_label -%}
-    <div class="{{ class_container }}">
-      <label for="birthday" class="{{ class_label }}">
-        {{ 'easypoints.note_form.birthday' | t }}
-      </label>
-      <input 
-      class="{{ class_input }}" 
-      type="date"
-      value="" 
-      name="customer[note][birthday]" 
-      />
-    </div>
-    {%- else -%}
-      <input 
+      <div class="{{ class_container }}">
+        <label for="birthday" class="{{ class_label }}">
+          {{ 'easypoints.note_form.birthday' | t }}
+        </label>
+        <input 
         class="{{ class_input }}" 
-        type="text" onfocus="(this.type='date')" 
-        placeholder="{{ 'easypoints.note_form.birthday' | t }}" 
+        type="date"
         value="" 
         name="customer[note][birthday]" 
-      />
+        />
+      </div>
+      {%- else -%}
+        <input 
+          class="{{ class_input }}" 
+          type="text" onfocus="(this.type='date')" 
+          placeholder="{{ 'easypoints.note_form.birthday' | t }}" 
+          value="" 
+          name="customer[note][birthday]" 
+        />
+    {%- endif -%}
   {%- endif -%}
 {%- comment -%} END EASYPOINTS {%- endcomment -%}
