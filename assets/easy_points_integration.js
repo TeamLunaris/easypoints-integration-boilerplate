@@ -566,7 +566,7 @@ var EasyPoints = {
         .forEach(node => node.addEventListener('click', this.onClickResetBtn));
 
       EasyPoints.Selectors.getCheckoutButtonEl(document, true)
-        .forEach(node => node.addEventListener('mousedown', this.onClickSetCoupon));
+        .forEach(node => node.addEventListener('click', this.onClickSetCoupon));
 
       EasyPoints.Debug.print('Applied all required event listeners');
     },
