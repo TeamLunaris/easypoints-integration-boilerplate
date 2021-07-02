@@ -22,7 +22,7 @@
         {%- endif -%}
       {%- endfor -%}
 
-      {%- if if has_feature_tiers and shop.metafields.loyalty['tiers_active'] == "true" -%}
+      {%- if has_feature_tiers and shop.metafields.loyalty['tiers_active'] == "true" -%}
         <p class="easy-points-tiers__container">
           <span>
             {{
