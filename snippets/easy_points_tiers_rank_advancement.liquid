@@ -11,15 +11,18 @@
       {%- assign class = class | default: '' -%}
       <span data-loyal-target="rank-advancement-data" class="{{ class }}">
         <span style="display: none;" data-loyal-target="max-rank">
-          {{ 'easypoints.tiers.achieve_highest_rank' | t }}
-          <strong data-loyal-target="rank-advancement-tier-name">-</strong>
+          {{
+            'easypoints.tiers.highest_rank_html' | t:
+              rank: '<strong data-loyal-target="rank-advancement-tier-name">-</strong>'
+          }}
         </span>
 
         <span data-loyal-target="not-max-rank">
-          {{ 'easypoints.tiers.spend_additional' | t }}
-          <strong data-loyal-target="rank-advancement-amount">-</strong>
-          {{ 'easypoints.tiers.to_rank_up' | t }}
-          <strong data-loyal-target="rank-advancement-tier-name">-</strong>
+          {{
+            'easypoints.tiers.spend_additional_html' | t:
+              amount: '<strong data-loyal-target="rank-advancement-amount">-</strong>',
+              rank: '<strong data-loyal-target="rank-advancement-tier-name">-</strong>'
+          }}
         </span>
       </span>
     {%- endif -%}

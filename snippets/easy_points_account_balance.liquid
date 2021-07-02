@@ -25,8 +25,10 @@
       {%- if if has_feature_tiers and shop.metafields.loyalty['tiers_active'] == "true" -%}
         <p class="easy-points-tiers__container">
           <span>
-            {{ 'easypoints.tiers.rank' | t }}
-            <strong data-loyal-target="tier-name">-</strong>
+            {{
+              'easypoints.tiers.current_rank_html' | t:
+                rank: '<strong data-loyal-target="tier-name">-</strong>'
+            }}
           </span>
           {% render 'easy_points_tiers_rank_advancement', class: 'easy-points-text__muted' %}
         </p>
