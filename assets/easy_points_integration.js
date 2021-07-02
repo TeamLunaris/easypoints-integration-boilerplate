@@ -1,5 +1,5 @@
 /**
- * v1.71
+ * v1.8
  *
  * Required functions from `easy_points.js`
  *  - updateLoyaltyTargets/0
@@ -9,7 +9,7 @@
  *  - insertPointValue/1
  */
 
-window.addEventListener('DOMContentLoaded', function() {
+ window.addEventListener('DOMContentLoaded', function() {
   var path = this.window.location.pathname;
   var re = /\/cart/i;
 
@@ -57,7 +57,7 @@ window.addEventListener('DOMContentLoaded', function() {
 var EasyPoints = {
 
   Debug: {
-    DEBUG: false,
+    DEBUG: true,
 
     print: function(msg, type = 'info') {
       if (!this.DEBUG) {
@@ -160,12 +160,12 @@ var EasyPoints = {
           insertPointValue(node);
 
           var totalPoints = parseInt(node.innerText.replace(/\D/g, ''));
-        
+
           // hack: some themes innerText returns empty string
           if (isNaN(totalPoints)) {
             totalPoints = parseInt(node.textContent.replace(/\D/g, ''));
           }
-          
+
           totalPoints += Math.round(EasyPoints.Points.getTotalBonusPoints());
           insertPointValueIntoElement(node, totalPoints);
         });
@@ -415,6 +415,60 @@ var EasyPoints = {
     }
   },
 
+  Tiers: {
+    recalculate: function(subtotal = null) {
+      var { rankAdvancementData } = getEasyPointsSession();
+
+      if (!rankAdvancementData && rankAdvancementData.raw_amount >= 0) {
+        return;
+      }
+
+      var discount = EasyPoints.getDiscountSession();
+      var { multiplier } = EasyPointsCore.Currency.getFormatOptions() || { multiplier: 100 };
+      var discountNoDecimal = Math.round(discount * EasyPointsCore.Currency.getRate() * multiplier)
+
+      if (subtotal === null) {
+        var priceEl = el.querySelector('[data-loyal-target="total_price"]');
+
+        if (!priceEl) {
+          EasyPoints.Debug.print('recalculate(el): missing total price target.', 'error');
+          return;
+        }
+
+        subtotal = priceEl.dataset.loyalTotalPrice;
+      }
+
+      try {
+        var nextTier = EasyPointsCore.Tiers.getNextTier(subtotal - discountNoDecimal);
+
+        if (nextTier) {
+          Array.prototype.slice.call(
+            document.querySelectorAll('[data-loyal-target="rank-advancement-tier-name"]')
+          ).forEach((target) =>  {
+            target.textContent = nextTier.name;
+          });
+
+          Array.prototype.slice.call(
+            document.querySelectorAll('[data-loyal-target="rank-advancement-amount"]')
+          ).forEach((target) => {
+            target.innerHTML = EasyPointsCore.Currency.format(nextTier.advancementAmountMultiplied);
+          });
+        } else {
+          Array.prototype.slice.call(
+            document.querySelectorAll('[data-loyal-target="rank-advancement-data"] > span')
+          ).forEach((target) => {
+            target.style.display = target.dataset.loyalTarget == 'max-rank'
+              ? ''
+              : 'none';
+          });
+        }
+      } catch {
+        EasyPoints.Debug.print('EasyPoints Tiers: error getting next tier.', 'error')
+        return;
+      }
+    },
+  },
+
   getDiscountSession: function() {
     var discount = sessionStorage.getItem("appliedDiscount");
 
@@ -540,6 +594,7 @@ var EasyPoints = {
     run: function() {
       updateLoyaltyTargets();
       EasyPoints.Points.insertTotalPoints(document);
+      EasyPoints.Tiers.recalculate()
 
       this.setEventListeners();
       EasyPoints.applyDiscount();

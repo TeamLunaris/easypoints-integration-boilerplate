@@ -1,18 +1,38 @@
 {%- comment -%} START EASYPOINTS - DO NOT MODIFY! 変更しないでください! INFO @ https://bit.ly/2Dn7ESM {%- endcomment -%}
-  {%- if shop.metafields.loyalty['stealth_mode'] == "false" -%}
+  {%- if customer and shop.metafields.loyalty['stealth_mode'] == "false" -%}
     <h2>{{ 'easypoints.points_balance' | t }}</h2>
-    <div class="easy-points-balance__container">
-      <p>
+
+    <div class="easy-points__account">
+      <p class="easy-points-balance__container">
         <span class="easy-points">
           <span data-loyal-target="balance">-</span> <span class="easy-points__text">{{ 'easypoints.points' | t }}</span>
         </span>
-        <span data-loyal-target="balance-expiration" class="easy-points-hide">
+        <span data-loyal-target="balance-expiration" class="easy-points-text__muted easy-points-hide">
           <span>{{ 'easypoints.expiration_date' | t }}</span>
           <span data-loyal-target="balance-expiration__yy">-</span>{{ 'easypoints.date_year' | t }}
           <span data-loyal-target="balance-expiration__mm">-</span>{{ 'easypoints.date_month' | t }}
           <span data-loyal-target="balance-expiration__dd">-</span>{{ 'easypoints.date_day' | t }}
         </span>
       </p>
+
+      {%- assign has_feature_tiers = false -%}
+      {%- for key_value in shop.metafields.loyalty['features'] -%}
+        {%- if key_value[0] == "tiers" and key_value[1] == true -%}
+          {%- assign has_feature_tiers = true -%}
+        {%- endif -%}
+      {%- endfor -%}
+
+      {%- if has_feature_tiers and shop.metafields.loyalty['tiers_active'] == "true" -%}
+        <p class="easy-points-tiers__container">
+          <span>
+            {{
+              'easypoints.tiers.current_rank_html' | t:
+                rank: '<strong data-loyal-target="tier-name">-</strong>'
+            }}
+          </span>
+          {% render 'easy_points_tiers_rank_advancement', class: 'easy-points-text__muted' %}
+        </p>
+      {%- endif -%}
     </div>
   {%- endif -%}
 {%- comment -%} END EASYPOINTS {%- endcomment -%}

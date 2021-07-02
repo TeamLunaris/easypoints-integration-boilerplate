@@ -23,8 +23,20 @@
   display: none;
 }
 
-.easy-points-balance__container {
+.easy-points__account {
   margin-bottom: var(--ep-spacer-3);
+}
+
+.easy-points__account .easy-points-text__muted {
+  font-size: 80%;
+  opacity: 50%;
+  padding-left: var(--ep-spacer-1);
+}
+
+.easy-points__account .easy-points-balance__container > span:first-child,
+.easy-points__account .easy-points-tiers__container > span:first-child {
+  display: inline-block;
+  min-width: 100px;
 }
 
 .easy-points-balance__container .easy-points {
@@ -32,10 +44,8 @@
   font-size: inherit;
 }
 
-.easy-points-balance__container [data-loyal-target="balance-expiration"] {
-  font-size: 80%;
-  opacity: 50%;
-  margin-left: var(--ep-spacer-1);
+.easy-points-tiers__container strong {
+  text-transform: uppercase;
 }
 
 .easy-points__note-form button[name="commit"] {
