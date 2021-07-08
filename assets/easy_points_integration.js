@@ -428,7 +428,7 @@ var EasyPoints = {
       var discountNoDecimal = Math.round(discount * EasyPointsCore.Currency.getRate() * multiplier)
 
       if (subtotal === null) {
-        var priceEl = el.querySelector('[data-loyal-target="total_price"]');
+        var priceEl = document.querySelector('[data-loyal-target="total_price"]');
 
         if (!priceEl) {
           EasyPoints.Debug.print('recalculate(el): missing total price target.', 'error');
