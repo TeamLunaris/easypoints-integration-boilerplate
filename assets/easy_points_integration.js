@@ -1,5 +1,5 @@
 /**
- * v1.8
+ * v1.81
  *
  * Required functions from `easy_points.js`
  *  - updateLoyaltyTargets/0
@@ -130,9 +130,9 @@ var EasyPoints = {
       return excluded;
     },
 
-    getTotalBonusPoints() {
+    getTotalBonusPoints(el = document) {
       var total =
-        Array.from(document.querySelectorAll('[data-loyal-bonus-points]'))
+        Array.from(el.querySelectorAll('[data-loyal-bonus-points]'))
           .reduce((acc, node) => {
             var { bonusPoints } = JSON.parse(node.dataset.loyalBonusPoints);
             bonusPoints = parseInt(bonusPoints);
@@ -166,7 +166,7 @@ var EasyPoints = {
             totalPoints = parseInt(node.textContent.replace(/\D/g, ''));
           }
 
-          totalPoints += Math.round(EasyPoints.Points.getTotalBonusPoints());
+          totalPoints += Math.round(EasyPoints.Points.getTotalBonusPoints(el));
           insertPointValueIntoElement(node, totalPoints);
         });
     },
