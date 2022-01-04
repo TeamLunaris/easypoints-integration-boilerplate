@@ -1,24 +1,28 @@
 {%- comment -%} START EASYPOINTS - DO NOT MODIFY! 変更しないでください! INFO @ https://bit.ly/2Dn7ESM {%- endcomment -%}
-  {%- if shop.metafields.loyalty['stealth_mode'] == "false" and customer -%}
-    {% assign class_button = class_button | default: 'button' %}
-    <div class="easy-points-form__container">
-      <div class="easy-points-form__balance">
-        <span data-loyal-target="balance">-</span> {{ 'easypoints.points_balance' | t }}
-      </div>
-      <div class="easy-points-form__inner">
-        <div class="easy-points-form__input">
-          <div class="easy-points-form__discount hidden-unless-discount-applied easy-points-hide">
-            -&nbsp;<span data-loyal-target="applied-discount"></span>
-          </div>
-          <input type="number" name="redemption_point_value" min="0" autocomplete="off">
+  {%- assign shop_ep_metafield = shop.metafields.loyalty.easy_points_attributes.value -%}
+  {%- unless shop_ep_metafield.stealth_mode -%}
+    {%- if customer -%}
+      {%- assign customer_ep_metafield = customer.metafields.loyalty.easy_points_attributes.value -%}
+      {% assign class_button = class_button | default: 'button' %}
+      <div class="easy-points-form__container">
+        <div class="easy-points-form__balance">
+          <span data-loyal-target="balance">{{ customer_ep_metafield.balance }}</span> {{ 'easypoints.points_balance' | t }}
         </div>
-        <button class="easy-points-button__redeem {{ class_button }}" type="button">
-          {{ 'easypoints.cart_redeem' | t }}
-        </button>
-        <button class="easy-points-button__reset {{ class_button }} easy-points-hide" type="button">
-          {{ 'easypoints.cart_reset' | t }}
-        </button>
+        <div class="easy-points-form__inner">
+          <div class="easy-points-form__input">
+            <div class="easy-points-form__discount hidden-unless-discount-applied easy-points-hide">
+              -&nbsp;<span data-loyal-target="applied-discount"></span>
+            </div>
+            <input type="number" name="redemption_point_value" min="0" autocomplete="off">
+          </div>
+          <button class="easy-points-button__redeem {{ class_button }}" type="button">
+            {{ 'easypoints.cart_redeem' | t }}
+          </button>
+          <button class="easy-points-button__reset {{ class_button }} easy-points-hide" type="button">
+            {{ 'easypoints.cart_reset' | t }}
+          </button>
+        </div>
       </div>
-    </div>
-  {%- endif -%}
+    {%- endif -%}
+  {%- endunless -%}
 {%- comment -%} END EASYPOINTS {%- endcomment -%}
