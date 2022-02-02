@@ -1,0 +1,9 @@
+{%- comment -%} START EASYPOINTS - DO NOT MODIFY! 変更しないでください! INFO @ https://bit.ly/2Dn7ESM {%- endcomment -%}
+  {%- if customer -%}
+    <script src="{{ 'easy_points_barcode.js' | asset_url }}" defer></script>
+
+    <div data-loyalty-barcode data-customer-id="{{ customer.id }}">
+      <canvas></canvas>
+    </div>
+  {%- endif -%}
+{%- comment -%} END EASYPOINTS {%- endcomment -%}
