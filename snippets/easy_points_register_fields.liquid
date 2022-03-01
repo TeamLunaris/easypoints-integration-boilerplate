@@ -8,6 +8,7 @@
           assign reward_points_active = true
         endif
       endfor
+      
       assign birthday_points = false
       for key_value in shop.metafields.loyalty['rewards']
         if key_value[0] == "birthday" and key_value[1] == true

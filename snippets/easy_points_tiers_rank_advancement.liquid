@@ -2,12 +2,14 @@
   {%- assign shop_ep_metafield = shop.metafields.loyalty.easy_points_attributes.value -%}
   {%- unless shop_ep_metafield.stealth_mode -%}
     {%- if customer -%}
-      {%- assign has_feature_tiers = false -%}
-      {%- for key_value in shop.metafields.loyalty['features'] -%}
-        {%- if key_value[0] == "tiers" and key_value[1] == true -%}
-          {%- assign has_feature_tiers = true -%}
-        {%- endif -%}
-      {%- endfor -%}
+      {%- liquid
+        assign has_feature_tiers = false
+        for key_value in shop.metafields.loyalty['features']
+          if key_value[0] == "tiers" and key_value[1] == true
+            assign has_feature_tiers = true
+          endif
+        endfor
+      -%}
 
       {%- if has_feature_tiers and shop.metafields.loyalty['tiers_active'] == "true" -%}
         {%- assign class = class | default: '' -%}
