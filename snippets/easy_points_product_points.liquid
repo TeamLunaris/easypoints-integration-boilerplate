@@ -1,5 +1,6 @@
 {%- comment -%} START EASYPOINTS - DO NOT MODIFY! 変更しないでください! INFO @ https://bit.ly/2Dn7ESM {%- endcomment -%}
-  {%- if shop.metafields.loyalty['stealth_mode'] == "false" -%}
+  {%- assign shop_ep_metafield = shop.metafields.loyalty.easy_points_attributes.value -%}
+  {%- unless shop_ep_metafield.stealth_mode -%}
     {%- assign class = class | default: 'easy-points easy-points__product-points' -%}
     {%- assign text = text | default: 'easypoints.points' -%}
 
@@ -9,5 +10,5 @@
         {{ text | t }}
       </span>
     </span>
-  {%- endif -%}
+  {%- endunless -%}
 {%- comment -%} END EASYPOINTS {%- endcomment -%}

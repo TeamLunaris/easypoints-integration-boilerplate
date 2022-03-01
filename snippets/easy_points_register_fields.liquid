@@ -1,42 +1,51 @@
 {%- comment -%} START EASYPOINTS - DO NOT MODIFY! 変更しないでください! INFO @ https://bit.ly/2Dn7ESM {%- endcomment -%}
-  {%- assign reward_points_active = false -%}
-  {%- for key_value in shop.metafields.loyalty['features'] -%}
-    {%- if key_value[0] == "reward_points" and key_value[1] == true -%}
-      {%- assign reward_points_active = true -%}
-    {%- endif -%}
-  {%- endfor -%}
-  {%- assign birthday_points = false -%}
-  {%- for key_value in shop.metafields.loyalty['rewards'] -%}
-    {%- if key_value[0] == "birthday" and key_value[1] == true -%}
-      {%- assign birthday_points = true -%}
-    {%- endif -%}
-  {%- endfor -%}
-  {%- if shop.metafields.loyalty['stealth_mode'] == "false" and reward_points_active and birthday_points -%}
-    {%- assign class_container = class_container | default: '' -%}
-    {%- assign class_label = class_label | default: '' -%}
-    {%- assign class_input = class_input | default: 'easy-points__input-date' -%}
-    {%- assign show_label = show_label | default: 'true' -%}
+  {%- assign shop_ep_metafield = shop.metafields.loyalty.easy_points_attributes.value -%}
+  {%- unless shop_ep_metafield.stealth_mode -%}
+    {%- liquid
+      assign reward_points_active = false
+      for key_value in shop.metafields.loyalty['features']
+        if key_value[0] == "reward_points" and key_value[1] == true
+          assign reward_points_active = true
+        endif
+      endfor
+      
+      assign birthday_points = false
+      for key_value in shop.metafields.loyalty['rewards']
+        if key_value[0] == "birthday" and key_value[1] == true
+          assign birthday_points = true
+        endif
+      endfor
+    -%}
 
-    {%- if show_label -%}
-      <div class="{{ class_container }}">
-        <label for="birthday" class="{{ class_label }}">
-          {{ 'easypoints.note_form.birthday' | t }}
-        </label>
-        <input 
-        class="{{ class_input }}" 
-        type="date"
-        value="" 
-        name="customer[note][birthday]" 
-        />
-      </div>
-      {%- else -%}
-        <input 
-          class="{{ class_input }}" 
-          type="text" onfocus="(this.type='date')" 
-          placeholder="{{ 'easypoints.note_form.birthday' | t }}" 
-          value="" 
-          name="customer[note][birthday]" 
-        />
+    {%- if reward_points_active and birthday_points -%}
+      {%- liquid
+        assign class_container = class_container | default: ''
+        assign class_label = class_label | default: ''
+        assign class_input = class_input | default: 'easy-points__input-date'
+        assign show_label = show_label | default: 'true'
+      -%}
+
+      {%- if show_label -%}
+        <div class="{{ class_container }}">
+          <label for="birthday" class="{{ class_label }}">
+            {{ 'easypoints.note_form.birthday' | t }}
+          </label>
+          <input
+          class="{{ class_input }}"
+          type="date"
+          value=""
+          name="customer[note][birthday]"
+          />
+        </div>
+        {%- else -%}
+          <input
+            class="{{ class_input }}"
+            type="text" onfocus="(this.type='date')"
+            placeholder="{{ 'easypoints.note_form.birthday' | t }}"
+            value=""
+            name="customer[note][birthday]"
+          />
+      {%- endif -%}
     {%- endif -%}
-  {%- endif -%}
+  {%- endunless -%}
 {%- comment -%} END EASYPOINTS {%- endcomment -%}

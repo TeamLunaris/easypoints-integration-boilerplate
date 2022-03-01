@@ -1,30 +1,35 @@
 {%- comment -%} START EASYPOINTS - DO NOT MODIFY! 変更しないでください! INFO @ https://bit.ly/2Dn7ESM {%- endcomment -%}
-  {%- if customer and shop.metafields.loyalty['stealth_mode'] == "false" -%}
-    {%- assign has_feature_tiers = false -%}
-    {%- for key_value in shop.metafields.loyalty['features'] -%}
-      {%- if key_value[0] == "tiers" and key_value[1] == true -%}
-        {%- assign has_feature_tiers = true -%}
+  {%- assign shop_ep_metafield = shop.metafields.loyalty.easy_points_attributes.value -%}
+  {%- unless shop_ep_metafield.stealth_mode -%}
+    {%- if customer -%}
+      {%- liquid
+        assign has_feature_tiers = false
+        for key_value in shop.metafields.loyalty['features']
+          if key_value[0] == "tiers" and key_value[1] == true
+            assign has_feature_tiers = true
+          endif
+        endfor
+      -%}
+
+      {%- if has_feature_tiers and shop.metafields.loyalty['tiers_active'] == "true" -%}
+        {%- assign class = class | default: '' -%}
+        <span data-loyal-target="rank-advancement-data" class="{{ class }}">
+          <span style="display: none;" data-loyal-target="max-rank">
+            {{
+              'easypoints.tiers.highest_rank_html' | t:
+                rank: '<strong data-loyal-target="rank-advancement-tier-name">-</strong>'
+            }}
+          </span>
+
+          <span data-loyal-target="not-max-rank">
+            {{
+              'easypoints.tiers.spend_additional_html' | t:
+                amount: '<strong data-loyal-target="rank-advancement-amount">-</strong>',
+                rank: '<strong data-loyal-target="rank-advancement-tier-name">-</strong>'
+            }}
+          </span>
+        </span>
       {%- endif -%}
-    {%- endfor -%}
-
-    {%- if has_feature_tiers and shop.metafields.loyalty['tiers_active'] == "true" -%}
-      {%- assign class = class | default: '' -%}
-      <span data-loyal-target="rank-advancement-data" class="{{ class }}">
-        <span style="display: none;" data-loyal-target="max-rank">
-          {{
-            'easypoints.tiers.highest_rank_html' | t:
-              rank: '<strong data-loyal-target="rank-advancement-tier-name">-</strong>'
-          }}
-        </span>
-
-        <span data-loyal-target="not-max-rank">
-          {{
-            'easypoints.tiers.spend_additional_html' | t:
-              amount: '<strong data-loyal-target="rank-advancement-amount">-</strong>',
-              rank: '<strong data-loyal-target="rank-advancement-tier-name">-</strong>'
-          }}
-        </span>
-      </span>
     {%- endif -%}
-  {%- endif -%}
+  {%- endunless -%}
 {%- comment -%} END EASYPOINTS {%- endcomment -%}

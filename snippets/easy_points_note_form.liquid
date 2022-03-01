@@ -1,37 +1,45 @@
 {%- comment -%} START EASYPOINTS - DO NOT MODIFY! 変更しないでください! INFO @ https://bit.ly/2Dn7ESM {%- endcomment -%}
-  {%- assign reward_points_active = false -%}
-  {%- for key_value in shop.metafields.loyalty['features'] -%}
-    {%- if key_value[0] == "reward_points" and key_value[1] == true -%}
-      {%- assign reward_points_active = true -%}
-    {%- endif -%}
-  {%- endfor -%}
-  {%- assign birthday_points = false -%}
-  {%- for key_value in shop.metafields.loyalty['rewards'] -%}
-    {%- if key_value[0] == "birthday" and key_value[1] == true -%}
-      {%- assign birthday_points = true -%}
-    {%- endif -%}
-  {%- endfor -%}
-  {%- if shop.metafields.loyalty['stealth_mode'] == "false" and reward_points_active and birthday_points -%}
-    {%- assign class_container = class_container | default: '' -%}
-    {%- assign class_input = class_input | default: '' -%}
-    {%- assign class_button = class_button | default: 'btn' -%}
-    <div class="{{ class_container }}">
-      <h2>
-        {{ 'easypoints.note_form.birthday' | t }}
-      </h2>
-      <div id="easypoints-note-update" class="easy-points__note-form">
-        <input class="{{ class_input }}" type="date" value="{{ customer.metafields.loyalty['birthday'] }}" name="customer[easypoints_birthday]" aria-label="Birthday">
-        <input type="hidden" name="customer[id]" value="{{ customer.id }}">
-        <input type="hidden" name="redirect_route" data-loyal-target="redirect_url">
-        <button
-          id="easypoints-note-update-submit"
-          class="{{ class_button }}"
-          name="commit"
-          type="button"
-        >
-          {{ 'easypoints.note_form.update' | t }}
-        </button>
+  {%- assign shop_ep_metafield = shop.metafields.loyalty.easy_points_attributes.value -%}
+  {%- unless shop_ep_metafield.stealth_mode -%}
+    {%- liquid
+      assign reward_points_active = false
+      for key_value in shop.metafields.loyalty['features']
+        if key_value[0] == "reward_points" and key_value[1] == true
+          assign reward_points_active = true
+        endif
+      endfor
+
+      assign birthday_points = false
+      for key_value in shop.metafields.loyalty['rewards']
+        if key_value[0] == "birthday" and key_value[1] == true
+          assign birthday_points = true
+        endif
+      endfor
+    -%}
+
+    {%- if reward_points_active and birthday_points -%}
+      {%- liquid
+        assign class_container = class_container | default: ''
+        assign class_input = class_input | default: ''
+        assign class_button = class_button | default: 'btn'
+      -%}
+
+      <div class="{{ class_container }}">
+        <h2>{{ 'easypoints.note_form.birthday' | t }}</h2>
+        <div id="easypoints-note-update" class="easy-points__note-form">
+          <input class="{{ class_input }}" type="date" value="{{ customer.metafields.loyalty['birthday'] }}" name="customer[easypoints_birthday]" aria-label="Birthday">
+          <input type="hidden" name="customer[id]" value="{{ customer.id }}">
+          <input type="hidden" name="redirect_route" data-loyal-target="redirect_url">
+          <button
+            id="easypoints-note-update-submit"
+            class="{{ class_button }}"
+            name="commit"
+            type="button"
+          >
+            {{ 'easypoints.note_form.update' | t }}
+          </button>
+        </div>
       </div>
-    </div>
-  {%- endif -%}
+    {%- endif -%}
+  {%- endunless -%}
 {%- comment -%} END EASYPOINTS {%- endcomment -%}
