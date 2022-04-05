@@ -134,8 +134,8 @@ var EasyPoints = {
       var total =
         Array.from(el.querySelectorAll('[data-loyal-bonus-points]'))
           .reduce((acc, node) => {
-            var { bonusPoints } = JSON.parse(node.dataset.loyalBonusPoints);
-            bonusPoints = parseInt(bonusPoints);
+            var { bonusPoints, quantity } = JSON.parse(node.dataset.loyalBonusPoints);
+            bonusPoints = parseInt(bonusPoints) * quantity;
 
             if (!isNaN(bonusPoints) && bonusPoints > 0) {
               return acc + bonusPoints;
