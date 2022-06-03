@@ -1,5 +1,5 @@
 /**
- * v1.81
+ * v1.9
  *
  * Required functions from `easy_points.js`
  *  - updateLoyaltyTargets/0
@@ -147,16 +147,40 @@ var EasyPoints = {
       return total;
     },
 
-    insertTotalPoints(el, {ignoreExcluded = false, ignoreTax = true} = {}) {
+    insertTotalPoints(el, { ignoreExcluded = false, ignoreTax = false } = {}) {
       EasyPoints.Selectors.getTotalPointsEl(el, true)
         .forEach(node => {
-          var total = parseInt(node.dataset.loyalCurrencyCost);
+          var { tax } = JSON.parse(node.dataset.loyalOpts);
+          var total = parseInt(node.dataset.loyalCostOriginal);
 
           if (!ignoreExcluded) {
             total -= EasyPoints.Points.getExcludedCost();
           }
 
-          EasyPoints.Points.setCurrencyCost(node, { price: total, ignoreTax: ignoreTax });
+          if (!tax.awardable) {
+            var pointEls = [
+              ...document.querySelectorAll('[data-loyal-target="point-value"]')
+            ];
+
+            var combinedTaxRate =
+              pointEls.reduce((acc, pointEl) => {
+                const { tax: { rate } } = JSON.parse(pointEl.dataset.loyalOpts);
+                return acc + rate
+              }, 0);
+
+            var tax = {
+              ...tax,
+              rate: combinedTaxRate / pointEls.length,
+            };
+
+            if (tax.included) {
+              total = total / tax.rate;
+            } else {
+              total = total * tax.rate;
+            }
+          }
+
+          EasyPoints.Points.setCurrencyCost(node, { price: Math.floor(total), ignoreTax: tax.awardable });
           insertPointValue(node);
 
           var totalPoints = parseInt(node.innerText.replace(/\D/g, ''));
