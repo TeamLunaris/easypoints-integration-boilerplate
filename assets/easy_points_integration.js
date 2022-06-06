@@ -153,7 +153,7 @@ var EasyPoints = {
           var { tax } = JSON.parse(node.dataset.loyalOpts);
           var total = parseInt(node.dataset.loyalCurrencyCost);
 
-          if (!tax.awardable) {
+          if (!tax.awardable || !tax.included) {
             var pointEls = [
               ...document.querySelectorAll('[data-loyal-target="point-value"]')
             ];
