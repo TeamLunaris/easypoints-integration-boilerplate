@@ -151,33 +151,25 @@ var EasyPoints = {
       EasyPoints.Selectors.getTotalPointsEl(el, true)
         .forEach(node => {
           var { tax } = JSON.parse(node.dataset.loyalOpts);
-          var total = parseInt(node.dataset.loyalCostOriginal);
-
-          if (!ignoreExcluded) {
-            total -= EasyPoints.Points.getExcludedCost();
-          }
+          var total = parseInt(node.dataset.loyalCurrencyCost);
 
           if (!tax.awardable) {
             var pointEls = [
               ...document.querySelectorAll('[data-loyal-target="point-value"]')
             ];
 
-            var combinedTaxRate =
-              pointEls.reduce((acc, pointEl) => {
-                const { tax: { rate } } = JSON.parse(pointEl.dataset.loyalOpts);
-                return acc + rate
-              }, 0);
+            // calculate the total price from all cart item point values
+            // must use the `item.final_price` otherwise qty must be ignored
+            // {% render 'points', item: item, price: item.final_price %}
 
-            var tax = {
-              ...tax,
-              rate: combinedTaxRate / pointEls.length,
-            };
+            total = pointEls.reduce((acc, pointEl) => {
+              var { loyalCurrencyCost: cost, loyalQuantity: qty } = pointEl.dataset;
+              return (cost * qty) + acc;
+            }, 0);
+          }
 
-            if (tax.included) {
-              total = total / tax.rate;
-            } else {
-              total = total * tax.rate;
-            }
+          if (!ignoreExcluded) {
+            total -= EasyPoints.Points.getExcludedCost();
           }
 
           EasyPoints.Points.setCurrencyCost(node, { price: Math.floor(total), ignoreTax: tax.awardable });
