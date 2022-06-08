@@ -1,0 +1,48 @@
+{%- comment -%} START EASYPOINTS - DO NOT MODIFY! 変更しないでください! INFO @ https://bit.ly/2Dn7ESM {%- endcomment -%}
+{%- assign shop_ep_metafield = shop.metafields.loyalty.easy_points_attributes.value -%}
+{%- unless shop_ep_metafield.stealth_mode -%}
+  {%- liquid
+    assign reward_points_active = false
+    for key_value in shop.metafields.loyalty['features']
+      if key_value[0] == "reward_points" and key_value[1] == true
+        assign reward_points_active = true
+      endif
+    endfor
+
+    assign referral_points = false
+    for key_value in shop.metafields.loyalty['rewards']
+      if key_value[0] == "referrals" and key_value[1] == true
+        assign referral_points = true
+      endif
+    endfor
+  -%}
+
+  {%- if reward_points_active and referral_points and customer -%}
+    <div id="easy-points__referral">
+      {%- liquid
+        assign referral_url = shop.secure_url | append: "/apps/loyalty/ref/" | append: customer.id
+        if product
+          assign referral_url = referral_url | append: "?product_id=" | append: product.id
+        endif
+      -%}
+
+      <div class="easy-points__referral-input">
+        <div class="field">
+          <input class="field__input" type="text" id="easy-points-ref-url" value="{{ referral_url }}" readonly/>
+          <label class="field__label" for="easy-points-ref-url">Referral</label>
+        </div>
+
+        <button>
+          <svg class="copy" viewbox="0 0 24 24">
+            <path d="M19,21H8V7H19M19,5H8A2,2 0 0,0 6,7V21A2,2 0 0,0 8,23H19A2,2 0 0,0 21,21V7A2,2 0 0,0 19,5M16,1H4A2,2 0 0,0 2,3V17H4V3H16V1Z"/>
+          </svg>
+
+          <svg class="copied" viewbox="0 0 24 24">
+            <path d="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  {%- endif -%}
+{%- endunless -%}
+{%- comment -%} END EASYPOINTS {%- endcomment -%}
