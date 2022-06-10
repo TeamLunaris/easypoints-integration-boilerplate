@@ -13,6 +13,8 @@
   var path = this.window.location.pathname;
   var re = /\/cart/i;
 
+  EasyPoints.Referrals.setup();
+
   if (!path.match(re)) {
     return;
   }
@@ -318,6 +320,89 @@ var EasyPoints = {
           });
         }
       });
+    }
+  },
+
+  Referrals: {
+    setup() {
+      const ref = 'easy-points-ref';
+      const urlParams = new URLSearchParams(window.location.search);
+      const refCode = urlParams.get(ref);
+
+      document.querySelector('#easy-points__referral-copy')
+      .addEventListener('click', EasyPoints.Referrals.copyToClipboard);
+
+      if (refCode === EasyPointsData.customer.id.toString()) {
+        // Don't refer self
+        return;
+      }
+
+      if (urlParams.has(ref) && !localStorage.getItem(ref)) {
+        localStorage.setItem(ref, refCode);
+      }
+
+      const storedRef = localStorage.getItem(ref);
+      const signUpForm = document.querySelector('form[action="/account"]');
+
+      if (signUpForm && storedRef) {
+        const customerCreateEl = signUpForm.querySelector('input[name="form_type"][value="create_customer"]');
+
+        if (customerCreateEl) {
+          const refElement = EasyPoints.Referrals.createReferralInput('customer[note][ep-ref]', storedRef);
+          signUpForm.appendChild(refElement);
+        }
+      }
+
+      const productForms = [...(document.querySelectorAll('form[action="/cart/add"]') || [])];
+      const productId = productForms[0]?.querySelector('input[name="id"]').value;
+      const storageKey = `${ref}-products`;
+      const referredProducts = JSON.parse(localStorage.getItem(storageKey) || '{}');
+
+      if (productForms.length > 0) {
+        if (urlParams.has(ref)) {
+          referredProducts[productId] = refCode;
+          localStorage.setItem(storageKey, JSON.stringify(referredProducts));
+        }
+
+        const productRefCode = referredProducts[productId];
+
+        if (productRefCode) {
+          productForms.forEach((form) => {
+            const refElement = EasyPoints.Referrals.createReferralInput('properties[_ep-ref]', productRefCode);
+            form.appendChild(refElement);
+          });
+        }
+      }
+    },
+
+    createReferralInput(name, value) {
+      const refElement = document.createElement('input');
+      refElement.type = 'hidden';
+      refElement.value = value;
+      refElement.name = name;
+      return refElement;
+    },
+
+    copyToClipboard() {
+      const referral = document.querySelector('#easy-points__referral');
+      const referralInput = referral.querySelector('.easy-points__referral-input input')
+
+      if (referral.hasAttribute('copying') || referral.hasAttribute('copied')) {
+        return;
+      }
+
+      referral.setAttribute('copying', true);
+
+      setTimeout(function() {
+        referral.setAttribute('copied', true);
+        referral.removeAttribute('copying');
+      }, 350)
+
+      setTimeout(function() {
+        referral.removeAttribute('copied');
+      }, 1500);
+
+      navigator.clipboard.writeText(referralInput.value)
     }
   },
 
