@@ -11,7 +11,7 @@
 
     assign referral_points = false
     for key_value in shop.metafields.loyalty['rewards']
-      if key_value[0] == "referrals" and key_value[1] == true
+      if key_value[0] == "referral" and key_value[1] == true
         assign referral_points = true
       endif
     endfor
