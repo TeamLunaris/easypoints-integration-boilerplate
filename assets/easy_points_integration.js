@@ -435,7 +435,7 @@ var EasyPoints = {
     recalculate: function(subtotal = null) {
       var { rankAdvancementData } = getEasyPointsSession();
 
-      if (!rankAdvancementData && rankAdvancementData.raw_amount >= 0) {
+      if (!rankAdvancementData || rankAdvancementData.raw_amount >= 0) {
         return;
       }
 
