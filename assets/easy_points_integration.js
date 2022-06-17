@@ -1,5 +1,5 @@
 /**
- * v1.9
+ * v1.91
  *
  * Required functions from `easy_points.js`
  *  - updateLoyaltyTargets/0
@@ -147,9 +147,10 @@ var EasyPoints = {
       return total;
     },
 
-    insertTotalPoints(el, { ignoreExcluded = false, ignoreTax = false } = {}) {
-      EasyPoints.Selectors.getTotalPointsEl(el, true)
+    insertTotalPoints(containerEl) {
+      EasyPoints.Selectors.getTotalPointsEl(containerEl, true)
         .forEach(node => {
+          var ignoreTax = false;
           var { tax } = JSON.parse(node.dataset.loyalOpts);
           var total = parseInt(node.dataset.loyalCurrencyCost);
 
@@ -162,17 +163,18 @@ var EasyPoints = {
             // must use the `item.final_price` otherwise qty must be ignored
             // {% render 'points', item: item, price: item.final_price %}
 
+            // ignore tax because we calculate total cost from all point values on the page
+            ignoreTax = true;
+
             total = pointEls.reduce((acc, pointEl) => {
               var { loyalCurrencyCost: cost, loyalQuantity: qty } = pointEl.dataset;
               return (cost * qty) + acc;
             }, 0);
           }
 
-          if (!ignoreExcluded) {
-            total -= EasyPoints.Points.getExcludedCost();
-          }
+          total -= EasyPoints.Points.getExcludedCost();
 
-          EasyPoints.Points.setCurrencyCost(node, { price: Math.floor(total), ignoreTax: tax.awardable });
+          EasyPoints.Points.setCurrencyCost(node, { price: Math.floor(total), ignoreTax: ignoreTax });
           insertPointValue(node);
 
           var totalPoints = parseInt(node.innerText.replace(/\D/g, ''));
