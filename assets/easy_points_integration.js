@@ -348,7 +348,7 @@ var EasyPoints = {
         const customerCreateEl = signUpForm.querySelector('input[name="form_type"][value="create_customer"]');
 
         if (customerCreateEl) {
-          const refElement = EasyPoints.Referrals.createReferralInput('customer[note][easypoints-ref]', storedRef);
+          const refElement = EasyPoints.Referrals.createReferralInput('customer[note][easypoints-referrer]', storedRef);
           signUpForm.appendChild(refElement);
         }
       }
@@ -368,7 +368,7 @@ var EasyPoints = {
 
         if (productRefCode) {
           productForms.forEach((form) => {
-            const refElement = EasyPoints.Referrals.createReferralInput('properties[_easypoints-ref]', productRefCode);
+            const refElement = EasyPoints.Referrals.createReferralInput('properties[_easypoints-referrer]', productRefCode);
             form.appendChild(refElement);
           });
         }
