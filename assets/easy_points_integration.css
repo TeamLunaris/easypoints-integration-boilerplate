@@ -10,6 +10,10 @@
   --ep-spacer-3:          30px;
 }
 
+.easy-points-hide {
+  display: none !important;
+}
+
 .easy-points {
   font-size: var(--ep-font-size);
   color: var(--ep-color-points);
