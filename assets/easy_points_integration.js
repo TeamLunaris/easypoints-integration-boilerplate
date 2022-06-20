@@ -1,5 +1,5 @@
 /**
- * v1.91
+ * v1.92
  *
  * Required functions from `easy_points.js`
  *  - updateLoyaltyTargets/0
@@ -331,10 +331,7 @@ var EasyPoints = {
       const urlParams = new URLSearchParams(window.location.search);
       const refCode = urlParams.get(ref);
 
-      document.querySelector('#easy-points__referral-copy')
-      .addEventListener('click', EasyPoints.Referrals.copyToClipboard);
-
-      if (refCode === EasyPointsData.customer.id.toString()) {
+      if (refCode === EasyPointsData.customer?.id?.toString()) {
         // Don't refer self
         return;
       }
@@ -348,7 +345,6 @@ var EasyPoints = {
 
       if (signUpForm && storedRef) {
         const customerCreateEl = signUpForm.querySelector('input[name="form_type"][value="create_customer"]');
-
         if (customerCreateEl) {
           const refElement = EasyPoints.Referrals.createReferralInput('customer[note][easypoints-referrer]', storedRef);
           signUpForm.appendChild(refElement);
@@ -375,6 +371,25 @@ var EasyPoints = {
           });
         }
       }
+
+      document.querySelector('#easy-points__referral-copy')
+      ?.addEventListener('click', EasyPoints.Referrals.copyToClipboard);
+
+      document.querySelector('.easy-points__referral-social-share')
+      ?.addEventListener('click', EasyPoints.Referrals.openMediaShare);
+
+      document.querySelector('.easy-points__referral-share')
+      ?.addEventListener('click', EasyPoints.Referrals.openModal);
+
+      document.querySelector('.easy-points__referral-close-button')
+      ?.addEventListener('click', EasyPoints.Referrals.closeModal)
+
+      document.querySelector('.easy-points__referral-modal')
+      ?.addEventListener('click', (ev) => {
+        if (ev.target === document.querySelector('.easy-points__referral-modal')) {
+          EasyPoints.Referrals.closeModal();
+        }
+      });
     },
 
     createReferralInput(name, value) {
@@ -405,6 +420,28 @@ var EasyPoints = {
       }, 1500);
 
       navigator.clipboard.writeText(referralInput.value)
+    },
+
+    openMediaShare(ev) {
+      const url = document.querySelector('#easy-points-ref-url').value;
+      const base = ev.target.dataset.base;
+      const shareUrl = base.replace('{url}', encodeURIComponent(url));
+
+      window.open(shareUrl, '_blank');
+    },
+
+    closeModal() {
+      document.querySelector('.easy-points__referral-modal').dataset.open = false;
+    },
+
+    openModal() {
+      const url = document.querySelector('#easy-points-ref-url').value;
+
+      if (navigator.share) {
+        navigator.share({ url });
+      } else {
+        document.querySelector('.easy-points__referral-modal').dataset.open = true;
+      }
     }
   },
 

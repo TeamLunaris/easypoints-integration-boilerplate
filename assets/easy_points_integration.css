@@ -1,13 +1,13 @@
 :root {
-  --ep-white:           #FFF;
-  --ep-black:           #000;
-  --ep-red:             #E53E3E;
-  --ep-color-text:      #000;
-  --ep-color-points:    #8C8C8C;
-  --ep-font-size:         14px;
-  --ep-spacer-1:          10px;
-  --ep-spacer-2:          20px;
-  --ep-spacer-3:          30px;
+  --ep-white: #FFF;
+  --ep-black: #000;
+  --ep-red: #E53E3E;
+  --ep-color-text: #000;
+  --ep-color-points: #8C8C8C;
+  --ep-font-size: 14px;
+  --ep-spacer-1: 10px;
+  --ep-spacer-2: 20px;
+  --ep-spacer-3: 30px;
 }
 
 .easy-points-hide {
@@ -24,7 +24,7 @@
 }
 
 .easy-points [data-loyal-target="point-exclusion-product"] + .easy-points__text {
-    display: none;
+  display: none;
 }
 
 .easy-points__account {
@@ -73,7 +73,8 @@
   justify-content: flex-end;
 }
 
-.easy-points-form__input input, .easy-points-form__discount {
+.easy-points-form__input input,
+.easy-points-form__discount {
   text-align: center;
   width: 85px;
   height: 100%;
@@ -84,7 +85,9 @@
 }
 
 @media only screen and (max-width: 749px) {
-  .easy-points-form__input input, .easy-points-form__discount {
+
+  .easy-points-form__input input,
+  .easy-points-form__discount {
     width: 100px;
   }
 }
@@ -176,6 +179,13 @@
   margin: 1rem auto;
 }
 
+#easy-points__referral .easy-points__referral-input button::before,
+#easy-points__referral .easy-points__referral-input button::after {
+  outline: none;
+  border: none;
+  box-shadow: none;
+}
+
 #easy-points__referral .easy-points__referral-input button .copy {
   transition: opacity 0.3s;
   opacity: 1;
@@ -202,12 +212,11 @@
   display: block;
 }
 
-#easy-points__referral .easy-points__referral-input {
+#easy-points__referral .easy-points__referral-input .field {
   display: flex;
   flex-direction: row;
   align-items: center;
   gap: 1rem;
-  border: .1rem solid rgba(var(--color-base-text), .08)
 }
 
 .easy-points__referral-input input {
@@ -220,6 +229,7 @@
 }
 
 .easy-points__referral-input button {
+  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -243,8 +253,93 @@
 }
 
 .easy-points__referral-input button svg {
+  pointer-events: none;
   width: 18px;
   height: 18px;
+}
+
+.easy-points__referral-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  overflow: auto;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.3);
+  display: none;
+  z-index: -999999;
+}
+
+.easy-points__referral-modal[data-open="true"] {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999999;
+}
+
+.easy-points__referral-modal-container {
+  position: relative;
+  background-color: rgb(var(--color-base-background-1));
+  width: 480px;
+  padding: 4rem;
+}
+
+.easy-points__referral-social-share {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3rem;
+}
+
+.easy-points__referral-close-button {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+}
+
+.easy-points__referral-social-share button,
+.easy-points__referral-close-button button,
+.easy-points__referral-close-button button:hover,
+.easy-points__referral-social-share button:hover,
+.easy-points__referral-social-share button:hover::before,
+.easy-points__referral-close-button button:hover::before,
+.easy-points__referral-social-share button:hover::after,
+.easy-points__referral-close-button button:hover::after,
+.easy-points__referral-close-button button::before,
+.easy-points__referral-close-button button::after,
+.easy-points__referral-social-share button::before,
+.easy-points__referral-social-share button::after {
+  background-color: transparent;
+  border: none;
+  outline: none;
+  box-shadow: none;
+}
+
+.easy-points__referral-social-share button,
+.easy-points__referral-close-button button {
+  cursor: pointer;
+  min-width: 20px;
+  min-height: 20px;
+  padding: 0;
+}
+
+.easy-points__referral-social-share button {
+  margin: 1.2rem !important;
+  width: 60px;
+  height: 60px;
+}
+
+.easy-points__referral-close-button button {
+  margin: 0 !important;
+  width: 40px;
+  height: 40px;
+}
+
+.easy-points__referral-social-share button svg,
+.easy-points__referral-close-button button svg {
+  pointer-events: none;
+  width: 50%;
+  height: 50%;
 }
 
 /* [data-loyal-target="subtotal"] .easy-points,
