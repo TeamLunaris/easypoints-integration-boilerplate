@@ -281,7 +281,7 @@
   position: relative;
   background-color: rgb(var(--color-base-background-1));
   width: 480px;
-  padding: 4rem;
+  padding: 6rem 4rem 2rem;
 }
 
 .easy-points__referral-social-share {
@@ -289,6 +289,12 @@
   align-items: center;
   justify-content: center;
   gap: 3rem;
+}
+
+.easy-points__referral-share {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
 }
 
 .easy-points__referral-close-button {
