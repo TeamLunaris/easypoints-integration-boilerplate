@@ -18,20 +18,25 @@
   -%}
 
   {%- if reward_points_active and referral_points and customer -%}
+    {%- liquid
+      assign referral_url = shop.secure_url | append: "/apps/loyalty/ref/" | append: customer.id
+      if product
+        assign referral_url = referral_url | append: "?product_id=" | append: product.id
+      endif
+
+      assign class_field = class_container | default: 'field'
+      assign class_input = class_input | default: 'field__input'
+      assign class_label = class_button | default: 'field__label'
+      assign class_button = class_button | default: 'field__button'
+    -%}
+
     <div id="easy-points__referral">
-      {%- liquid
-        assign referral_url = shop.secure_url | append: "/apps/loyalty/ref/" | append: customer.id
-        if product
-          assign referral_url = referral_url | append: "?product_id=" | append: product.id
-        endif
-      -%}
-
       <div class="easy-points__referral-input">
-        <div class="field">
-          <input class="field__input" type="text" id="easy-points-ref-url" value="{{ referral_url }}" readonly/>
-          <label class="field__label" for="easy-points-ref-url">Referral</label>
+        <div class="{{class_field}}">
+          <input class="{{class_input}}" type="text" id="easy-points-ref-url" value="{{ referral_url }}" readonly/>
+          <label class="{{class_label}}" for="easy-points-ref-url">Referral</label>
 
-          <button class="field__button" id="easy-points__referral-copy">
+          <button class="{{class_button}}" id="easy-points__referral-copy">
             <svg class="copy" viewbox="0 0 24 24">
               <path d="M19,21H8V7H19M19,5H8A2,2 0 0,0 6,7V21A2,2 0 0,0 8,23H19A2,2 0 0,0 21,21V7A2,2 0 0,0 19,5M16,1H4A2,2 0 0,0 2,3V17H4V3H16V1Z"/>
             </svg>

@@ -18,6 +18,19 @@
   -%}
 
   {%- if reward_points_active and referral_points and customer -%}
+    {%- liquid
+      assign class_field = class_container | default: 'field'
+      assign class_input = class_input | default: 'field__input'
+      assign class_label = class_button | default: 'field__label'
+      assign class_button = class_button | default: 'field__button'
+    -%}
+
+    {%- comment -%} 
+      if you want to show the reward points use
+
+      {{ shop_ep_metafield.reward_rules.referral.point_value }}
+    {%- endcomment -%}
+
     <div class="easy-points__referral-modal">
       <div class="easy-points__referral-modal-container">
         <div class="easy-points__referral-close-button">
@@ -28,7 +41,7 @@
           </button>
         </div>
 
-        {%- render 'easy_points_referral_field' -%}
+        {%- render 'easy_points_referral_field', class_field: class_field, class_input: class_input, class_label: class_label, class_button: class_button -%}
 
         <div class="easy-points__referral-social-share">
           <button data-base="https://www.facebook.com/sharer.php?u={url}" id="facebook">
