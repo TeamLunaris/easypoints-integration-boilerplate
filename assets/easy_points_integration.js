@@ -352,11 +352,12 @@ var EasyPoints = {
       }
 
       const productForms = [...(document.querySelectorAll('form[action="/cart/add"]') || [])];
-      const productId = productForms[0]?.querySelector('input[name="id"]').value;
-      const storageKey = `${ref}-products`;
-      const referredProducts = JSON.parse(localStorage.getItem(storageKey) || '{}');
 
       if (productForms.length > 0) {
+        const productId = productForms[0].querySelector('input[name="id"]').value;
+        const storageKey = `${ref}-products`;
+        const referredProducts = JSON.parse(localStorage.getItem(storageKey) || '{}');
+
         if (urlParams.has(ref)) {
           referredProducts[productId] = refCode;
           localStorage.setItem(storageKey, JSON.stringify(referredProducts));
