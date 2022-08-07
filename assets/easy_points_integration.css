@@ -1,13 +1,13 @@
 :root {
-  --ep-white: #FFF;
-  --ep-black: #000;
-  --ep-red: #E53E3E;
-  --ep-color-text: #000;
-  --ep-color-points: #8C8C8C;
-  --ep-font-size: 14px;
-  --ep-spacer-1: 10px;
-  --ep-spacer-2: 20px;
-  --ep-spacer-3: 30px;
+  --ep-white:         #FFF;
+  --ep-black:         #000;
+  --ep-red:           #E53E3E;
+  --ep-color-text:    #000;
+  --ep-color-points:  #8C8C8C;
+  --ep-font-size:     14px;
+  --ep-spacer-1:      10px;
+  --ep-spacer-2:      20px;
+  --ep-spacer-3:      30px;
 }
 
 .easy-points-hide {
@@ -176,7 +176,7 @@
 
 #easy-points__referral {
   background-color: transparent;
-  margin: 1rem auto;
+  margin: var(--ep-spacer-2) auto;
 }
 
 #easy-points__referral .easy-points__referral-input button::before,
@@ -216,7 +216,7 @@
   display: flex;
   flex-direction: row;
   align-items: center;
-  gap: 1rem;
+  gap: var(--ep-spacer-2);
 }
 
 .easy-points__referral-input input {
@@ -229,7 +229,6 @@
 }
 
 .easy-points__referral-input button {
-  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -239,7 +238,6 @@
   border: none;
   box-shadow: none;
   background-color: transparent;
-  cursor: pointer;
   min-width: 0px !important;
   min-height: 0px !important;
   width: 4.4rem;
@@ -294,13 +292,13 @@
 .easy-points__referral-share {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: var(--ep-spacer-2);
 }
 
 .easy-points__referral-close-button {
   position: absolute;
-  top: 1rem;
-  right: 1rem;
+  top: var(--ep-spacer-2);
+  right: var(--ep-spacer-2);
 }
 
 .easy-points__referral-social-share button,

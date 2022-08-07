@@ -16,7 +16,7 @@
       endif
     endfor
   -%}
-
+  
   {%- if reward_points_active and referral_points and customer -%}
     {%- liquid
       assign referral_url = shop.secure_url | append: "/apps/loyalty/ref/" | append: customer.id
@@ -26,7 +26,7 @@
 
       assign class_field = class_container | default: 'field'
       assign class_input = class_input | default: 'field__input'
-      assign class_label = class_button | default: 'field__label'
+      assign class_label = class_label | default: 'field__label'
       assign class_button = class_button | default: 'field__button'
     -%}
 
