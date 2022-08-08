@@ -179,56 +179,42 @@
   margin: var(--ep-spacer-2) auto;
 }
 
-#easy-points__referral .easy-points__referral-input button::before,
-#easy-points__referral .easy-points__referral-input button::after {
+#easy-points__referral button::before,
+#easy-points__referral button::after {
   outline: none;
   border: none;
   box-shadow: none;
 }
 
-#easy-points__referral .easy-points__referral-input button .copy {
-  transition: opacity 0.3s;
+#easy-points__referral[copying=true] button .copy {
+  opacity: 0;
+}
+
+#easy-points__referral[copied=true] button .copy {
+  display: none;
+}
+
+#easy-points__referral[copied=true] button .copied {
   opacity: 1;
   display: block;
 }
 
-#easy-points__referral .easy-points__referral-input button .copied {
-  transition-delay: 0.3s;
-  transition: opacity 0.3s;
-  opacity: 0;
-  display: none;
-}
-
-#easy-points__referral[copying=true] .easy-points__referral-input button .copy {
-  opacity: 0;
-}
-
-#easy-points__referral[copied=true] .easy-points__referral-input button .copy {
-  display: none;
-}
-
-#easy-points__referral[copied=true] .easy-points__referral-input button .copied {
-  opacity: 1;
-  display: block;
-}
-
-#easy-points__referral .easy-points__referral-input .field {
+#easy-points__referral .field {
   display: flex;
   flex-direction: row;
   align-items: center;
   gap: var(--ep-spacer-2);
 }
 
-.easy-points__referral-input input {
+#easy-points__referral input {
   background-color: transparent;
   box-shadow: none !important;
   outline: none;
   border: none;
-  padding: 0;
   min-width: 250px;
 }
 
-.easy-points__referral-input button {
+#easy-points__referral button {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -244,13 +230,26 @@
   height: 4.4rem;
 }
 
-.easy-points__referral-input button:hover {
+#easy-points__referral button:hover {
   outline: none;
   border: none;
   box-shadow: none;
 }
 
-.easy-points__referral-input button svg {
+#easy-points__referral button .copy {
+  transition: opacity 0.3s;
+  opacity: 1;
+  display: block;
+}
+
+#easy-points__referral button .copied {
+  transition-delay: 0.3s;
+  transition: opacity 0.3s;
+  opacity: 0;
+  display: none;
+}
+
+#easy-points__referral button svg {
   pointer-events: none;
   width: 18px;
   height: 18px;
@@ -321,7 +320,6 @@
 
 .easy-points__referral-social-share button,
 .easy-points__referral-close-button button {
-  cursor: pointer;
   min-width: 20px;
   min-height: 20px;
   padding: 0;

@@ -364,7 +364,7 @@ const EasyPoints = {
 
     copyToClipboard() {
       const referral = document.querySelector('#easy-points__referral');
-      const referralInputEl = referral.querySelector('.easy-points__referral-input input');
+      const referralInputEl = referral.querySelector('input');
 
       if (referral.hasAttribute('copying') || referral.hasAttribute('copied')) {
         return;
@@ -553,7 +553,7 @@ const EasyPoints = {
           Array.prototype.slice.call(
             document.querySelectorAll('[data-loyal-target="rank-advancement-amount"]')
           ).forEach((target) => {
-            target.innerHTML = EasyPointsCore.Currency.format(nextTier.advancementAmountMultiplied);
+            target.innerHTML = window.EasyPointsCore.Currency.format(nextTier.advancementAmountMultiplied);
           });
         } else {
           Array.prototype.slice.call(

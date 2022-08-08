@@ -2,13 +2,6 @@
 {%- assign shop_ep_metafield = shop.metafields.loyalty.easy_points_attributes.value -%}
 {%- unless shop_ep_metafield.stealth_mode -%}
   {%- liquid
-    assign reward_points_active = false
-    for key_value in shop.metafields.loyalty['features']
-      if key_value[0] == "reward_points" and key_value[1] == true
-        assign reward_points_active = true
-      endif
-    endfor
-
     assign referral_points = false
     for key_value in shop.metafields.loyalty['rewards']
       if key_value[0] == "referral" and key_value[1] == true
@@ -17,7 +10,7 @@
     endfor
   -%}
 
-  {%- if reward_points_active and referral_points and customer -%}
+  {%- if referral_points and customer -%}
     {%- liquid
       assign class_button = class_button | default: ''
       assign class_icon = class_container | default: ''
