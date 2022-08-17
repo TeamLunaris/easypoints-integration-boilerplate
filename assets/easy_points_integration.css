@@ -211,7 +211,10 @@
   box-shadow: none !important;
   outline: none;
   border: none;
-  min-width: 250px;
+  max-width: 95%;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
 }
 
 #easy-points__referral button {
