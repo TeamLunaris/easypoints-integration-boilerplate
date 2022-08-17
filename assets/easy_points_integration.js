@@ -134,7 +134,7 @@ const EasyPoints = {
             totalPoints = parseInt(node.textContent.replace(/\D/g, ''));
           }
 
-          totalPoints += Math.round(EasyPoints.Points.getTotalBonusPoints(node));
+          totalPoints += Math.round(window.EasyPoints.Points.getTotalBonusPoints(containerEl));
           window.insertPointValueIntoElement(node, totalPoints);
         });
     },
