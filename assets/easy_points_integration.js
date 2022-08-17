@@ -334,11 +334,14 @@ const EasyPoints = {
         }
       }
 
+      document.querySelector('#easy-points-ref-url')
+        ?.addEventListener('click', EasyPoints.Referrals.copyToClipboard);
+
       document.querySelector('#easy-points__referral-copy')
         ?.addEventListener('click', EasyPoints.Referrals.copyToClipboard);
 
-      document.querySelector('.easy-points__referral-social-share')
-        ?.addEventListener('click', EasyPoints.Referrals.openMediaShare);
+      document.querySelectorAll('.easy-points__referral-social-share button')
+        .forEach((button) => button.addEventListener('click', EasyPoints.Referrals.openMediaShare));
 
       document.querySelector('.easy-points__referral-share')
         ?.addEventListener('click', EasyPoints.Referrals.openModal);
@@ -553,7 +556,7 @@ const EasyPoints = {
           Array.prototype.slice.call(
             document.querySelectorAll('[data-loyal-target="rank-advancement-amount"]')
           ).forEach((target) => {
-            target.innerHTML = window.EasyPointsCore.Currency.format(nextTier.advancementAmountMultiplied);
+            target.innerHTML = EasyPointsCore.Currency.format(nextTier.advancementAmountMultiplied);
           });
         } else {
           Array.prototype.slice.call(
