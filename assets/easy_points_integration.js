@@ -293,6 +293,41 @@ var EasyPoints = {
       req.send();
     },
 
+    /**
+     * Fetches the HTML for the cart section of the page.
+     *
+     * @param {String} section name of the liquid snippet containing our cart items by default `main-cart-items`
+     * @returns {HTMLElement} html document containing the updated cart items
+     */
+    getHtmlCartSection: async function(section = 'main-cart-items') {
+      const resp = await fetch(`${window.Shopify.routes.root}?sections=${section}`);
+      const data = await resp.json();
+
+      const parser = new DOMParser();
+      return parser.parseFromString(data[section], 'text/html');
+    },
+
+    /**
+     * Replaces ALL point value dom elements with the given updated html.
+     *
+     * @param {HTMLElement|null} html html document with the updated cart items
+     */
+    replaceCartItemPointValues: function (html = null) {
+      if (!html) {
+        html = this.getHtmlCartSection();
+      }
+
+      var pointEls = [
+        ...document.querySelectorAll('[data-loyal-target="point-value"]'),
+      ];
+
+      pointEls.forEach(function(el) {
+        var { loyalItemId: itemId } = el.dataset;
+        var selector = `[data-loyal-target="point-value"][data-loyal-item-id="${itemId}"]`;
+        html.querySelector(selector).innerHTML = el.innerHTML;
+      });
+    },
+
     setRedemptionForm: function() {
       this.getFromJSON(function(cart) {
         var form = document.getElementById('point-redemption-form');
@@ -700,3 +735,4 @@ var EasyPoints = {
     }
   }
 };
+
