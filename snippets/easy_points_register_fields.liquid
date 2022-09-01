@@ -8,7 +8,7 @@
           assign reward_points_active = true
         endif
       endfor
-      
+
       assign birthday_points = false
       for key_value in shop.metafields.loyalty['rewards']
         if key_value[0] == "birthday" and key_value[1] == true
@@ -17,7 +17,7 @@
       endfor
     -%}
 
-    {%- if reward_points_active and birthday_points -%}
+    {%- if birthday_points -%}
       {%- liquid
         assign class_container = class_container | default: ''
         assign class_label = class_label | default: ''

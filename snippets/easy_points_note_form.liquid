@@ -17,7 +17,7 @@
       endfor
     -%}
 
-    {%- if reward_points_active and birthday_points -%}
+    {%- if birthday_points -%}
       {%- liquid
         assign class_container = class_container | default: ''
         assign class_input = class_input | default: ''
