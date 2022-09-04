@@ -1,0 +1,32 @@
+{%- comment -%} START EASYPOINTS - DO NOT MODIFY! 変更しないでください! INFO @ https://bit.ly/2Dn7ESM {%- endcomment -%}
+{%- assign shop_ep_metafield = shop.metafields.loyalty.easy_points_attributes.value -%}
+{%- unless shop_ep_metafield.stealth_mode -%}
+  {%- liquid
+    assign referral_points = false
+    for key_value in shop.metafields.loyalty['rewards']
+      if key_value[0] == "referral" and key_value[1] == true
+        assign referral_points = true
+      endif
+    endfor
+  -%}
+
+  {%- if referral_points and customer -%}
+    {%- liquid
+      assign class_button = class_button | default: ''
+      assign class_icon = class_container | default: ''
+      assign icon_size = icon_size | default: '24'
+    -%}
+
+    <div>
+      <button class="{{ class_button }} easy-points__referral-share" type="button">
+        <svg class="{{ class_icon }}" style="width: {{ icon_size }}px; height: {{ icon_size }}px;" viewbox="0 0 24 24">
+          <path d="M18,16.08C17.24,16.08 16.56,16.38 16.04,16.85L8.91,12.7C8.96,12.47 9,12.24 9,12C9,11.76 8.96,11.53 8.91,11.3L15.96,7.19C16.5,7.69 17.21,8 18,8A3,3 0 0,0 21,5A3,3 0 0,0 18,2A3,3 0 0,0 15,5C15,5.24 15.04,5.47 15.09,5.7L8.04,9.81C7.5,9.31 6.79,9 6,9A3,3 0 0,0 3,12A3,3 0 0,0 6,15C6.79,15 7.5,14.69 8.04,14.19L15.16,18.34C15.11,18.55 15.08,18.77 15.08,19C15.08,20.61 16.39,21.91 18,21.91C19.61,21.91 20.92,20.61 20.92,19A2.92,2.92 0 0,0 18,16.08Z"/>
+        </svg>
+
+        {{ 'easypoints.referral.share' | t }}
+      </button>
+    </div>
+  {%- endif -%}
+
+{%- endunless -%}
+{%- comment -%} END EASYPOINTS {%- endcomment -%}
