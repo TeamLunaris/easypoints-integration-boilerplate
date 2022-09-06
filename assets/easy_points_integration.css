@@ -171,6 +171,11 @@
   font-size: 95%;
 }
 
+.ep-disabled-text a {
+  opacity: 0.7;
+}
+
+
 /* [data-loyal-target="subtotal"] .easy-points,
 [data-loyal-target="subtotal"] [data-loyal-target="total_price"] {
   display: inline-block;
@@ -184,4 +189,3 @@
   min-width: 140px;
   margin-left: var(--ep-spacer-1);
 } */
-

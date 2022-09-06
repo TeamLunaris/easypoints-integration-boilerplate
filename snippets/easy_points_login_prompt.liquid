@@ -2,7 +2,7 @@
 {%- assign shop_ep_metafield = shop.metafields.loyalty.easy_points_attributes.value -%}
   {%- unless shop_ep_metafield.stealth_mode -%}
     {%- unless customer -%}
-      <small class="ep-disabled-text">ポイントのご利用には<a href="/account/login">ログイン</a>していただく必要がございます</small>
+      <small class="ep-disabled-text">ポイントのご利用には<a href="/account/login">ログイン</a>していただく必要がございます。</small>
     {%- endunless -%}
   {%- endunless -%}
 {%- comment -%} END EASYPOINTS {%- endcomment -%}
