@@ -638,9 +638,6 @@ var EasyPoints = {
       EasyPoints.Selectors.getResetPointsButtonEl(document, true)
         .forEach(node => node.addEventListener('click', this.onClickResetBtn));
 
-      EasyPoints.Selectors.getCheckoutButtonEl(document, true)
-        .forEach(node => node.addEventListener('click', this.onClickSetCoupon));
-
       EasyPoints.Debug.print('Applied all required event listeners');
     },
 
@@ -654,7 +651,23 @@ var EasyPoints = {
 
       EasyPoints.Register.submissionReady = false;
       if (EasyPoints.Form.redeem({event: e})) {
-        EasyPoints.applyDiscount();
+        e.target.style.cursor = 'progress';
+        e.target.setAttribute('disabled', true);
+
+        var checkoutBtn = EasyPoints.Selectors.getCheckoutButtonEl(document, false);
+        checkoutBtn.setAttribute('disabled', true);
+
+        EasyPoints.Form.setCoupon(
+          function() {
+            EasyPoints.applyDiscount();
+
+            e.target.style.cursor = 'unset';
+            e.target.removeAttribute('disabled');
+
+            var checkoutBtn = EasyPoints.Selectors.getCheckoutButtonEl(document, false);
+            checkoutBtn.removeAttribute('disabled');
+          }
+        )
       }
     },
 
@@ -663,7 +676,26 @@ var EasyPoints = {
       EasyPoints.Debug.print('Clicked: Reset');
 
       EasyPoints.Register.submissionReady = false;
-      EasyPoints.reset({event: e});
+      e.target.style.cursor = 'progress';
+      e.target.setAttribute('disabled', true);
+
+      var checkoutBtn = EasyPoints.Selectors.getCheckoutButtonEl(document, false);
+      checkoutBtn.setAttribute('disabled', true);
+
+      sessionStorage.removeItem('appliedDiscount')
+
+      EasyPoints.Form.setCoupon(
+        function() {
+          EasyPoints.reset({event: e});
+
+          e.target.style.cursor = 'unset';
+          e.target.removeAttribute('disabled');
+
+          var checkoutBtn = EasyPoints.Selectors.getCheckoutButtonEl(document, false);
+          checkoutBtn.removeAttribute('disabled');
+        }
+
+      )
     },
 
     onClickSetCoupon(e, callback = null) {
@@ -678,7 +710,7 @@ var EasyPoints = {
       e.preventDefault();
       e.stopPropagation();
 
-      checkoutBtn = e.target;
+      var checkoutBtn = EasyPoints.Selectors.getCheckoutButtonEl(document, false);
       checkoutBtn.style.cursor = 'progress';
       checkoutBtn.classList.add('btn--loading');
       checkoutBtn.setAttribute('disabled', true);
