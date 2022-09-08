@@ -1,6 +1,6 @@
 {%- comment -%} START EASYPOINTS - DO NOT MODIFY! 変更しないでください! INFO @ https://bit.ly/2Dn7ESM {%- endcomment -%}
 {%- assign shop_ep_metafield = shop.metafields.loyalty.easy_points_attributes.value -%}
-  {%- unless shop_ep_metafield.stealth_mode and customer-%}
+  {%- unless shop_ep_metafield.stealth_mode or customer-%}
     <small class="ep-disabled-text">ポイントのご利用には<a href="{{ routes.account_login_url }}">ログイン</a>していただく必要がございます。</small>
   {%- endunless -%}
 {%- comment -%} END EASYPOINTS {%- endcomment -%}
