@@ -1,13 +1,13 @@
 :root {
-  --ep-white:           #FFF;
-  --ep-black:           #000;
-  --ep-red:             #E53E3E;
-  --ep-color-text:      #000;
-  --ep-color-points:    #8C8C8C;
-  --ep-font-size:         14px;
-  --ep-spacer-1:          10px;
-  --ep-spacer-2:          20px;
-  --ep-spacer-3:          30px;
+  --ep-white: #fff;
+  --ep-black: #000;
+  --ep-red: #e53e3e;
+  --ep-color-text: #000;
+  --ep-color-points: #8c8c8c;
+  --ep-font-size: 14px;
+  --ep-spacer-1: 10px;
+  --ep-spacer-2: 20px;
+  --ep-spacer-3: 30px;
 }
 
 .easy-points-hide {
@@ -23,7 +23,9 @@
   display: none;
 }
 
-.easy-points [data-loyal-target="point-exclusion-product"] + .easy-points__text{
+.easy-points
+  [data-loyal-target="point-exclusion-product"]
+  + .easy-points__text {
   display: none;
 }
 
@@ -73,7 +75,8 @@
   justify-content: flex-end;
 }
 
-.easy-points-form__input input, .easy-points-form__discount {
+.easy-points-form__input input,
+.easy-points-form__discount {
   text-align: center;
   width: 85px;
   height: 100%;
@@ -84,7 +87,8 @@
 }
 
 @media only screen and (max-width: 749px) {
-  .easy-points-form__input input, .easy-points-form__discount {
+  .easy-points-form__input input,
+  .easy-points-form__discount {
     width: 100px;
   }
 }
@@ -94,8 +98,8 @@
   -webkit-appearance: none;
 }
 
-.easy-points-form__input input[type=number]::-webkit-inner-spin-button,
-.easy-points-form__input input[type=number]::-webkit-outer-spin-button {
+.easy-points-form__input input[type="number"]::-webkit-inner-spin-button,
+.easy-points-form__input input[type="number"]::-webkit-outer-spin-button {
   -moz-appearance: textfield;
   -webkit-appearance: none;
   margin: 0;
@@ -172,7 +176,13 @@
 }
 
 .ep-disabled-text a {
-  text-decoration: underline;
+  font-size: 80%;
+  text-decoration: none;
+  color: var(--ep-color-text);
+}
+
+.ep-disabled-text a:hover {
+  opacity: 0.7;
 }
 
 /* [data-loyal-target="subtotal"] .easy-points,
