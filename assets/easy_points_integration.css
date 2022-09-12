@@ -175,13 +175,13 @@
   font-size: 95%;
 }
 
-.ep-disabled-text a {
+.ep-login-prompt--text a {
   font-size: 80%;
   text-decoration: none;
   color: var(--ep-color-text);
 }
 
-.ep-disabled-text a:hover {
+.ep-login-prompt--text a:hover {
   opacity: 0.7;
 }
 

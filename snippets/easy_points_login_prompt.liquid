@@ -3,7 +3,7 @@
 {%- unless shop_ep_metafield.stealth_mode or customer -%}
   <a
     href="{{ routes.account_login_url }}"
-    class="ep-disabled-text"
+    class="ep-login-prompt--text"
   >
     {{- 'easypoints.login_prompt' | t -}}
   </a>
