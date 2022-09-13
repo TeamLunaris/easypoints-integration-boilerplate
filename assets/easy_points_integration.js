@@ -13,12 +13,17 @@
   var path = this.window.location.pathname;
   var re = /\/cart/i;
 
+
   if (!path.match(re)) {
     return;
   }
 
   EasyPoints.reset({});
   EasyPoints.Register.run();
+
+  setTimeout(() => {
+    EasyPoints.resetDiscount();
+  }, 1000);
 
   // var cartNode = document.querySelector('form[action="/cart"]');
 
@@ -491,6 +496,13 @@ var EasyPoints = {
     var discount = sessionStorage.getItem("appliedDiscount");
 
     return discount ? parseInt(discount) : 0;
+  },
+
+  resetDiscount: function() {
+    var discounted = this.getDiscountSession();
+    if (discounted > 0) {
+      EasyPoints.Selectors.getResetPointsButtonEl(document).click();
+    }
   },
 
   applyDiscount: function() {
