@@ -654,7 +654,7 @@ var EasyPoints = {
         e.target.style.cursor = 'progress';
         e.target.setAttribute('disabled', true);
 
-        var checkoutBtn = EasyPoints.Selectors.getCheckoutButtonEl(document, false);
+        var checkoutBtn = EasyPoints.Selectors.getCheckoutButtonEl(document);
         checkoutBtn.setAttribute('disabled', true);
 
         EasyPoints.Form.setCoupon(
@@ -664,7 +664,7 @@ var EasyPoints = {
             e.target.style.cursor = 'unset';
             e.target.removeAttribute('disabled');
 
-            var checkoutBtn = EasyPoints.Selectors.getCheckoutButtonEl(document, false);
+            var checkoutBtn = EasyPoints.Selectors.getCheckoutButtonEl(document);
             checkoutBtn.removeAttribute('disabled');
           }
         )
@@ -679,7 +679,7 @@ var EasyPoints = {
       e.target.style.cursor = 'progress';
       e.target.setAttribute('disabled', true);
 
-      var checkoutBtn = EasyPoints.Selectors.getCheckoutButtonEl(document, false);
+      var checkoutBtn = EasyPoints.Selectors.getCheckoutButtonEl(document);
       checkoutBtn.setAttribute('disabled', true);
 
       sessionStorage.removeItem('appliedDiscount')
@@ -691,7 +691,7 @@ var EasyPoints = {
           e.target.style.cursor = 'unset';
           e.target.removeAttribute('disabled');
 
-          var checkoutBtn = EasyPoints.Selectors.getCheckoutButtonEl(document, false);
+          var checkoutBtn = EasyPoints.Selectors.getCheckoutButtonEl(document);
           checkoutBtn.removeAttribute('disabled');
         }
 
@@ -710,7 +710,7 @@ var EasyPoints = {
       e.preventDefault();
       e.stopPropagation();
 
-      var checkoutBtn = EasyPoints.Selectors.getCheckoutButtonEl(document, false);
+      var checkoutBtn = EasyPoints.Selectors.getCheckoutButtonEl(document);
       checkoutBtn.style.cursor = 'progress';
       checkoutBtn.classList.add('btn--loading');
       checkoutBtn.setAttribute('disabled', true);
