@@ -18,12 +18,11 @@
     return;
   }
 
-  EasyPoints.reset({});
   EasyPoints.Register.run();
 
   setTimeout(() => {
     EasyPoints.resetDiscount();
-  }, 1000);
+  }, 100);
 
   // var cartNode = document.querySelector('form[action="/cart"]');
 
