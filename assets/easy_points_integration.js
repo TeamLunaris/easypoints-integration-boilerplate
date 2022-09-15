@@ -500,8 +500,23 @@ var EasyPoints = {
   resetDiscount: function() {
     var discounted = this.getDiscountSession();
     if (discounted > 0) {
-      EasyPoints.Selectors.getResetPointsButtonEl(document).click();
-    }
+      var checkoutBtn = EasyPoints.Selectors.getCheckoutButtonEl(document);
+      var resetBtn = EasyPoints.Selectors.getResetPointsButtonEl(document);
+
+      EasyPoints.Register.submissionReady = false;
+
+      resetBtn.setAttribute('disabled', true);
+      checkoutBtn.setAttribute('disabled', true);
+
+      EasyPoints.Form.setCoupon(
+        function() {
+          EasyPoints.reset({});
+
+          resetBtn.removeAttribute('disabled');
+          checkoutBtn.removeAttribute('disabled');
+        }
+      )
+      }
   },
 
   applyDiscount: function() {
@@ -649,6 +664,9 @@ var EasyPoints = {
       EasyPoints.Selectors.getResetPointsButtonEl(document, true)
         .forEach(node => node.addEventListener('click', this.onClickResetBtn));
 
+        // EasyPoints.Selectors.getCheckoutButtonEl(document, true)
+        //   .forEach(node => node.addEventListener('click', this.onClickSetCoupon));
+
       EasyPoints.Debug.print('Applied all required event listeners');
     },
 
@@ -686,60 +704,54 @@ var EasyPoints = {
       e.preventDefault();
       EasyPoints.Debug.print('Clicked: Reset');
 
-      EasyPoints.Register.submissionReady = false;
+      var checkoutBtn = EasyPoints.Selectors.getCheckoutButtonEl(document);
       e.target.style.cursor = 'progress';
       e.target.setAttribute('disabled', true);
-
-      var checkoutBtn = EasyPoints.Selectors.getCheckoutButtonEl(document);
       checkoutBtn.setAttribute('disabled', true);
-
-      sessionStorage.removeItem('appliedDiscount')
 
       EasyPoints.Form.setCoupon(
         function() {
+          EasyPoints.Register.submissionReady = false;
           EasyPoints.reset({event: e});
 
           e.target.style.cursor = 'unset';
           e.target.removeAttribute('disabled');
-
-          var checkoutBtn = EasyPoints.Selectors.getCheckoutButtonEl(document);
           checkoutBtn.removeAttribute('disabled');
         }
-
       )
     },
 
-    onClickSetCoupon(e, callback = null) {
-      EasyPoints.Debug.print('Clicked: checkout');
+    // onClickSetCoupon(e, callback = null) {
+    //   EasyPoints.Debug.print('Clicked: checkout');
 
-      if (EasyPoints.Register.submissionReady) {
-        EasyPoints.Debug.print('> ready to checkout');
-        return;
-      }
+    //   if (EasyPoints.Register.submissionReady) {
+    //     EasyPoints.Debug.print('> ready to checkout');
+    //     return;
+    //   }
 
-      EasyPoints.Debug.print('Setting coupon');
-      e.preventDefault();
-      e.stopPropagation();
+    //   EasyPoints.Debug.print('Setting coupon');
+    //   e.preventDefault();
+    //   e.stopPropagation();
 
-      var checkoutBtn = EasyPoints.Selectors.getCheckoutButtonEl(document);
-      checkoutBtn.style.cursor = 'progress';
-      checkoutBtn.classList.add('btn--loading');
-      checkoutBtn.setAttribute('disabled', true);
+    //   var checkoutBtn = EasyPoints.Selectors.getCheckoutButtonEl(document);
+    //   checkoutBtn.style.cursor = 'progress';
+    //   checkoutBtn.classList.add('btn--loading');
+    //   checkoutBtn.setAttribute('disabled', true);
 
-      EasyPoints.Form.setCoupon(
-        function() {
-          EasyPoints.Register.submissionReady = true;
+    //   EasyPoints.Form.setCoupon(
+    //     function() {
+    //       EasyPoints.Register.submissionReady = true;
 
-          checkoutBtn.style.cursor = 'unset';
-          checkoutBtn.classList.remove('btn--loading');
-          checkoutBtn.removeAttribute('disabled');
-          checkoutBtn.click();
+    //       checkoutBtn.style.cursor = 'unset';
+    //       checkoutBtn.classList.remove('btn--loading');
+    //       checkoutBtn.removeAttribute('disabled');
+    //       checkoutBtn.click();
 
-          if (callback) {
-            callback();
-          }
-        }
-      )
-    }
+    //       if (callback) {
+    //         callback();
+    //       }
+    //     }
+    //   )
+    // }
   }
 };
