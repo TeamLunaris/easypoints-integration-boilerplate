@@ -193,7 +193,7 @@
 }
 
 .ep-login-prompt--text:hover {
-  opacity: 0.7;
+  text-decoration: underline;
 }
 
 /* [data-loyal-target="subtotal"] .easy-points,
