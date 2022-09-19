@@ -516,7 +516,7 @@ var EasyPoints = {
           checkoutBtn.removeAttribute('disabled');
         }
       )
-      }
+    }
   },
 
   applyDiscount: function() {
