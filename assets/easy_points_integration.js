@@ -498,8 +498,7 @@ var EasyPoints = {
   },
 
   resetDiscount: function() {
-    var discounted = this.getDiscountSession();
-    if (discounted > 0) {
+    if (this.getDiscountSession() > 0) {
       var checkoutBtn = EasyPoints.Selectors.getCheckoutButtonEl(document);
       var resetBtn = EasyPoints.Selectors.getResetPointsButtonEl(document);
 
