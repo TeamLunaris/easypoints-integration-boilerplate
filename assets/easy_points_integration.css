@@ -175,7 +175,6 @@
   font-size: 95%;
 }
 
-<<<<<<< HEAD
 .easy-points-button__redeem:disabled,
 .easy-points-button__reset:disabled {
   opacity: 0.5;
@@ -187,8 +186,6 @@
   cursor: not-allowed;
 }
 
-=======
->>>>>>> 0ea5535cc215017d2748392d470adcfc92b8ea54
 .ep-login-prompt--text {
   font-size: 80%;
   text-decoration: none;
@@ -196,11 +193,8 @@
 }
 
 .ep-login-prompt--text:hover {
-<<<<<<< HEAD
   text-decoration: underline;
-=======
   opacity: 0.7;
->>>>>>> 0ea5535cc215017d2748392d470adcfc92b8ea54
 }
 
 /* [data-loyal-target="subtotal"] .easy-points,
