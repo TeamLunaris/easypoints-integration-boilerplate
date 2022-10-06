@@ -20,9 +20,9 @@
 
   EasyPoints.Register.run();
 
-  setTimeout(() => {
-    EasyPoints.resetDiscount();
-  }, 100);
+
+  EasyPoints.removeCoupon();
+
 
   // var cartNode = document.querySelector('form[action="/cart"]');
 
@@ -497,7 +497,7 @@ var EasyPoints = {
     return discount ? parseInt(discount) : 0;
   },
 
-  resetDiscount: function() {
+  removeCoupon: function() {
     if (this.getDiscountSession() > 0) {
       var checkoutBtn = EasyPoints.Selectors.getCheckoutButtonEl(document);
       var resetBtn = EasyPoints.Selectors.getResetPointsButtonEl(document);
@@ -663,9 +663,6 @@ var EasyPoints = {
       EasyPoints.Selectors.getResetPointsButtonEl(document, true)
         .forEach(node => node.addEventListener('click', this.onClickResetBtn));
 
-        // EasyPoints.Selectors.getCheckoutButtonEl(document, true)
-        //   .forEach(node => node.addEventListener('click', this.onClickSetCoupon));
-
       EasyPoints.Debug.print('Applied all required event listeners');
     },
 
@@ -676,8 +673,8 @@ var EasyPoints = {
     onClickRedeemBtn: function(e) {
       e.preventDefault();
       EasyPoints.Debug.print('Clicked: Redeem');
-
       EasyPoints.Register.submissionReady = false;
+
       if (EasyPoints.Form.redeem({event: e})) {
         e.target.style.cursor = 'progress';
         e.target.setAttribute('disabled', true);
@@ -719,38 +716,5 @@ var EasyPoints = {
         }
       )
     },
-
-    // onClickSetCoupon(e, callback = null) {
-    //   EasyPoints.Debug.print('Clicked: checkout');
-
-    //   if (EasyPoints.Register.submissionReady) {
-    //     EasyPoints.Debug.print('> ready to checkout');
-    //     return;
-    //   }
-
-    //   EasyPoints.Debug.print('Setting coupon');
-    //   e.preventDefault();
-    //   e.stopPropagation();
-
-    //   var checkoutBtn = EasyPoints.Selectors.getCheckoutButtonEl(document);
-    //   checkoutBtn.style.cursor = 'progress';
-    //   checkoutBtn.classList.add('btn--loading');
-    //   checkoutBtn.setAttribute('disabled', true);
-
-    //   EasyPoints.Form.setCoupon(
-    //     function() {
-    //       EasyPoints.Register.submissionReady = true;
-
-    //       checkoutBtn.style.cursor = 'unset';
-    //       checkoutBtn.classList.remove('btn--loading');
-    //       checkoutBtn.removeAttribute('disabled');
-    //       checkoutBtn.click();
-
-    //       if (callback) {
-    //         callback();
-    //       }
-    //     }
-    //   )
-    // }
   }
 };
