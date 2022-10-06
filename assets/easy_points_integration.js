@@ -689,7 +689,6 @@ var EasyPoints = {
             e.target.style.cursor = 'unset';
             e.target.removeAttribute('disabled');
 
-            var checkoutBtn = EasyPoints.Selectors.getCheckoutButtonEl(document);
             checkoutBtn.removeAttribute('disabled');
           }
         )
