@@ -676,10 +676,10 @@ var EasyPoints = {
       EasyPoints.Register.submissionReady = false;
 
       if (EasyPoints.Form.redeem({event: e})) {
+        var checkoutBtn = EasyPoints.Selectors.getCheckoutButtonEl(document);
+
         e.target.style.cursor = 'progress';
         e.target.setAttribute('disabled', true);
-
-        var checkoutBtn = EasyPoints.Selectors.getCheckoutButtonEl(document);
         checkoutBtn.setAttribute('disabled', true);
 
         EasyPoints.Form.setCoupon(
