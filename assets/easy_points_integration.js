@@ -13,12 +13,16 @@
   var path = this.window.location.pathname;
   var re = /\/cart/i;
 
+
   if (!path.match(re)) {
     return;
   }
 
-  EasyPoints.reset({});
   EasyPoints.Register.run();
+
+
+  EasyPoints.removeCoupon();
+
 
   // var cartNode = document.querySelector('form[action="/cart"]');
 
@@ -493,6 +497,27 @@ var EasyPoints = {
     return discount ? parseInt(discount) : 0;
   },
 
+  removeCoupon: function() {
+    if (this.getDiscountSession() > 0) {
+      var checkoutBtn = EasyPoints.Selectors.getCheckoutButtonEl(document);
+      var resetBtn = EasyPoints.Selectors.getResetPointsButtonEl(document);
+
+      EasyPoints.Register.submissionReady = false;
+
+      resetBtn.setAttribute('disabled', true);
+      checkoutBtn.setAttribute('disabled', true);
+
+      EasyPoints.Form.setCoupon(
+        function() {
+          EasyPoints.reset({});
+
+          resetBtn.removeAttribute('disabled');
+          checkoutBtn.removeAttribute('disabled');
+        }
+      )
+    }
+  },
+
   applyDiscount: function() {
     var discount = this.getDiscountSession();
 
@@ -638,9 +663,6 @@ var EasyPoints = {
       EasyPoints.Selectors.getResetPointsButtonEl(document, true)
         .forEach(node => node.addEventListener('click', this.onClickResetBtn));
 
-      EasyPoints.Selectors.getCheckoutButtonEl(document, true)
-        .forEach(node => node.addEventListener('click', this.onClickSetCoupon));
-
       EasyPoints.Debug.print('Applied all required event listeners');
     },
 
@@ -651,10 +673,25 @@ var EasyPoints = {
     onClickRedeemBtn: function(e) {
       e.preventDefault();
       EasyPoints.Debug.print('Clicked: Redeem');
-
       EasyPoints.Register.submissionReady = false;
+
       if (EasyPoints.Form.redeem({event: e})) {
-        EasyPoints.applyDiscount();
+        var checkoutBtn = EasyPoints.Selectors.getCheckoutButtonEl(document);
+
+        e.target.style.cursor = 'progress';
+        e.target.setAttribute('disabled', true);
+        checkoutBtn.setAttribute('disabled', true);
+
+        EasyPoints.Form.setCoupon(
+          function() {
+            EasyPoints.applyDiscount();
+
+            e.target.style.cursor = 'unset';
+            e.target.removeAttribute('disabled');
+
+            checkoutBtn.removeAttribute('disabled');
+          }
+        )
       }
     },
 
@@ -662,41 +699,21 @@ var EasyPoints = {
       e.preventDefault();
       EasyPoints.Debug.print('Clicked: Reset');
 
-      EasyPoints.Register.submissionReady = false;
-      EasyPoints.reset({event: e});
-    },
-
-    onClickSetCoupon(e, callback = null) {
-      EasyPoints.Debug.print('Clicked: checkout');
-
-      if (EasyPoints.Register.submissionReady) {
-        EasyPoints.Debug.print('> ready to checkout');
-        return;
-      }
-
-      EasyPoints.Debug.print('Setting coupon');
-      e.preventDefault();
-      e.stopPropagation();
-
-      checkoutBtn = e.target;
-      checkoutBtn.style.cursor = 'progress';
-      checkoutBtn.classList.add('btn--loading');
+      var checkoutBtn = EasyPoints.Selectors.getCheckoutButtonEl(document);
+      e.target.style.cursor = 'progress';
+      e.target.setAttribute('disabled', true);
       checkoutBtn.setAttribute('disabled', true);
 
       EasyPoints.Form.setCoupon(
         function() {
-          EasyPoints.Register.submissionReady = true;
+          EasyPoints.Register.submissionReady = false;
+          EasyPoints.reset({event: e});
 
-          checkoutBtn.style.cursor = 'unset';
-          checkoutBtn.classList.remove('btn--loading');
+          e.target.style.cursor = 'unset';
+          e.target.removeAttribute('disabled');
           checkoutBtn.removeAttribute('disabled');
-          checkoutBtn.click();
-
-          if (callback) {
-            callback();
-          }
         }
       )
-    }
+    },
   }
 };
