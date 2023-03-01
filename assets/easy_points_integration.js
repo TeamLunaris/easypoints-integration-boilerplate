@@ -715,6 +715,6 @@ var EasyPoints = {
           checkoutBtn.forEach((node) => node.removeAttribute('disabled'));
         }
       )
-    },
+    }
   }
 };
