@@ -504,7 +504,7 @@ var EasyPoints = {
       var resetBtn = EasyPoints.Selectors.getResetPointsButtonEl(document);
 
       resetBtn.setAttribute('disabled', true);
-      checkoutBtn.forEach((node) => node.setAttribute('disabled', true))
+      checkoutBtn.forEach((node) => node.setAttribute('disabled', true));
 
       EasyPoints.Form.setCoupon(
         function() {
