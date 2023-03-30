@@ -508,7 +508,6 @@ var EasyPoints = {
 
       EasyPoints.Form.setCoupon(
         function() {
-          EasyPoints.Register.submissionReady = false;
           EasyPoints.reset({});
 
           resetBtn.removeAttribute('disabled');
@@ -632,8 +631,6 @@ var EasyPoints = {
   },
 
   Register: {
-    submissionReady: false,
-
     run: function() {
       updateLoyaltyTargets();
       EasyPoints.Points.insertTotalPoints(document);
@@ -673,7 +670,6 @@ var EasyPoints = {
     onClickRedeemBtn: function(e) {
       e.preventDefault();
       EasyPoints.Debug.print('Clicked: Redeem');
-      EasyPoints.Register.submissionReady = false;
 
       if (EasyPoints.Form.redeem({event: e})) {
         var checkoutBtn = EasyPoints.Selectors.getCheckoutButtonEl(document, true);
@@ -707,7 +703,6 @@ var EasyPoints = {
 
       EasyPoints.Form.setCoupon(
         function() {
-          EasyPoints.Register.submissionReady = false;
           EasyPoints.reset({event: e});
 
           e.target.style.cursor = 'unset';
