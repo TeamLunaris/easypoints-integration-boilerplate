@@ -1,0 +1,54 @@
+<script>
+  var shopEpMetafield = {{ shop.metafields.loyalty.easy_points_attributes.value | json }};
+
+  if (shopEpMetafield) {
+    var easyPointsSession = sessionStorage.getItem("easyPoints");
+    easyPointsSession = easyPointsSession ? JSON.parse(easyPointsSession) : {};
+
+    easyPointsSession.widgetHidden = !shopEpMetafield.widget;
+    easyPointsSession.shopMetafieldUpdatedAt = shopEpMetafield.updated_at;
+
+    {% if customer %}
+      var customerEpMetafield = {{ customer.metafields.loyalty.easy_points_attributes.value | json }};
+    {% else %}
+      var customerEpMetafield = null;
+    {% endif %}
+
+    if (customerEpMetafield) {
+      easyPointsSession.pointBalance = customerEpMetafield.balance;
+      easyPointsSession.expirationDate = customerEpMetafield.expiration_date;
+
+      easyPointsSession.customerPointRulePercentage = parseInt(customerEpMetafield.percentage);
+      easyPointsSession.customerPointRulePointValue = parseInt(customerEpMetafield.point_value);
+      easyPointsSession.customerPointRuleCurrencyValue = parseInt(customerEpMetafield.currency_value);
+      easyPointsSession.tierName = customerEpMetafield.tier;
+
+      if (customerEpMetafield.tier_maintenance_data) {
+        easyPointsSession.rankMaintenanceData = customerEpMetafield.tier_maintenance_data.maintenance_data;
+        easyPointsSession.rankAdvancementData = customerEpMetafield.tier_maintenance_data.advancement_data;
+      }
+
+      if (typeof customerEpMetafield.coupon_value === "number" && customerEpMetafield.coupon_value > 0) {
+        easyPointsSession.appliedDiscount = customerEpMetafield.coupon_value;
+        easyPointsSession.appliedDiscountCurrency = customerEpMetafield.coupon_currency;
+      } else {
+        delete easyPointsSession.appliedDiscount;
+        delete easyPointsSession.appliedDiscountCurrency;
+      }
+    } else {
+      easyPointsSession.customerPointRulePercentage = parseInt(shopEpMetafield.percentage);
+      easyPointsSession.customerPointRulePointValue = parseInt(shopEpMetafield.point_value);
+      easyPointsSession.customerPointRuleCurrencyValue = parseInt(shopEpMetafield.currency_value);
+
+      delete easyPointsSession.pointBalance;
+      delete easyPointsSession.expirationDate;
+      delete easyPointsSession.tierName;
+      delete easyPointsSession.rankMaintenanceData;
+      delete easyPointsSession.rankAdvancementData;
+      delete easyPointsSession.appliedDiscount;
+      delete easyPointsSession.appliedDiscountCurrency;
+    }
+
+    sessionStorage.setItem("easyPoints", JSON.stringify(easyPointsSession));
+  }
+</script>
