@@ -38,8 +38,7 @@
       },
       {%- if shop.customer_accounts_enabled and customer -%}
         customer: {
-          id: {{ customer.id }},
-          hash: "{{ customer.id | append: shop.permanent_domain | append: "d96886fc8fb45617476366d9bddfe536" | md5 }}"
+          id: {{ customer.id }}
         },
         cart: {
           totalPrice: {{ cart.total_price }},
