@@ -110,25 +110,25 @@ function buildForm(action, formId = "point-redemption-form", name = "coupon") {
       form.appendChild(input.cloneNode());
     });
 
-    var clonedCustomerHashInput;
+    // var clonedCustomerHashInput;
 
-    if (EasyPointsData.customer && EasyPointsData.customer.hash) {
-      clonedCustomerHashInput = document.createElement("INPUT");
-      clonedCustomerHashInput.type =  "hidden";
-      clonedCustomerHashInput.value = EasyPointsData.customer.hash;
-    } else {
-      var customerHashInput = document.getElementById("customerHash");
+    // if (EasyPointsData.customer && EasyPointsData.customer.hash) {
+    //   clonedCustomerHashInput = document.createElement("INPUT");
+    //   clonedCustomerHashInput.type =  "hidden";
+    //   clonedCustomerHashInput.value = EasyPointsData.customer.hash;
+    // } else {
+    //   var customerHashInput = document.getElementById("customerHash");
 
-      if (customerHashInput) {
-        clonedCustomerHashInput = customerHashInput.cloneNode();
-        clonedCustomerHashInput.removeAttribute("id");
-      }
-    }
+    //   if (customerHashInput) {
+    //     clonedCustomerHashInput = customerHashInput.cloneNode();
+    //     clonedCustomerHashInput.removeAttribute("id");
+    //   }
+    // }
 
-    if (clonedCustomerHashInput) {
-      clonedCustomerHashInput.name = name + '[customer_hash]';
-      form.appendChild(clonedCustomerHashInput);
-    }
+    // if (clonedCustomerHashInput) {
+    //   clonedCustomerHashInput.name = name + '[customer_hash]';
+    //   form.appendChild(clonedCustomerHashInput);
+    // }
 
     form.appendChild(htmlRedirectInput());
     return form;

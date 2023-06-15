@@ -10,7 +10,6 @@
     <input type="hidden" data-loyal-target="shop-reward-currency-value" value="{{ shop_ep_metafield.reward_currency_value }}">
     {%- if shop.customer_accounts_enabled and customer -%}
       <input type="hidden" id="customerId" name="customerId" value="{{ customer.id }}">
-      <input type="hidden" id="customerHash" name="customerHash" value="{{ customer.id | append: shop.permanent_domain | append: "d96886fc8fb45617476366d9bddfe536" | md5 }}">
       <input type="hidden" id="cart-total" name="cart-total" value="{{ cart.total_price }}">
       <input type="hidden" id="cart-total_discount" name="cart-total_discount" value="{{ cart.total_discount }}">
       <input type="hidden" id="cart-item_count" name="cart-total_discount" value="{{ cart.item_count }}">
