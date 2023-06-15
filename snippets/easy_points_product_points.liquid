@@ -1,14 +1,14 @@
 {%- comment -%} START EASYPOINTS - DO NOT MODIFY! 変更しないでください! INFO @ https://bit.ly/2Dn7ESM {%- endcomment -%}
-  {%- assign shop_ep_metafield = shop.metafields.loyalty.easy_points_attributes.value -%}
-  {%- unless shop_ep_metafield.stealth_mode -%}
-    {%- assign class = class | default: 'easy-points easy-points__product-points' -%}
-    {%- assign text = text | default: 'easypoints.points' -%}
+{%- assign shop_ep_metafield = shop.metafields.loyalty.easy_points_attributes.value -%}
+{%- unless shop_ep_metafield.stealth_mode -%}
+  {%- assign class = class | default: 'easy-points easy-points__product-points' -%}
+  {%- assign text = text | default: 'easypoints.points' -%}
 
-    <span class="{{ class }}">
-      {% render 'easy_points_product_price_value', item: item, price: price %}
-      <span class="easy-points__text easy-points__text--suffix">
-        {{ text | t }}
-      </span>
+  <span class="{{ class }}">
+    {% render 'easy_points_product_price_value', item: item, price: price %}
+    <span class="easy-points__text easy-points__text--suffix">
+      {{ text | t }}
     </span>
-  {%- endunless -%}
+  </span>
+{%- endunless -%}
 {%- comment -%} END EASYPOINTS {%- endcomment -%}
