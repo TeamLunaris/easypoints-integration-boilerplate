@@ -1,0 +1,20 @@
+== at line 237 ==
+
+{%- comment -%} START EASYPOINTS - DO NOT MODIFY! 変更しないでください! INFO @ https://bit.ly/2Dn7ESM {%- endcomment -%}
+      {%- unless shop.metafields.loyalty.easy_points_attributes.value.stealth_mode -%}
+    {% render 'easy_points_metafield_script' %}
+{{ 'easy_points.js' | asset_url | script_tag }}
+{{ 'easy_points_integration.css' | asset_url | stylesheet_tag }}
+{{ 'easy_points_integration.js' | asset_url | script_tag }}
+  {%- endunless -%}
+
+  {%- comment -%} END EASYPOINTS {%- endcomment -%}
+
+== at line 304 ==
+
+{%- comment -%} START EASYPOINTS - DO NOT MODIFY! 変更しないでください! INFO @ https://bit.ly/2Dn7ESM {%- endcomment -%}
+      {%- unless shop.metafields.loyalty.easy_points_attributes.value.stealth_mode -%}
+    {% render 'easy_points' %}
+  {%- endunless -%}
+
+  {%- comment -%} END EASYPOINTS {%- endcomment -%}
