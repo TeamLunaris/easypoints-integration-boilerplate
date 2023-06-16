@@ -9,59 +9,119 @@
  *  - insertPointValue/1
  */
 
- window.addEventListener('DOMContentLoaded', function() {
-  var path = this.window.location.pathname;
-  var re = /\/cart/i;
+function productObserver() {
+  var pricingContainer = document.querySelector('.price');
 
+  if (pricingContainer) {
+    var variantsCallback = function(mutationsList, observer) {
+      for (var mutation of mutationsList) {
+        // console.log(mutation);
+        if (mutation.type === 'childList' && mutation.target.classList.contains('price-item')) {
+          var price = EasyPoints.Points.getPriceFromEl(mutation.target);
 
-  if (!path.match(re)) {
+          if (price) {
+            var pointsNode =
+              mutation.target
+              .closest('.product-single__meta')
+              .querySelector('.easy-points [data-loyal-target="point-value"]');
+
+            EasyPoints.Points.setCurrencyCost(pointsNode, { price: price });
+            updateLoyaltyTargets()
+          }
+        }
+      }
+    };
+
+    (new MutationObserver(variantsCallback))
+      .observe(pricingContainer, {
+        attributes: true,
+        childList: true,
+        subtree: true
+    });
+  }
+}
+
+function cartObserver() {
+  var cartNode = document.querySelector('.cart-subtotal');
+
+  if (!cartNode) {
     return;
   }
 
+  var callback = function(mutationsList, observer) {
+    for (var mutation of mutationsList) {
+      // console.log(mutation);
+      if (mutation.type === 'childList' && mutation.target.classList.contains('cart-subtotal__price')) {
+        
+        // document.querySelectorAll('[data-loyal-target="subtotal"]')
+        // .forEach(node => {
+        //   var price = EasyPoints.Points.getPriceFromEl(node, '[data-loyal-target="total_price"]');
+
+        //   EasyPoints.Points.setCost(
+        //     node.querySelector('[data-loyal-target="total_price"]'),
+        //     'data-loyal-total-price',
+        //     { price: price }
+        //   );
+
+        //   EasyPoints.Points.setCurrencyCost(
+        //     node.querySelector('[data-loyal-target="total-points-value"]'),
+        //     { price: price }
+        //   );
+        // });
+
+        // setTimeout(function(){
+        //   var discounted = EasyPoints.getDiscountSession();
+        //     if (discounted > 0) {
+        //       document.querySelector('.easy-points-button__reset').click()
+        //     }
+        // }, 100);
+
+        // EasyPoints.Points.resetTargets();
+        // EasyPoints.Points.insertTotalPoints(document);
+        // EasyPoints.Cart.setRedemptionForm();
+        
+        EasyPoints.Register.run();
+
+        break;
+      }
+    }
+  };
+
+  (new MutationObserver(callback))
+    .observe(cartNode, {
+      attributes: true,
+      childList: true,
+      subtree: true
+    });
+}
+
+window.addEventListener('DOMContentLoaded', function() {
+  var path = this.window.location.pathname;
+  var re = /\/cart/i;
+
+  if (!path.match(re)) {
+    productObserver();
+    return;
+  }
+
+  setTimeout(function(){
+    var discounted = EasyPoints.getDiscountSession();
+      if (discounted > 0) {
+        document.querySelector('.easy-points-button__reset').click()
+      }
+  }, 100);
+
+  EasyPoints.applyDiscount();
   EasyPoints.Register.run();
 
+  // cartObserver();
 
-  EasyPoints.removeDiscount();
-
-
-  // var cartNode = document.querySelector('form[action="/cart"]');
-
-  // if (cartNode) {
-  //   var callback = function(mutationsList, observer) {
-  //     for (var mutation of mutationsList) {
-  //       if (mutation.type === 'childList' && mutation.target == cartNode) {
-  //         EasyPoints.reset({});
-
-  //         document.querySelectorAll('[data-loyal-target="subtotal"]')
-  //           .forEach(node => {
-  //             var price = EasyPoints.Points.getPriceFromEl(node, '[data-loyal-target="total_price"]');
-  //             EasyPoints.Points.setCurrencyCost(
-  //               node.querySelector('[data-loyal-target="point-value"]'),
-  //               { price: price }
-  //             );
-  //           });
-
-  //         EasyPoints.Points.resetTargets();
-  //         EasyPoints.Cart.setRedemptionForm();
-
-  //         break;
-  //       }
-  //     }
-  //   };
-
-  //   (new MutationObserver(callback))
-  //     .observe(cartNode, {
-  //       attributes: false,
-  //       childList: true,
-  //       subtree: true
-  //     });
-  // }
 });
 
 var EasyPoints = {
 
   Debug: {
-    DEBUG: true,
+    DEBUG: false,
 
     print: function(msg, type = 'info') {
       if (!this.DEBUG) {
@@ -116,6 +176,10 @@ var EasyPoints = {
       return this.getElementBy$(element, '.easy-points-form__input input', nodes);
     },
 
+    // getCheckoutButtonEl: function(element, nodes = false) {
+    //   return this.getElementBy$(element, 'form[action$="/cart"]', nodes);
+    // },
+
     getCheckoutButtonEl: function(element, nodes = false) {
       return this.getElementBy$(element, '[type="submit"][name="checkout"]', nodes);
     },
@@ -138,8 +202,8 @@ var EasyPoints = {
       var total =
         Array.from(el.querySelectorAll('[data-loyal-bonus-points]'))
           .reduce((acc, node) => {
-            var { bonusPoints } = JSON.parse(node.dataset.loyalBonusPoints);
-            bonusPoints = parseInt(bonusPoints);
+            var { bonusPoints, quantity } = JSON.parse(node.dataset.loyalBonusPoints);
+            bonusPoints = parseInt(bonusPoints) * quantity;
 
             if (!isNaN(bonusPoints) && bonusPoints > 0) {
               return acc + bonusPoints;
@@ -631,6 +695,8 @@ var EasyPoints = {
   },
 
   Register: {
+    submissionReady: false,
+
     run: function() {
       updateLoyaltyTargets();
       EasyPoints.Points.insertTotalPoints(document);
@@ -660,6 +726,9 @@ var EasyPoints = {
       EasyPoints.Selectors.getResetPointsButtonEl(document, true)
         .forEach(node => node.addEventListener('click', this.onClickResetBtn));
 
+      // EasyPoints.Selectors.getCheckoutButtonEl(document, true)
+      //   .forEach(node => node.addEventListener('submit', this.onClickSetCoupon));
+
       EasyPoints.Debug.print('Applied all required event listeners');
     },
 
@@ -671,12 +740,14 @@ var EasyPoints = {
       e.preventDefault();
       EasyPoints.Debug.print('Clicked: Redeem');
 
+      EasyPoints.Register.submissionReady = false;
       if (EasyPoints.Form.redeem({event: e})) {
-        var checkoutBtn = EasyPoints.Selectors.getCheckoutButtonEl(document, true);
-
         e.target.style.cursor = 'progress';
         e.target.setAttribute('disabled', true);
-        checkoutBtn.forEach((node) => node.setAttribute('disabled', true));
+
+        var checkoutBtn = EasyPoints.Selectors.getCheckoutButtonEl(document);
+
+        checkoutBtn.setAttribute('disabled', true);
 
         EasyPoints.Form.setCoupon(
           function() {
@@ -685,8 +756,9 @@ var EasyPoints = {
             e.target.style.cursor = 'unset';
             e.target.removeAttribute('disabled');
 
-            var checkoutBtn = EasyPoints.Selectors.getCheckoutButtonEl(document, true);
-            checkoutBtn.forEach((node) => node.removeAttribute('disabled'));
+            var checkoutBtn = EasyPoints.Selectors.getCheckoutButtonEl(document);
+
+            checkoutBtn.removeAttribute('disabled');
           }
         )
       }
@@ -696,10 +768,15 @@ var EasyPoints = {
       e.preventDefault();
       EasyPoints.Debug.print('Clicked: Reset');
 
-      var checkoutBtn = EasyPoints.Selectors.getCheckoutButtonEl(document, true);
+      EasyPoints.Register.submissionReady = false;
       e.target.style.cursor = 'progress';
       e.target.setAttribute('disabled', true);
-      checkoutBtn.forEach((node) => node.setAttribute('disabled', true));
+
+      var checkoutBtn = EasyPoints.Selectors.getCheckoutButtonEl(document);
+
+      checkoutBtn.setAttribute('disabled', true);
+
+      sessionStorage.removeItem('appliedDiscount')
 
       EasyPoints.Form.setCoupon(
         function() {
@@ -707,7 +784,44 @@ var EasyPoints = {
 
           e.target.style.cursor = 'unset';
           e.target.removeAttribute('disabled');
-          checkoutBtn.forEach((node) => node.removeAttribute('disabled'));
+
+          var checkoutBtn = EasyPoints.Selectors.getCheckoutButtonEl(document);
+
+          checkoutBtn.removeAttribute('disabled');
+        }
+
+      )
+    },
+
+    onClickSetCoupon(e, callback = null) {
+      EasyPoints.Debug.print('Clicked: checkout');
+
+      if (EasyPoints.Register.submissionReady) {
+        EasyPoints.Debug.print('> ready to checkout');
+        return;
+      }
+
+      EasyPoints.Debug.print('Setting coupon');
+      e.preventDefault();
+      e.stopPropagation();
+
+      var checkoutBtn = e.target.querySelector('button[type="submit"]');
+      checkoutBtn.style.cursor = 'progress';
+      checkoutBtn.classList.add('btn--loading');
+      checkoutBtn.setAttribute('disabled', true);
+
+      EasyPoints.Form.setCoupon(
+        function() {
+          EasyPoints.Register.submissionReady = true;
+
+          checkoutBtn.style.cursor = 'unset';
+          checkoutBtn.classList.remove('btn--loading');
+          checkoutBtn.removeAttribute('disabled');
+          checkoutBtn.click();
+
+          if (callback) {
+            callback();
+          }
         }
       )
     }
