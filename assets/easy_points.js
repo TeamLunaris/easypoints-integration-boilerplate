@@ -679,8 +679,6 @@ window.addEventListener('DOMContentLoaded', function() {
 
   var custIdEle = document.getElementById("customerId");
   var custId = custIdEle ? custIdEle.value : null;
-  var custHashEle = document.getElementById("customerHash");
-  var custHash = custHashEle ? custHashEle.value : null;
 
   function staleSessionKey(key, easyPointsSession = null) {
     easyPointsSession = easyPointsSession || getEasyPointsSession();
@@ -693,18 +691,16 @@ window.addEventListener('DOMContentLoaded', function() {
 
     if (shopDomain && (
       force ||
-      (custId && custHash && staleSessionKey('customerMetafieldUpdatedAt', easyPointsSession)) ||
       staleSessionKey('shopMetafieldUpdatedAt', easyPointsSession)
     )) {
       var data = {};
       var route = "/apps/loyalty/order_point_rule";
 
-      if (custId && custHash) {
-        data = { hash: custHash };
+      if (custId) {
         route = route + "/" + custId;
       }
 
-      var params = new URLSearchParams(data);
+      var params = new URLSearchParams();
       var xhr = new XMLHttpRequest();
       xhr.open("GET", route + "?" + params.toString());
 
@@ -722,7 +718,7 @@ window.addEventListener('DOMContentLoaded', function() {
             easyPointsSession.rankAdvancementData = resp.tier_maintenance_data.advancement_data;
           }
 
-          if (!(custId && custHash)) {
+          if (!(custId)) {
             easyPointsSession.shopMetafieldUpdatedAt = new Date();
           }
 
@@ -786,11 +782,11 @@ window.addEventListener('DOMContentLoaded', function() {
   }
 
   function fetchAndUpdatePointBalance(force = false) {
-    if (custId && custHash && shopDomain) {
+    if (custId && shopDomain) {
       var easyPointsSession = getEasyPointsSession();
 
       if (force || staleSessionKey("customerMetafieldUpdatedAt", easyPointsSession)) {
-        var params = new URLSearchParams({ hash: custHash, sid: custId });
+        var params = new URLSearchParams({ sid: custId });
         var xhr = new XMLHttpRequest();
         xhr.open("GET", `/apps/loyalty/point_balances/${custId}?` + params.toString());
 
@@ -879,8 +875,8 @@ window.addEventListener('DOMContentLoaded', function() {
       });
     });
 
-    if (orderIds.length > 0 && custId && custHash && shopDomain) {
-      var params = new URLSearchParams({"hash": custHash, "order_ids": orderIds});
+    if (orderIds.length > 0 && custId && shopDomain) {
+      var params = new URLSearchParams({"order_ids": orderIds});
       var xhr = new XMLHttpRequest();
       xhr.open("GET", `/apps/loyalty/customers/${custId}/orders?` + params.toString());
 
