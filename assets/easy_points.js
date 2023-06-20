@@ -691,6 +691,7 @@ window.addEventListener('DOMContentLoaded', function() {
 
     if (shopDomain && (
       force ||
+      (custId && staleSessionKey('customerMetafieldUpdatedAt', easyPointsSession)) ||
       staleSessionKey('shopMetafieldUpdatedAt', easyPointsSession)
     )) {
       var data = {};
@@ -700,9 +701,8 @@ window.addEventListener('DOMContentLoaded', function() {
         route = route + "/" + custId;
       }
 
-      var params = new URLSearchParams();
       var xhr = new XMLHttpRequest();
-      xhr.open("GET", route + "?" + params.toString());
+      xhr.open("GET", route);
 
       xhr.onload = function() {
         if (xhr.status === 200) {
@@ -718,7 +718,7 @@ window.addEventListener('DOMContentLoaded', function() {
             easyPointsSession.rankAdvancementData = resp.tier_maintenance_data.advancement_data;
           }
 
-          if (!(custId)) {
+          if (!custId) {
             easyPointsSession.shopMetafieldUpdatedAt = new Date();
           }
 
