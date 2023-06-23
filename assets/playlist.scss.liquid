@@ -1,0 +1,54 @@
+.playlist {
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-wrap: wrap;
+  flex-wrap: wrap;
+  -webkit-justify-content: center;
+  justify-content: center;
+  margin: 0 -15px;
+  .playlist_card {
+    width: 33.333333%;
+    padding: 0 15px;
+    margin: 0 0 45px;
+    a {
+      text-align: center;
+      display: block;
+      overflow: hidden;
+
+      &:hover{
+        img {
+          -webkit-transform: scale(1.05);
+          transform: scale(1.05);
+        }
+      }
+
+      .thum{
+        margin-bottom: 15px;
+      }
+      img {
+        -webkit-transition-property: all;
+        transition-property: all;
+        -webkit-transition-duration: 0.5s;
+        transition-duration: 0.5s;
+        overflow: hidden;
+      }
+      h3{
+        font-family: "Archivo Narrow",sans-serif;
+        font-size: 18px;
+        
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 580px) {
+  .playlist {
+    margin: 0;
+    .playlist_card {
+      width: 100%;
+      padding: 0;
+    }
+  }
+
+  
+}
