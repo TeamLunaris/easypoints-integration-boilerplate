@@ -85,7 +85,15 @@ var EasyPoints = {
   },
 
   Selectors: {
-    getElementBy$: function(element, selector, nodes = false) {
+    /**
+     * The `getElementBy$` method queries an element (or elements, if `nodes` is true) that matches a specified selector.
+     *
+     * @param {Element} element - The root element to start the search from.
+     * @param {string} selector - A DOMString containing one or more selectors to match.
+     * @param {boolean} [nodes=false] - If true, the method will return all matching elements, otherwise it will return the first matching element.
+     * @returns {Element | NodeList | null} - Returns the first matching element if `nodes` is false, a NodeList of matching elements if `nodes` is true, or null if no match is found.
+     */
+    getElementBy$: function (element, selector, nodes = false) {
       var element =
         nodes ? element.querySelectorAll(selector) : element.querySelector(selector);
 
@@ -96,44 +104,67 @@ var EasyPoints = {
       return element;
     },
 
-    getTotalPointsEl: function(el, nodes = false) {
-      return this.getElementBy$(el, '[data-loyal-target="total-points-value"]', nodes);
+    /**
+     * @param {Element} element - The root element to start the search from.
+     * @param {boolean} [nodes=false] - If true, the method will return all matching elements with attribute data-loyal-target equals to "total-points-value", otherwise it will return the first matching element.
+     * @returns {Element | NodeList | null} - Returns the first matching element if `nodes` is false, a NodeList of matching elements if `nodes` is true, or null if no match is found.
+     */
+    getTotalPointsEl: function (element, nodes = false) {
+      return this.getElementBy$(
+        element,
+        '[data-loyal-target="total-points-value"]',
+        nodes
+      );
     },
 
-    getRedeemContainerEl: function(element, nodes = false) {
+    getRedeemContainerEl: function (element, nodes = false) {
       return this.getElementBy$(element, '.easy-points-form__container', nodes);
     },
 
-    getRedeemPointsButtonEl: function(element, nodes = false) {
+    getRedeemPointsButtonEl: function (element, nodes = false) {
       return this.getElementBy$(element, '.easy-points-button__redeem', nodes);
     },
 
-    getResetPointsButtonEl: function(element, nodes = false) {
+    getResetPointsButtonEl: function (element, nodes = false) {
       return this.getElementBy$(element, '.easy-points-button__reset', nodes);
     },
 
-    getRedeemPointsInputEl: function(element, nodes = false) {
+    getRedeemPointsInputEl: function (element, nodes = false) {
       return this.getElementBy$(element, '.easy-points-form__input input', nodes);
     },
 
-    getCheckoutButtonEl: function(element, nodes = false) {
+    getCheckoutButtonEl: function (element, nodes = false) {
       return this.getElementBy$(element, '[type="submit"][name="checkout"]', nodes);
     },
 
-    getAdditionalCheckoutButtonEl: function(element, nodes = false) {
+    getAdditionalCheckoutButtonEl: function (element, nodes = false) {
       return this.getElementBy$(element, '.additional-checkout-buttons', nodes);
-    }
+    },
   },
 
   Points: {
+    /**
+     * Retrieves the total costs that are excluded from loyalty points calculation.
+     *
+     * @returns {number} - The total excluded cost.
+     */
     getExcludedCost() {
-      var excluded =
-        Array.from(document.querySelectorAll('[data-loyal-target="point-exclusion"]'))
-          .reduce((acc, node) => acc + parseInt(node.dataset.loyalCurrencyCost), 0);
+      var excluded = Array.from(
+        document.querySelectorAll('[data-loyal-target="point-exclusion"]')
+      ).reduce(
+        (acc, node) => acc + parseInt(node.dataset.loyalCurrencyCost),
+        0
+      );
 
       return excluded;
     },
 
+    /**
+     * Retrieves the total bonus points available in the document or the given element.
+     *
+     * @param {Element} [el=document] - The root element to start the search from.
+     * @returns {number} - The total bonus points.
+     */
     getTotalBonusPoints(el = document) {
       var total =
         Array.from(el.querySelectorAll('[data-loyal-bonus-points]'))
@@ -151,6 +182,11 @@ var EasyPoints = {
       return total;
     },
 
+    /**
+     * Inserts total loyalty points to all matching elements within the container.
+     *
+     * @param {Element} containerEl - The container within which to search for elements.
+     */
     insertTotalPoints(containerEl) {
       EasyPoints.Selectors.getTotalPointsEl(containerEl, true)
         .forEach(node => {
@@ -193,7 +229,15 @@ var EasyPoints = {
         });
     },
 
-    getPriceFromEl: function(element, selector = null, regex = /[^\d]/g) {
+    /**
+     * Retrieves the price from a given element or from an element matching the given selector within it.
+     *
+     * @param {Element} element - The root element to start the search from.
+     * @param {string} [selector=null] - A CSS selector to further specify the element to search from.
+     * @param {RegExp} [regex=/[^\d]/g] - A regex to clean the price text.
+     * @returns {number | null} - The price found, or null if no price could be found.
+     */
+    getPriceFromEl: function (element, selector = null, regex = /[^\d]/g) {
       var el = selector ? element.querySelector(selector) : element;
 
       if (el) {
@@ -203,7 +247,16 @@ var EasyPoints = {
       return null;
     },
 
-    getTaxedCost: function({price, tax}, el = null) {
+    /**
+     * Retrieves the cost including tax, if applicable.
+     *
+     * @param {Object} params - The object containing price and tax details.
+     * @param {number} params.price - The base price.
+     * @param {Object} params.tax - The tax details.
+     * @param {Element} [el=null] - An optional element from which to retrieve tax information if not provided in `params`.
+     * @returns {number} - The cost including tax if applicable, or the original price if not.
+     */
+    getTaxedCost: function ({ price, tax }, el = null) {
       if (el !== null && el.dataset.loyalOpts) {
         var opts = JSON.parse(el.dataset.loyalOpts);
         tax = opts.tax
@@ -221,6 +274,16 @@ var EasyPoints = {
       return tax.exempt ? price : Math.floor(price * tax.rate);
     },
 
+    /**
+     * Sets the cost attribute for a given node.
+     *
+     * @param {Element} node - The element to set the attribute on.
+     * @param {string} attribute - The attribute to set.
+     * @param {Object} params - The object containing price details and configuration.
+     * @param {number} [params.price=null] - The price to set, or null to use the existing price on the node.
+     * @param {number} [params.multiplier=1] - The multiplier to apply to the price.
+     * @param {boolean} [params.ignoreTax=false] - Whether to ignore tax when calculating the price.
+     */
     setCost(node, attribute, {price = null, multiplier = 1, ignoreTax = false}) {
       price = (price !== null ? price : parseInt(node.dataset.loyalCurrencyCost)) * multiplier;
 
@@ -240,6 +303,12 @@ var EasyPoints = {
       node.setAttribute(attribute, price);
     },
 
+    /**
+     * Sets the "data-loyal-currency-cost" attribute for a given node.
+     *
+     * @param {Element} node - The element to set the attribute on.
+     * @param {Object} opts - The object containing price details and configuration, as passed to `setCost`.
+     */
     setCurrencyCost(node, opts) {
       this.setCost(node, 'data-loyal-currency-cost', opts)
     },
@@ -247,6 +316,10 @@ var EasyPoints = {
     /**
      * Resets all `[data-loyal-target="point-value"]` targets to their original values.
      * Original values are calculated through options on the element.
+     *
+     * @param {Object} [priceOptions={}] - Options for calculating the original price.
+     * @param {function} [callback=null] - An optional callback function to call after resetting all targets.
+     * @param {string} [container=null] - An optional CSS selector string of the container within which to search for targets.
      */
     resetTargets: function(priceOptions = {}, callback = null, container = null) {
       var selector = container != null
