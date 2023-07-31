@@ -85,6 +85,7 @@ var EasyPoints = {
   },
 
   Selectors: {
+
     /**
      * The `getElementBy$` method queries an element (or elements, if `nodes` is true) that matches a specified selector.
      *
@@ -143,6 +144,7 @@ var EasyPoints = {
   },
 
   Points: {
+
     /**
      * Retrieves the total costs that are excluded from loyalty points calculation.
      *
@@ -346,6 +348,7 @@ var EasyPoints = {
   },
 
   Cart: {
+
     /**
      * Returns the URL for the cart in JSON format.
      *
@@ -414,6 +417,7 @@ var EasyPoints = {
   },
 
   UI: {
+
     /**
      * Shows all the elements with class 'hidden-unless-discount-applied'.
      */
@@ -683,6 +687,7 @@ var EasyPoints = {
   },
 
   Form: {
+
     /**
      * Updates the value of redemption points input and validates it. Also, updates the session storage accordingly.
      *
@@ -792,6 +797,12 @@ var EasyPoints = {
 
 
   Register: {
+
+    /**
+     * Run the registration process by updating the loyalty targets,
+     * inserting the total points, recalculating tiers, setting up event listeners,
+     * and applying any discount.
+     */
     run: function() {
       updateLoyaltyTargets();
       EasyPoints.Points.insertTotalPoints(document);
@@ -801,6 +812,9 @@ var EasyPoints = {
       EasyPoints.applyDiscount();
     },
 
+    /**
+     * Set up the necessary event listeners for redeeming points and resetting the form.
+     */
     setEventListeners: function() {
       if (EasyPoints.Selectors.getRedeemContainerEl(document, true).length == 0) {
         return;
@@ -824,10 +838,23 @@ var EasyPoints = {
       EasyPoints.Debug.print('Applied all required event listeners');
     },
 
+    /**
+     * Handler for the 'focus' event on the points input.
+     * Removes the 'invalid' class from the input field.
+     *
+     * @param {Event} e - The event object.
+     */
     onPointsInput: function(e) {
       e.target.classList.remove('invalid');
     },
 
+    /**
+     * Handler for the 'click' event on the Redeem button.
+     * If the form passes validation, it sets a loading cursor, disables the button,
+     * applies the discount, and then reverts the cursor and re-enables the button.
+     *
+     * @param {Event} e - The event object.
+     */
     onClickRedeemBtn: function(e) {
       e.preventDefault();
       EasyPoints.Debug.print('Clicked: Redeem');
@@ -853,6 +880,13 @@ var EasyPoints = {
       }
     },
 
+    /**
+     * Handler for the 'click' event on the Reset button.
+     * It sets a loading cursor, disables the button, resets the form,
+     * and then reverts the cursor and re-enables the button.
+     *
+     * @param {Event} e - The event object.
+     */
     onClickResetBtn: function(e) {
       e.preventDefault();
       EasyPoints.Debug.print('Clicked: Reset');
