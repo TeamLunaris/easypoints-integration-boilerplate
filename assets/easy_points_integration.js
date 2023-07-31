@@ -499,7 +499,7 @@ var EasyPoints = {
     },
 
     /**
-     * Executes functions to reflect a discount in the UI.
+     * Executes functions to show the discount in the UI.
      */
     showDiscount: function() {
       this.showHidden();
@@ -507,7 +507,7 @@ var EasyPoints = {
     },
 
     /**
-     * Executes functions to revert the UI to a state where no discount is applied.
+     * Executes functions to revert the UI to where no discount is applied.
      */
     hideDiscount: function() {
       this.hideHidden();
@@ -614,12 +614,19 @@ var EasyPoints = {
     },
   },
 
+  /**
+   * Retrieves the applied discount value from the session storage.
+   * @return {number} The applied discount value, or 0.
+   */
   getDiscountSession: function() {
     var discount = sessionStorage.getItem("appliedDiscount");
 
     return discount ? parseInt(discount) : 0;
   },
 
+  /**
+   * Removes the applied discount if it's greater than 0. Disables the checkout and reset buttons during the process.
+   */
   removeDiscount: function() {
     if (this.getDiscountSession() > 0) {
       EasyPoints.Debug.print('Removing discount');
@@ -640,6 +647,9 @@ var EasyPoints = {
     }
   },
 
+  /**
+   * Applies the discount from session storage if it's greater than 0. Updates the UI accordingly.
+   */
   applyDiscount: function() {
     var discount = this.getDiscountSession();
 
@@ -655,6 +665,11 @@ var EasyPoints = {
     }
   },
 
+  /**
+   * Resets the applied discount, updates the UI, and clears the discount from the session storage.
+   * @param {Object} options The options for the reset.
+   * @param {Event} [options.event=null] The event that triggered the reset, if applicable.
+   */
   reset: function({event = null}) {
     EasyPoints.UI.hideDiscount();
     EasyPoints.UI.resetClonedSubtotal();
