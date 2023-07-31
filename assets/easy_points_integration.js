@@ -683,6 +683,13 @@ var EasyPoints = {
   },
 
   Form: {
+    /**
+     * Updates the value of redemption points input and validates it. Also, updates the session storage accordingly.
+     *
+     * @param {Object} options The options for the update.
+     * @param {number} options.points The new value for the points input.
+     * @returns {boolean} Whether the update was successful.
+     */
     update({points}) {
       var input = EasyPoints.Selectors.getElementBy$(document, '#redemption-point-value');
 
@@ -710,6 +717,14 @@ var EasyPoints = {
       }
     },
 
+    /**
+     * Redeems the given points or the points value from the event's related form.
+     *
+     * @param {Object} options The options for the redemption.
+     * @param {Event} [options.event=null] The event that triggered the redemption, if applicable.
+     * @param {number} [options.points=null] The points to redeem, if provided.
+     * @returns {boolean} Whether the redemption was successful.
+     */
     redeem({event = null, points = null}) {
       if (points == null) {
         if (event == null) {
@@ -733,6 +748,13 @@ var EasyPoints = {
       return this.update({points: points});
     },
 
+    /**
+     * Sets a coupon using the given endpoints based on the value of reset and the discount session.
+     * Executes the provided callback function after the AJAX request is completed.
+     *
+     * @param {function} [callback=null] The function to call after the AJAX request is completed.
+     * @param {boolean} [reset=null] The flag to indicate whether to reset the coupon.
+     */
     setCoupon(callback = null, reset = null) {
       if ((reset != null && !reset) || EasyPoints.getDiscountSession() > 0) {
         EasyPoints.Debug.print('Using /redeem')
@@ -767,6 +789,7 @@ var EasyPoints = {
       }
     },
   },
+
 
   Register: {
     run: function() {
