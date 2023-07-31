@@ -554,6 +554,13 @@ var EasyPoints = {
   },
 
   Tiers: {
+
+    /**
+     * Recalculates the next tier rank and updates the associated HTML elements accordingly.
+     * This function also handles the case where the next tier is not present (maximum tier reached).
+     *
+     * @param {number|null} [subtotal=null] - The subtotal amount used to calculate the next tier. If null, the function will attempt to retrieve it from an HTML element.
+     */
     recalculate: function(subtotal = null) {
       var { rankAdvancementData } = getEasyPointsSession();
 
