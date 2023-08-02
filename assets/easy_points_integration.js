@@ -85,7 +85,6 @@ var EasyPoints = {
   },
 
   Selectors: {
-
     /**
      * The `getElementBy$` method queries an element (or elements, if `nodes` is true) that matches a specified selector.
      *
@@ -144,7 +143,6 @@ var EasyPoints = {
   },
 
   Points: {
-
     /**
      * Retrieves the total costs that are excluded from loyalty points calculation.
      *
@@ -348,7 +346,6 @@ var EasyPoints = {
   },
 
   Cart: {
-
     /**
      * Returns the URL for the cart in JSON format.
      *
@@ -417,7 +414,6 @@ var EasyPoints = {
   },
 
   UI: {
-
     /**
      * Shows all the elements with class 'hidden-unless-discount-applied'.
      */
@@ -558,7 +554,6 @@ var EasyPoints = {
   },
 
   Tiers: {
-
     /**
      * Recalculates the next tier rank and updates the associated HTML elements accordingly.
      * This function also handles the case where the next tier is not present (maximum tier reached).
@@ -687,7 +682,6 @@ var EasyPoints = {
   },
 
   Form: {
-
     /**
      * Updates the value of redemption points input and validates it. Also, updates the session storage accordingly.
      *
@@ -795,9 +789,7 @@ var EasyPoints = {
     },
   },
 
-
   Register: {
-
     /**
      * Run the registration process by updating the loyalty targets,
      * inserting the total points, recalculating tiers, setting up event listeners,
