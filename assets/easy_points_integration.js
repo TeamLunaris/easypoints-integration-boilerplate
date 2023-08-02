@@ -9,7 +9,7 @@
  *  - insertPointValue/1
  */
 
-window.addEventListener('DOMContentLoaded', function() {
+ window.addEventListener('DOMContentLoaded', function() {
   var path = this.window.location.pathname;
   var re = /\/cart/i;
 
