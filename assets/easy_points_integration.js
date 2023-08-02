@@ -145,12 +145,9 @@ var EasyPoints = {
      * @returns {number} - The total excluded cost.
      */
     getExcludedCost() {
-      var excluded = Array.from(
-        document.querySelectorAll('[data-loyal-target="point-exclusion"]')
-      ).reduce(
-        (acc, node) => acc + parseInt(node.dataset.loyalCurrencyCost),
-        0
-      );
+      var excluded =
+        Array.from(document.querySelectorAll('[data-loyal-target="point-exclusion"]'))
+          .reduce((acc, node) => acc + parseInt(node.dataset.loyalCurrencyCost), 0);
 
       return excluded;
     },
