@@ -88,7 +88,7 @@ var EasyPoints = {
     /**
      * The `getElementBy$` method queries an element (or elements, if `nodes` is true) that matches a specified selector.
      *
-     * @param {Document|HTMLElement} element - The root element to start the search from.
+     * @param {Document | HTMLElement} element - The root element to start the search from.
      * @param {string} selector - A DOMString containing one or more selectors to match.
      * @param {boolean} [nodes=false] - If true, the method will return all matching elements, otherwise it will return the first matching element.
      * @returns {HTMLElement | NodeList | null} - Returns the first matching element if `nodes` is false, a NodeList of matching elements if `nodes` is true, or null if no match is found.
@@ -105,7 +105,7 @@ var EasyPoints = {
     },
 
     /**
-     * @param {Document|HTMLElement} element - The root element to start the search from.
+     * @param {Document | HTMLElement} element - The root element to start the search from.
      * @param {boolean} [nodes=false] - If true, the method will return all matching elements with attribute data-loyal-target equals to "total-points-value", otherwise it will return the first matching element.
      * @returns {HTMLElement | NodeList | null} - Returns the first matching element if `nodes` is false, a NodeList of matching elements if `nodes` is true, or null if no match is found.
      */
@@ -162,7 +162,7 @@ var EasyPoints = {
     /**
      * Retrieves the total bonus points available in the document or the given element.
      *
-     * @param {Document|HTMLElement} [el=document] - The root element to start the search from.
+     * @param {Document | HTMLElement} [el=document] - The root element to start the search from.
      * @returns {number} - The total bonus points.
      */
     getTotalBonusPoints(el = document) {
@@ -185,7 +185,7 @@ var EasyPoints = {
     /**
      * Inserts total loyalty points to all matching elements within the container.
      *
-     * @param {Document|HTMLElement} containerEl - The container within which to search for elements.
+     * @param {Document | HTMLElement} containerEl - The container within which to search for elements.
      */
     insertTotalPoints(containerEl) {
       EasyPoints.Selectors.getTotalPointsEl(containerEl, true)
