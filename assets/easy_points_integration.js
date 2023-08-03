@@ -110,11 +110,7 @@ var EasyPoints = {
      * @returns {HTMLElement | NodeList | null} - Returns the first matching element if `nodes` is false, a NodeList of matching elements if `nodes` is true, or null if no match is found.
      */
     getTotalPointsEl: function (element, nodes = false) {
-      return this.getElementBy$(
-        element,
-        '[data-loyal-target="total-points-value"]',
-        nodes
-      );
+      return this.getElementBy$(element, '[data-loyal-target="total-points-value"]', nodes);
     },
 
     getRedeemContainerEl: function (element, nodes = false) {
@@ -149,12 +145,9 @@ var EasyPoints = {
      * @returns {number} - The total excluded cost.
      */
     getExcludedCost() {
-      var excluded = Array.from(
-        document.querySelectorAll('[data-loyal-target="point-exclusion"]')
-      ).reduce(
-        (acc, node) => acc + parseInt(node.dataset.loyalCurrencyCost),
-        0
-      );
+      var excluded =
+        Array.from(document.querySelectorAll('[data-loyal-target="point-exclusion"]'))
+          .reduce((acc, node) => acc + parseInt(node.dataset.loyalCurrencyCost), 0);
 
       return excluded;
     },
