@@ -85,7 +85,15 @@ var EasyPoints = {
   },
 
   Selectors: {
-    getElementBy$: function(element, selector, nodes = false) {
+    /**
+     * The `getElementBy$` method queries an element (or elements, if `nodes` is true) that matches a specified selector.
+     *
+     * @param {Document | HTMLElement} element - The root element to start the search from.
+     * @param {string} selector - A DOMString containing one or more selectors to match.
+     * @param {boolean} [nodes=false] - If true, the method will return all matching elements, otherwise it will return the first matching element.
+     * @returns {HTMLElement | NodeList | null} - Returns the first matching element if `nodes` is false, a NodeList of matching elements if `nodes` is true, or null if no match is found.
+     */
+    getElementBy$: function (element, selector, nodes = false) {
       var element =
         nodes ? element.querySelectorAll(selector) : element.querySelector(selector);
 
@@ -96,36 +104,46 @@ var EasyPoints = {
       return element;
     },
 
-    getTotalPointsEl: function(el, nodes = false) {
-      return this.getElementBy$(el, '[data-loyal-target="total-points-value"]', nodes);
+    /**
+     * @param {Document | HTMLElement} element - The root element to start the search from.
+     * @param {boolean} [nodes=false] - If true, the method will return all matching elements with attribute data-loyal-target equals to "total-points-value", otherwise it will return the first matching element.
+     * @returns {HTMLElement | NodeList | null} - Returns the first matching element if `nodes` is false, a NodeList of matching elements if `nodes` is true, or null if no match is found.
+     */
+    getTotalPointsEl: function (element, nodes = false) {
+      return this.getElementBy$(element, '[data-loyal-target="total-points-value"]', nodes);
     },
 
-    getRedeemContainerEl: function(element, nodes = false) {
+    getRedeemContainerEl: function (element, nodes = false) {
       return this.getElementBy$(element, '.easy-points-form__container', nodes);
     },
 
-    getRedeemPointsButtonEl: function(element, nodes = false) {
+    getRedeemPointsButtonEl: function (element, nodes = false) {
       return this.getElementBy$(element, '.easy-points-button__redeem', nodes);
     },
 
-    getResetPointsButtonEl: function(element, nodes = false) {
+    getResetPointsButtonEl: function (element, nodes = false) {
       return this.getElementBy$(element, '.easy-points-button__reset', nodes);
     },
 
-    getRedeemPointsInputEl: function(element, nodes = false) {
+    getRedeemPointsInputEl: function (element, nodes = false) {
       return this.getElementBy$(element, '.easy-points-form__input input', nodes);
     },
 
-    getCheckoutButtonEl: function(element, nodes = false) {
+    getCheckoutButtonEl: function (element, nodes = false) {
       return this.getElementBy$(element, '[type="submit"][name="checkout"]', nodes);
     },
 
-    getAdditionalCheckoutButtonEl: function(element, nodes = false) {
+    getAdditionalCheckoutButtonEl: function (element, nodes = false) {
       return this.getElementBy$(element, '.additional-checkout-buttons', nodes);
-    }
+    },
   },
 
   Points: {
+    /**
+     * Retrieves the total costs that are excluded from loyalty points calculation.
+     *
+     * @returns {number} - The total excluded cost.
+     */
     getExcludedCost() {
       var excluded =
         Array.from(document.querySelectorAll('[data-loyal-target="point-exclusion"]'))
@@ -134,6 +152,12 @@ var EasyPoints = {
       return excluded;
     },
 
+    /**
+     * Retrieves the total bonus points available in the document or the given element.
+     *
+     * @param {Document | HTMLElement} [el=document] - The root element to start the search from.
+     * @returns {number} - The total bonus points.
+     */
     getTotalBonusPoints(el = document) {
       var total =
         Array.from(el.querySelectorAll('[data-loyal-bonus-points]'))
@@ -151,6 +175,11 @@ var EasyPoints = {
       return total;
     },
 
+    /**
+     * Inserts total loyalty points to all matching elements within the container.
+     *
+     * @param {Document | HTMLElement} containerEl - The container within which to search for elements.
+     */
     insertTotalPoints(containerEl) {
       EasyPoints.Selectors.getTotalPointsEl(containerEl, true)
         .forEach(node => {
@@ -193,7 +222,15 @@ var EasyPoints = {
         });
     },
 
-    getPriceFromEl: function(element, selector = null, regex = /[^\d]/g) {
+    /**
+     * Retrieves the price from a given element or from an element matching the given selector within it.
+     *
+     * @param {HTMLElement} element - The root element to start the search from.
+     * @param {string} [selector=null] - A CSS selector to further specify the element to search from.
+     * @param {RegExp} [regex=/[^\d]/g] - A regex to clean the price text.
+     * @returns {number | null} - The price found, or null if no price could be found.
+     */
+    getPriceFromEl: function (element, selector = null, regex = /[^\d]/g) {
       var el = selector ? element.querySelector(selector) : element;
 
       if (el) {
@@ -203,7 +240,16 @@ var EasyPoints = {
       return null;
     },
 
-    getTaxedCost: function({price, tax}, el = null) {
+    /**
+     * Retrieves the cost including tax, if applicable.
+     *
+     * @param {Object} params - The object containing price and tax details.
+     * @param {number} params.price - The base price.
+     * @param {Object} params.tax - The tax details.
+     * @param {HTMLElement} [el=null] - An optional element from which to retrieve tax information if not provided in `params`.
+     * @returns {number} - The cost including tax if applicable, or the original price if not.
+     */
+    getTaxedCost: function ({ price, tax }, el = null) {
       if (el !== null && el.dataset.loyalOpts) {
         var opts = JSON.parse(el.dataset.loyalOpts);
         tax = opts.tax
@@ -221,6 +267,16 @@ var EasyPoints = {
       return tax.exempt ? price : Math.floor(price * tax.rate);
     },
 
+    /**
+     * Sets the cost attribute for a given node.
+     *
+     * @param {HTMLElement} node - The element to set the attribute on.
+     * @param {string} attribute - The attribute to set.
+     * @param {Object} params - The object containing price details and configuration.
+     * @param {number} [params.price=null] - The price to set, or null to use the existing price on the node.
+     * @param {number} [params.multiplier=1] - The multiplier to apply to the price.
+     * @param {boolean} [params.ignoreTax=false] - Whether to ignore tax when calculating the price.
+     */
     setCost(node, attribute, {price = null, multiplier = 1, ignoreTax = false}) {
       price = (price !== null ? price : parseInt(node.dataset.loyalCurrencyCost)) * multiplier;
 
@@ -240,6 +296,12 @@ var EasyPoints = {
       node.setAttribute(attribute, price);
     },
 
+    /**
+     * Sets the "data-loyal-currency-cost" attribute for a given node.
+     *
+     * @param {HTMLElement} node - The element to set the attribute on.
+     * @param {Object} opts - The object containing price details and configuration, as passed to `setCost`.
+     */
     setCurrencyCost(node, opts) {
       this.setCost(node, 'data-loyal-currency-cost', opts)
     },
@@ -247,6 +309,10 @@ var EasyPoints = {
     /**
      * Resets all `[data-loyal-target="point-value"]` targets to their original values.
      * Original values are calculated through options on the element.
+     *
+     * @param {Object} [priceOptions={}] - Options for calculating the original price.
+     * @param {function} [callback=null] - An optional callback function to call after resetting all targets.
+     * @param {string} [container=null] - An optional CSS selector string of the container within which to search for targets.
      */
     resetTargets: function(priceOptions = {}, callback = null, container = null) {
       var selector = container != null
@@ -273,10 +339,20 @@ var EasyPoints = {
   },
 
   Cart: {
+    /**
+     * Returns the URL for the cart in JSON format.
+     *
+     * @returns {string} - The URL for the cart in JSON format.
+     */
     url: function() {
       return window.location.origin + '/cart.json';
     },
 
+    /**
+     * Fetches the cart's content from /cart.json and executes a callback function with the result.
+     *
+     * @param {function} callback - The function to call with the cart's data when the request completes.
+     */
     getFromJSON: function(callback) {
       var req = new XMLHttpRequest();
 
@@ -297,6 +373,9 @@ var EasyPoints = {
       req.send();
     },
 
+    /**
+     * Fetches the cart's content from /cart.json and populates a form with data about the cart items.
+     */
     setRedemptionForm: function() {
       this.getFromJSON(function(cart) {
         var form = document.getElementById('point-redemption-form');
@@ -328,16 +407,25 @@ var EasyPoints = {
   },
 
   UI: {
+    /**
+     * Shows all the elements with class 'hidden-unless-discount-applied'.
+     */
     showHidden: function() {
       EasyPoints.Selectors.getElementBy$(document, '.hidden-unless-discount-applied', true)
         .forEach(node => node.classList.remove('easy-points-hide'));
     },
 
+    /**
+     * Hides all the elements with class 'hidden-unless-discount-applied'.
+     */
     hideHidden: function() {
       EasyPoints.Selectors.getElementBy$(document, '.hidden-unless-discount-applied', true)
         .forEach(node => node.classList.add('easy-points-hide'));
     },
 
+    /**
+     * Clones the element(s) with '[data-loyal-target="subtotal"]' and hides original element(s).
+     */
     cloneSubtotal: function() {
       EasyPoints.Selectors.getElementBy$(document, '[data-loyal-target="subtotal"]', true)
         .forEach(node => {
@@ -350,6 +438,9 @@ var EasyPoints = {
         });
     },
 
+    /**
+     * Removes all cloned 'subtotal' elements and shows the original 'subtotal' elements.
+     */
     resetClonedSubtotal: function() {
       EasyPoints.Selectors.getElementBy$(document, '[data-loyal-clone]', true)
         .forEach(node => node.remove());
@@ -358,6 +449,12 @@ var EasyPoints = {
         .forEach(node => node.classList.remove('easy-points-hide'));
     },
 
+    /**
+     * Modifies 'subtotal' element, updating the total price based on the discount.
+     *
+     * @param {HTMLElement} el - The root element to start the search from.
+     * @returns {HTMLElement} - The modified 'subtotal' element.
+     */
     modifySubtotal: function(el) {
       var priceEl = el.querySelector('[data-loyal-target="total_price"]');
 
@@ -394,16 +491,25 @@ var EasyPoints = {
       return el;
     },
 
+    /**
+     * Executes functions to show the discount in the UI.
+     */
     showDiscount: function() {
       this.showHidden();
       this.buttonReset();
     },
 
+    /**
+     * Executes functions to revert the UI to where no discount is applied.
+     */
     hideDiscount: function() {
       this.hideHidden();
       this.buttonRedeem();
     },
 
+    /**
+     * Enables the 'Redeem Points' input and shows the 'Redeem Points' button while hiding the 'Reset' button.
+     */
     buttonRedeem: function() {
       EasyPoints.Selectors.getRedeemPointsInputEl(document, true)
         .forEach(node => node.removeAttribute('disabled'));
@@ -415,6 +521,9 @@ var EasyPoints = {
         .forEach(node => node.classList.remove('easy-points-hide'));
     },
 
+    /**
+     * Disables and hides the 'Redeem Points' input, and shows the 'Reset' button.
+     */
     buttonReset: function() {
       EasyPoints.Selectors.getRedeemPointsInputEl(document, true)
         .forEach(pointsInput => {
@@ -438,6 +547,12 @@ var EasyPoints = {
   },
 
   Tiers: {
+    /**
+     * Recalculates the next tier rank and updates the associated HTML elements accordingly.
+     * This function also handles the case where the next tier is not present (maximum tier reached).
+     *
+     * @param {number|null} [subtotal=null] - The subtotal amount used to calculate the next tier. If null, the function will attempt to retrieve it from an HTML element.
+     */
     recalculate: function(subtotal = null) {
       var { rankAdvancementData } = getEasyPointsSession();
 
@@ -491,12 +606,19 @@ var EasyPoints = {
     },
   },
 
+  /**
+   * Retrieves the applied discount value from the session storage.
+   * @return {number} The applied discount value, or 0.
+   */
   getDiscountSession: function() {
     var discount = sessionStorage.getItem("appliedDiscount");
 
     return discount ? parseInt(discount) : 0;
   },
 
+  /**
+   * Removes the applied discount if it's greater than 0. Disables the checkout and reset buttons during the process.
+   */
   removeDiscount: function() {
     if (this.getDiscountSession() > 0) {
       EasyPoints.Debug.print('Removing discount');
@@ -517,6 +639,9 @@ var EasyPoints = {
     }
   },
 
+  /**
+   * Applies the discount from session storage if it's greater than 0. Updates the UI accordingly.
+   */
   applyDiscount: function() {
     var discount = this.getDiscountSession();
 
@@ -532,6 +657,11 @@ var EasyPoints = {
     }
   },
 
+  /**
+   * Resets the applied discount, updates the UI, and clears the discount from the session storage.
+   * @param {Object} options The options for the reset.
+   * @param {Event} [options.event=null] The event that triggered the reset, if applicable.
+   */
   reset: function({event = null}) {
     EasyPoints.UI.hideDiscount();
     EasyPoints.UI.resetClonedSubtotal();
@@ -545,6 +675,13 @@ var EasyPoints = {
   },
 
   Form: {
+    /**
+     * Updates the value of redemption points input and validates it. Also, updates the session storage accordingly.
+     *
+     * @param {Object} options The options for the update.
+     * @param {number} options.points The new value for the points input.
+     * @returns {boolean} Whether the update was successful.
+     */
     update({points}) {
       var input = EasyPoints.Selectors.getElementBy$(document, '#redemption-point-value');
 
@@ -572,6 +709,14 @@ var EasyPoints = {
       }
     },
 
+    /**
+     * Redeems the given points or the points value from the event's related form.
+     *
+     * @param {Object} options The options for the redemption.
+     * @param {Event} [options.event=null] The event that triggered the redemption, if applicable.
+     * @param {number} [options.points=null] The points to redeem, if provided.
+     * @returns {boolean} Whether the redemption was successful.
+     */
     redeem({event = null, points = null}) {
       if (points == null) {
         if (event == null) {
@@ -595,6 +740,13 @@ var EasyPoints = {
       return this.update({points: points});
     },
 
+    /**
+     * Sets a coupon using the given endpoints based on the value of reset and the discount session.
+     * Executes the provided callback function after the AJAX request is completed.
+     *
+     * @param {function} [callback=null] The function to call after the AJAX request is completed.
+     * @param {boolean} [reset=null] The flag to indicate whether to reset the coupon.
+     */
     setCoupon(callback = null, reset = null) {
       if ((reset != null && !reset) || EasyPoints.getDiscountSession() > 0) {
         EasyPoints.Debug.print('Using /redeem')
@@ -631,6 +783,11 @@ var EasyPoints = {
   },
 
   Register: {
+    /**
+     * Run the registration process by updating the loyalty targets,
+     * inserting the total points, recalculating tiers, setting up event listeners,
+     * and applying any discount.
+     */
     run: function() {
       updateLoyaltyTargets();
       EasyPoints.Points.insertTotalPoints(document);
@@ -640,6 +797,9 @@ var EasyPoints = {
       EasyPoints.applyDiscount();
     },
 
+    /**
+     * Set up the necessary event listeners for redeeming points and resetting the form.
+     */
     setEventListeners: function() {
       if (EasyPoints.Selectors.getRedeemContainerEl(document, true).length == 0) {
         return;
@@ -663,10 +823,23 @@ var EasyPoints = {
       EasyPoints.Debug.print('Applied all required event listeners');
     },
 
+    /**
+     * Handler for the 'focus' event on the points input.
+     * Removes the 'invalid' class from the input field.
+     *
+     * @param {Event} e - The event object.
+     */
     onPointsInput: function(e) {
       e.target.classList.remove('invalid');
     },
 
+    /**
+     * Handler for the 'click' event on the Redeem button.
+     * If the form passes validation, it sets a loading cursor, disables the button,
+     * applies the discount, and then reverts the cursor and re-enables the button.
+     *
+     * @param {Event} e - The event object.
+     */
     onClickRedeemBtn: function(e) {
       e.preventDefault();
       EasyPoints.Debug.print('Clicked: Redeem');
@@ -692,6 +865,13 @@ var EasyPoints = {
       }
     },
 
+    /**
+     * Handler for the 'click' event on the Reset button.
+     * It sets a loading cursor, disables the button, resets the form,
+     * and then reverts the cursor and re-enables the button.
+     *
+     * @param {Event} e - The event object.
+     */
     onClickResetBtn: function(e) {
       e.preventDefault();
       EasyPoints.Debug.print('Clicked: Reset');
