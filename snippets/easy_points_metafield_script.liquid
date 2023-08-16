@@ -30,10 +30,8 @@
 
       if (typeof customerEpMetafield.coupon_value === "number" && customerEpMetafield.coupon_value > 0) {
         easyPointsSession.appliedDiscount = customerEpMetafield.coupon_value;
-        easyPointsSession.appliedDiscountCurrency = customerEpMetafield.coupon_currency;
       } else {
         delete easyPointsSession.appliedDiscount;
-        delete easyPointsSession.appliedDiscountCurrency;
       }
     } else {
       easyPointsSession.customerPointRulePercentage = parseInt(shopEpMetafield.percentage);
@@ -46,7 +44,6 @@
       delete easyPointsSession.rankMaintenanceData;
       delete easyPointsSession.rankAdvancementData;
       delete easyPointsSession.appliedDiscount;
-      delete easyPointsSession.appliedDiscountCurrency;
     }
 
     sessionStorage.setItem("easyPoints", JSON.stringify(easyPointsSession));
