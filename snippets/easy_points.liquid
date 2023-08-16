@@ -1,13 +1,27 @@
-{%- assign shop_ep_metafield = shop.metafields.loyalty.easy_points_attributes.value -%}
+{%- liquid
+  assign shop_ep_metafield = shop.metafields.loyalty.easy_points_attributes.value
+  assign currency_multiplier = 100
+  if shop.currency == 'USD'
+    assign currency_multiplier = 1
+  endif
+-%}
 {%- unless shop_ep_metafield.stealth_mode -%}
   <div style="display: none !important;">
     <input type="hidden" id="shopDomain" name="shopDomain" value="{{ shop.domain }}">
     <input type="hidden" data-loyal-target="shop-point-rule-percent">
     <input type="hidden" data-loyal-target="shop-point-rule-point-value" value="{{ shop_ep_metafield.point_value }}">
-    <input type="hidden" data-loyal-target="shop-point-rule-currency-value" value="{{ shop_ep_metafield.currency_value }}">
+    <input
+      type="hidden"
+      data-loyal-target="shop-point-rule-currency-value"
+      value="{{ shop_ep_metafield.currency_value }}"
+    >
     <input type="hidden" data-loyal-target="shop-reward-percent">
     <input type="hidden" data-loyal-target="shop-reward-point-value" value="{{ shop_ep_metafield.reward_point_value }}">
-    <input type="hidden" data-loyal-target="shop-reward-currency-value" value="{{ shop_ep_metafield.reward_currency_value }}">
+    <input
+      type="hidden"
+      data-loyal-target="shop-reward-currency-value"
+      value="{{ shop_ep_metafield.reward_currency_value }}"
+    >
     {%- if shop.customer_accounts_enabled and customer -%}
       <input type="hidden" id="customerId" name="customerId" value="{{ customer.id }}">
       <input type="hidden" id="cart-total" name="cart-total" value="{{ cart.total_price }}">
@@ -20,8 +34,9 @@
       shop: {
         domain: "{{ shop.domain }}",
         locale: "{{ request.locale.iso_code }}",
+        multiplier: {{ currency_multiplier }},
         money_format: "{{ shop.money_format | strip_html | escape }}",
-        money_format_options: { convert: true, multiplier: 100 },
+        money_format_options: { convert: true, multiplier: {{ currency_multiplier }} },
         rules: {
           point: {
             percent: null,
