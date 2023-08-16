@@ -8,7 +8,6 @@ function getMultiplier() {
   return window.EasyPointsData.shop.multiplier * EasyPointsCore.Currency.getRate();
 }
 
-
 function formatBigNumber(int) {
   return int.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
