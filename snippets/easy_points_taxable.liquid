@@ -7,12 +7,12 @@
     assign include_tax = customer_ep_metafield.include_tax
   endif
 
-  assign tax_rate = tax_rate | default: 1.1
+  assign tax_rate = tax_rate | default: 1.0
 
   if product
     for collection in product.collections
-      if collection.metafields.loyalty['tax_override_percentage']
-        assign tax_override_percentage = collection.metafields.loyalty['tax_override_percentage']
+      if collection.metafields.loyalty.tax_override_percentage
+        assign tax_override_percentage = collection.metafields.loyalty.tax_override_percentage
         assign tax_override_percentage = tax_override_percentage | divided_by: 100
         assign tax_rate = 1 | plus: tax_override_percentage
       endif
@@ -51,10 +51,24 @@
 
 {%- if tax_price -%}
   {%- raw -%}
-  data-loyal-{%- endraw -%}{{ key | default: "currency-cost" }}{%- raw -%}="{%- endraw -%}{{ tax_price | floor }}{%- raw -%}"
-  data-loyal-cost-original="{%- endraw -%}{{ price }}{%- raw -%}"
+  data-loyal-{%- endraw -%}
+  {{ key | default: 'currency-cost' }}
+  {%- raw -%}="{%- endraw -%}
+  {{ tax_price | floor }}
+  {%- raw -%}"
+  data-loyal-cost-original="{%- endraw -%}
+  {{ price }}
+  {%- raw -%}"
   {%- endraw -%}
 {%- endif -%}
 {%- raw -%}
-  data-loyal-opts="{&quot;tax&quot;: {&quot;rate&quot;: {%- endraw -%}{{ tax_rate }}{%- raw -%}, &quot;included&quot;: {%- endraw -%}{{ tax_included }}{%- raw -%}, &quot;exempt&quot;: {%- endraw -%}{{ tax_exempt }}{%- raw -%}, &quot;awardable&quot;: {%- endraw -%}{{ include_tax }}{%- raw -%}}}"
+  data-loyal-opts="{&quot;tax&quot;: {&quot;rate&quot;: {%- endraw -%}
+{{ tax_rate }}
+{%- raw -%}, &quot;included&quot;: {%- endraw -%}
+{{ tax_included }}
+{%- raw -%}, &quot;exempt&quot;: {%- endraw -%}
+{{ tax_exempt }}
+{%- raw -%}, &quot;awardable&quot;: {%- endraw -%}
+{{ include_tax }}
+{%- raw -%}}}"
 {%- endraw -%}
