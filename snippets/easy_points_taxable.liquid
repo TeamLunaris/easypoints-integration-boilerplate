@@ -51,24 +51,10 @@
 
 {%- if tax_price -%}
   {%- raw -%}
-  data-loyal-{%- endraw -%}
-  {{ key | default: 'currency-cost' }}
-  {%- raw -%}="{%- endraw -%}
-  {{ tax_price | floor }}
-  {%- raw -%}"
-  data-loyal-cost-original="{%- endraw -%}
-  {{ price }}
-  {%- raw -%}"
-  {%- endraw -%}
+  data-loyal-{%- endraw -%}{{ key | default: 'currency-cost' }}{%- raw -%}="{%- endraw -%}{{ tax_price | floor }}{%- raw -%}"
+  data-loyal-cost-original="{%- endraw -%}{{ price }}{%- raw -%}"
+{%- endraw -%}
 {%- endif -%}
 {%- raw -%}
-  data-loyal-opts="{&quot;tax&quot;: {&quot;rate&quot;: {%- endraw -%}
-{{ tax_rate }}
-{%- raw -%}, &quot;included&quot;: {%- endraw -%}
-{{ tax_included }}
-{%- raw -%}, &quot;exempt&quot;: {%- endraw -%}
-{{ tax_exempt }}
-{%- raw -%}, &quot;awardable&quot;: {%- endraw -%}
-{{ include_tax }}
-{%- raw -%}}}"
+  data-loyal-opts="{&quot;tax&quot;: {&quot;rate&quot;: {%- endraw -%}{{ tax_rate }}{%- raw -%}, &quot;included&quot;: {%- endraw -%}{{ tax_included }}{%- raw -%}, &quot;exempt&quot;: {%- endraw -%}{{ tax_exempt }}{%- raw -%}, &quot;awardable&quot;: {%- endraw -%}{{ include_tax }}{%- raw -%}}}"
 {%- endraw -%}
