@@ -1,8 +1,12 @@
 {%- liquid
   assign shop_ep_metafield = shop.metafields.loyalty.easy_points_attributes.value
-  assign currency_multiplier = 100
-  if shop.currency == 'USD'
-    assign currency_multiplier = 1
+  assign currency_multiplier = 1
+
+  assign currencies = 'JPY,KRW,BIF,CLP,DJF,GNF,ISK,KMF,PYG,RWF,UGX,VND,VUV,XAF,XOF,XPF'
+  assign currencies = currencies | split: ','
+
+  if currencies contains shop.currency
+    assign currency_multiplier = 100
   endif
 -%}
 {%- unless shop_ep_metafield.stealth_mode -%}
