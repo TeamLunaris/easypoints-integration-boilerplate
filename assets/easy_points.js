@@ -1,3 +1,13 @@
+const POINT_RATIO = 1.0;
+
+function getMultiplier() {
+  if (!window.EasyPointsData) {
+    throw new Error('missing loyalty data, make sure required liquid is rendered.');
+  }
+
+  return window.EasyPointsData.shop.multiplier * EasyPointsCore.Currency.getRate();
+}
+
 function formatBigNumber(int) {
   return int.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
@@ -5,7 +15,7 @@ function formatBigNumber(int) {
 function insertPointValue(ele) {
   var currencyCostString = ele.getAttribute("data-loyal-currency-cost");
   var regex = /[^\d]/g;
-  var currencyCost = currencyCostString.replace(regex, "") / (100 * EasyPointsCore.Currency.getRate());
+  var currencyCost = currencyCostString.replace(regex, "") / getMultiplier();
 
   var points = currencyCost * pointRulePercent;
 
@@ -174,13 +184,8 @@ function updateDiscountInfo() {
 }
 
 function displayDiscount(value) {
-  var currencyValue = "¥";
-  var currencyRatio = "1.0";
-  currencyValue += formatBigNumber(value / currencyRatio).toString();
-
   var easyPointsSession = getEasyPointsSession();
   easyPointsSession.appliedDiscount = value;
-  easyPointsSession.appliedDiscountCurrency = currencyValue;
   setEasyPointsSession(easyPointsSession);
 
   displayAppliedDiscount();
@@ -357,8 +362,8 @@ var EasyPointsCore = {
         max = parseInt(pointsMaxEl.value);
       }
 
-      max = max / (100 * EasyPointsCore.Currency.getRate());
-      max *= 1.0;
+      max = max / getMultiplier();
+      max *= POINT_RATIO;
       max = Math.floor(max);
 
       return 0 < points && points <= Math.min(balance, max);
@@ -391,14 +396,15 @@ var EasyPointsCore = {
       var nextTier =
         rankAdvancementData.tiers
           .find((tier) => {
-            return (tier.raw_amount * (100 * EasyPointsCore.Currency.getRate())) > subtotal;
+            var diff = (tier.raw_amount * getMultiplier()) - subtotal;
+            return Math.max(diff, 0) > 0;
           });
 
       if (nextTier) {
         return {
           name: nextTier.name,
           advancementAmountRaw: nextTier.raw_amount,
-          advancementAmountMultiplied: (nextTier.raw_amount * (100 * EasyPointsCore.Currency.getRate())) - subtotal,
+          advancementAmountMultiplied: (nextTier.raw_amount * getMultiplier()) - subtotal,
         }
       }
 
@@ -754,7 +760,7 @@ window.addEventListener('DOMContentLoaded', function() {
 
     document.querySelectorAll('[data-loyal-target="point-value"]:not([data-loyal-block])')
       .forEach(function(ele) {
-        var currencyCost = parseInt(ele.dataset.loyalCurrencyCost) / (100 * EasyPointsCore.Currency.getRate());
+        var currencyCost = parseInt(ele.dataset.loyalCurrencyCost) / getMultiplier();
         var points = currencyCost * (pointValue / currencyValue);
         var target = ele.querySelector('[data-loyal-target="point-value-location"]');
 
@@ -798,10 +804,8 @@ window.addEventListener('DOMContentLoaded', function() {
 
             if (typeof resp.coupon_value === "number" && resp.coupon_value > 0) {
               easyPointsSession.appliedDiscount = resp.coupon_value;
-              easyPointsSession.appliedDiscountCurrency = resp.coupon_currency;
             } else {
               delete easyPointsSession.appliedDiscount;
-              delete easyPointsSession.appliedDiscountCurrency;
             }
 
             easyPointsSession.customerMetafieldUpdatedAt = new Date();

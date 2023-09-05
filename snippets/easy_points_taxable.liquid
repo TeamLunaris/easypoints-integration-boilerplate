@@ -11,8 +11,8 @@
 
   if product
     for collection in product.collections
-      if collection.metafields.loyalty['tax_override_percentage']
-        assign tax_override_percentage = collection.metafields.loyalty['tax_override_percentage']
+      if collection.metafields.loyalty.tax_override_percentage
+        assign tax_override_percentage = collection.metafields.loyalty.tax_override_percentage
         assign tax_override_percentage = tax_override_percentage | divided_by: 100
         assign tax_rate = 1 | plus: tax_override_percentage
       endif
