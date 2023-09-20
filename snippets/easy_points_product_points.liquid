@@ -14,24 +14,26 @@
 
     assign worth_points = true
     if current_product
-      for collection in current_product.collections
-        if collection.handle == 'easy-points-point-exclusion' 
+      for tag in current_product.tags
+        if tag == 'no-easy-points'
           assign worth_points = false
           break
-        else 
-          for tag in current_product.tags 
-            if tag == 'no-easy-points'
-              assign worth_points = false
-              break
-            endif
-          endfor
         endif
       endfor
+
+      if worth_points 
+        for collection in current_product.collections
+          if collection.handle == 'easy-points-point-exclusion'
+            assign worth_points = false
+            break
+          endif
+        endfor
+      endif
     endif
   -%}
 
   <span class="{{ class }}">
-    {% render 'easy_points_product_price_value', item: item, price: price %}
+    {% render 'easy_points_product_price_value', item: item, price: price, worth_points: worth_points %}
     {%- if worth_points == true -%}
       <span class="style">
         {{ text | t }}
