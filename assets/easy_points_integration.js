@@ -61,7 +61,7 @@
 var EasyPoints = {
 
   Debug: {
-    DEBUG: true,
+    DEBUG: false,
 
     print: function(msg, type = 'info') {
       if (!this.DEBUG) {
