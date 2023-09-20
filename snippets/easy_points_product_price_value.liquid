@@ -11,6 +11,13 @@
         if collection.handle == 'easy-points-point-exclusion'
           assign worth_points = false
           break
+        else 
+         for tag in current_product.tags 
+            if tag == 'no-easy-points'
+              assign worth_points = false
+              break
+            endif
+          endfor
         endif
       endfor
     endif

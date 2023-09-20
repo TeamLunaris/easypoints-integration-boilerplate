@@ -19,7 +19,7 @@
   color: var(--ep-color-points);
 }
 
-.easy-points [data-loyal-target="point-exclusion"] + .easy-points__text {
+/* .easy-points [data-loyal-target="point-exclusion"] + .easy-points__text {
   display: none;
 }
 
@@ -27,7 +27,7 @@
   [data-loyal-target="point-exclusion-product"]
   + .easy-points__text {
   display: none;
-}
+} */
 
 .easy-points__account {
   margin-bottom: var(--ep-spacer-3);
