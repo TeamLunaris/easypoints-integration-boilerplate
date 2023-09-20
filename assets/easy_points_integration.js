@@ -877,9 +877,11 @@ var EasyPoints = {
       EasyPoints.Debug.print('Clicked: Reset');
 
       var checkoutBtn = EasyPoints.Selectors.getCheckoutButtonEl(document, true);
+      EasyPoints.Register.submissionReady = false;
       e.target.style.cursor = 'progress';
       e.target.setAttribute('disabled', true);
       checkoutBtn.forEach((node) => node.setAttribute('disabled', true));
+      sessionStorage.removeItem('appliedDiscount')
 
       EasyPoints.Form.setCoupon(
         function() {
