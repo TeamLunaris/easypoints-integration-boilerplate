@@ -61,7 +61,7 @@
 var EasyPoints = {
 
   Debug: {
-    DEBUG: true,
+    DEBUG: false,
 
     print: function(msg, type = 'info') {
       if (!this.DEBUG) {
@@ -880,6 +880,7 @@ var EasyPoints = {
       e.target.style.cursor = 'progress';
       e.target.setAttribute('disabled', true);
       checkoutBtn.forEach((node) => node.setAttribute('disabled', true));
+      sessionStorage.removeItem('appliedDiscount')
 
       EasyPoints.Form.setCoupon(
         function() {
