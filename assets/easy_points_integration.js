@@ -205,7 +205,9 @@ var EasyPoints = {
             }, 0);
           }
 
-          total -= EasyPoints.Points.getExcludedCost();
+          else {
+            total -= EasyPoints.Points.getExcludedCost();
+          }
 
           EasyPoints.Points.setCurrencyCost(node, { price: Math.floor(total), ignoreTax: ignoreTax });
           insertPointValue(node);
