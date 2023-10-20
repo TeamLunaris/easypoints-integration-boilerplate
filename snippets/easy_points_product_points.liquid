@@ -20,7 +20,7 @@
         endif
       endfor
 
-      if worth_points 
+      if worth_points
         for collection in current_product.collections
           if collection.handle == 'easy-points-point-exclusion'
             assign worth_points = false
