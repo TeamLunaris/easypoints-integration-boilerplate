@@ -203,9 +203,9 @@ var EasyPoints = {
               var { loyalCurrencyCost: cost, loyalQuantity: qty } = pointEl.dataset;
               return (cost * qty) + acc;
             }, 0);
+          } else {
+            total -= EasyPoints.Points.getExcludedCost();
           }
-
-          total -= EasyPoints.Points.getExcludedCost();
 
           EasyPoints.Points.setCurrencyCost(node, { price: Math.floor(total), ignoreTax: ignoreTax });
           insertPointValue(node);
