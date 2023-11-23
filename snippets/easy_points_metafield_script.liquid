@@ -15,12 +15,13 @@
     {% endif %}
 
     if (customerEpMetafield) {
+      var pointRule = shopEpMetafield.point_rules[customerEpMetafield.tier_uid];
       easyPointsSession.pointBalance = customerEpMetafield.balance;
       easyPointsSession.expirationDate = customerEpMetafield.expiration_date;
 
-      easyPointsSession.customerPointRulePercentage = parseInt(customerEpMetafield.percentage);
-      easyPointsSession.customerPointRulePointValue = parseInt(customerEpMetafield.point_value);
-      easyPointsSession.customerPointRuleCurrencyValue = parseInt(customerEpMetafield.currency_value);
+      easyPointsSession.customerPointRulePercentage = parseInt(pointRule.percentage);
+      easyPointsSession.customerPointRulePointValue = parseInt(pointRule.point_value);
+      easyPointsSession.customerPointRuleCurrencyValue = parseInt(pointRule.currency_value);
       easyPointsSession.tierName = customerEpMetafield.tier;
 
       if (customerEpMetafield.tier_maintenance_data) {
