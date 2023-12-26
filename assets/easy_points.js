@@ -380,7 +380,13 @@ var EasyPointsCore = {
 
       var form = buildForm('/apps/loyalty/customers', 'easypoints-note-update', 'customer');
       if (form) {
-        submitForm(form);
+        fetch(form.action, {
+          method: 'post',
+          body: new FormData(form)
+        }).then(() => {
+          window.location.reload();
+        });
+        // submitForm(form);
       }
     }
   },
