@@ -386,7 +386,6 @@ var EasyPointsCore = {
         }).then(() => {
           window.location.reload();
         });
-        // submitForm(form);
       }
     }
   },
