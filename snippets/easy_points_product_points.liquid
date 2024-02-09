@@ -1,3 +1,14 @@
+{%- comment -%}
+  *Use in cart item page to determine if easyPoints discount is applied to line items
+   {%- liquid
+      assign ep_discount = false
+      for discount in item.line_level_discount_allocations
+        if discount.discount_application.title contains 'ポイント割引'
+          assign ep_discount = true
+        endif
+      endfor
+    -%}
+{%- endcomment -%}
 {%- comment -%} START EASYPOINTS - DO NOT MODIFY! 変更しないでください! INFO @ https://bit.ly/2Dn7ESM {%- endcomment -%}
 {%- assign shop_ep_metafield = shop.metafields.loyalty.easy_points_attributes.value -%}
 {%- unless shop_ep_metafield.stealth_mode -%}

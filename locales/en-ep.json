@@ -4,13 +4,17 @@
     "points_earned": "Points Earned",
     "points_earned_total": "Points Earned",
     "points_balance": "Points Available",
+    "points_balance_2": "Points Balance",
     "cart_redeem": "Redeem",
     "cart_reset": "Reset",
     "expiration_date": "Expires",
     "date_year": " -",
     "date_month": " -",
     "date_day": " ",
-    "login_prompt": "You must be logged in to use points.",
+    "login_prompt_1": "Please ",
+    "login_prompt_2": "login ",
+    "login_prompt_3": "to use points.",
+    "discount_warning": "Points discount cannot be combined with other discounts.",
     "note_form": {
       "birthday": "Birthday",
       "update": "Update"

@@ -5,13 +5,17 @@
     "points_earned": "ポイント\/円 還元",
     "points_earned_total": "獲得ポイント",
     "points_balance": "ポイント保有中",
+    "points_balance_2": "保有ポイント",
     "cart_redeem": "ポイントを使う",
     "cart_reset": "リセット",
     "expiration_date": "有効期限",
     "date_year": "年",
     "date_month": "月",
     "date_day": "日",
-    "login_prompt": "ポイントのご利用にはログインしていただく必要がございます。",
+    "login_prompt_1": "ポイントのご利用には",
+    "login_prompt_2": "ログイン",
+    "login_prompt_3": "してください",
+    "discount_warning": "ポイント割引は他割引と併用できません。",
     "note_form": {
       "birthday": "生年月日",
       "update": "更新"
