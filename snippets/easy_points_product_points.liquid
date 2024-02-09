@@ -16,6 +16,7 @@
     assign class = class | default: 'easy-points easy-points__product-points'
     assign style = style | default: 'easy-points__text easy-points__text--suffix'
     assign text = text | default: 'easypoints.points'
+    assign ep_discount = ep_discount
 
     assign current_product = product
     if item
@@ -43,7 +44,7 @@
   -%}
 
   <span class="{{ class }}">
-    {% render 'easy_points_product_price_value', item: item, price: price, worth_points: worth_points %}
+    {% render 'easy_points_product_price_value', item: item, price: price, worth_points: worth_points, ep_discount: ep_discount %}
     {%- if worth_points == true -%}
       <span class="{{ style }}">
         {{ text | t }}
