@@ -1,0 +1,55 @@
+{%- comment -%} START EASYPOINTS - DO NOT MODIFY! 変更しないでください! INFO @ https://bit.ly/2Dn7ESM {%- endcomment -%}
+{%- liquid
+  assign class_container = class_container
+  assign class_title = class_title
+  assign class_value = class_value
+
+  assign ep_discount = false
+  assign other_discount = false
+  for item in cart.items
+    for discount in item.line_level_discount_allocations
+      if discount.discount_application.title contains 'ポイント割引'
+        assign ep_discount = true
+      elsif discount.discount_application
+        assign other_discount = true
+      endif
+    endfor
+  endfor
+
+  if ep_discount
+    assign ep-total-price = cart.original_total_price
+  else
+    assign ep-total-price = cart.total_price
+  endif
+-%}
+
+{% render 'easy_points_redemption_form', hide_points_form: true %}
+
+{% render 'easy_points_redemption', 
+    class_button: 'button button--secondary', 
+    other_discount: other_discount 
+%}
+
+<div class="easy-points__subtotal" data-loyal-target="subtotal">
+  <div class="{{ class_container }}">
+    <h2 class="{{ class_title }}">{{ 'sections.cart.estimated_total' | t }}</h2>
+    <p
+      class="{{ class_value }}"
+      data-loyal-target="total_price"
+      data-loyal-total-price="{{ ep-total-price }}"
+    >
+      {{ ep-total-price | money_with_currency }}
+    </p>
+  </div>
+  {%- unless shop.metafields.loyalty.easy_points_attributes.value.stealth_mode -%}
+    <div class="easy-points__subtotal-points totals {{ class_container }}">
+      <span class="easy-points__cart-title totals__total {{ class_title }}">
+        {{ 'easypoints.points_earned_total' | t }}
+      </span>
+      <span class="easy-points__cart-points totals__total-value {{ class_value }}">
+        {% render 'easy_points_total_points', price: ep-total-price %}
+      </span>
+    </div>
+  {%- endunless -%}
+</div>
+{%- comment -%} END EASYPOINTS {%- endcomment -%}

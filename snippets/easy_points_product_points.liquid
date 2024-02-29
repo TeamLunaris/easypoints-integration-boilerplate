@@ -1,3 +1,14 @@
+{%- comment -%}
+  *Use in cart item page to determine if easyPoints discount is applied to line items
+   {%- liquid
+      assign ep_discount = false
+      for discount in item.line_level_discount_allocations
+        if discount.discount_application.title contains 'ポイント割引'
+          assign ep_discount = true
+        endif
+      endfor
+    -%}
+{%- endcomment -%}
 {%- comment -%} START EASYPOINTS - DO NOT MODIFY! 変更しないでください! INFO @ https://bit.ly/2Dn7ESM {%- endcomment -%}
 {%- assign shop_ep_metafield = shop.metafields.loyalty.easy_points_attributes.value -%}
 {%- unless shop_ep_metafield.stealth_mode -%}
@@ -5,6 +16,7 @@
     assign class = class | default: 'easy-points easy-points__product-points'
     assign style = style | default: 'easy-points__text easy-points__text--suffix'
     assign text = text | default: 'easypoints.points'
+    assign ep_discount = ep_discount
 
     assign current_product = product
     if item
@@ -32,7 +44,7 @@
   -%}
 
   <span class="{{ class }}">
-    {% render 'easy_points_product_price_value', item: item, price: price, worth_points: worth_points %}
+    {% render 'easy_points_product_price_value', item: item, price: price, worth_points: worth_points, ep_discount: ep_discount %}
     {%- if worth_points == true -%}
       <span class="{{ style }}">
         {{ text | t }}
