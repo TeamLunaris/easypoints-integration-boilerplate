@@ -1,3 +1,25 @@
+/**
+ * v2.0.0-a
+ *
+ * Only supported from `easy_points.js`
+ * Tiers, Notes
+ *
+ * Supported in easyPointsSDK
+ * insertPointValue
+ * insertPointValueIntoElement
+ * updateLoyaltyTargets
+ * getDiscountSession
+ * Currency.getFormatOptions
+ * Currency.getRate
+ * Currency.format
+ * formatBigNumber
+ * setup
+ * applyDiscount
+ * removeDiscount
+ * setRedemptionPoints
+ *
+ */
+
 window.addEventListener('DOMContentLoaded', function() {
   var path = this.window.location.pathname;
   var re = /\/cart/i;
@@ -9,6 +31,38 @@ window.addEventListener('DOMContentLoaded', function() {
 
   EasyPoints.Register.run();
   EasyPoints.removeDiscount();
+  // var cartNode = document.querySelector('form[action="/cart"]');
+
+  // if (cartNode) {
+  //   var callback = function(mutationsList, observer) {
+  //     for (var mutation of mutationsList) {
+  //       if (mutation.type === 'childList' && mutation.target == cartNode) {
+  //         EasyPoints.reset({});
+
+  //         document.querySelectorAll('[data-loyal-target="subtotal"]')
+  //           .forEach(node => {
+  //             var price = EasyPoints.Points.getPriceFromEl(node, '[data-loyal-target="total_price"]');
+  //             EasyPoints.Points.setCurrencyCost(
+  //               node.querySelector('[data-loyal-target="point-value"]'),
+  //               { price: price }
+  //             );
+  //           });
+
+  //         EasyPoints.Points.resetTargets();
+  //         EasyPoints.Cart.setRedemptionForm();
+
+  //         break;
+  //       }
+  //     }
+  //   };
+
+  //   (new MutationObserver(callback))
+  //     .observe(cartNode, {
+  //       attributes: false,
+  //       childList: true,
+  //       subtree: true
+  //     });
+  // }
 });
 
 var EasyPoints = {
@@ -499,6 +553,66 @@ var EasyPoints = {
     }
   },
 
+  Tiers: {
+    /**
+     * Recalculates the next tier rank and updates the associated HTML elements accordingly.
+     * This function also handles the case where the next tier is not present (maximum tier reached).
+     *
+     * @param {number|null} [subtotal=null] - The subtotal amount used to calculate the next tier. If null, the function will attempt to retrieve it from an HTML element.
+     */
+    recalculate: function(subtotal = null) {
+      var { rankAdvancementData } = getEasyPointsSession();
+
+      if (!rankAdvancementData || rankAdvancementData.raw_amount >= 0) {
+        return;
+      }
+
+      var discount = EasyPoints.getDiscountSession();
+      var { multiplier } = EasyPointsCore.Currency.getFormatOptions() || { multiplier: 100 };
+      var discountNoDecimal = Math.round(discount * EasyPointsCore.Currency.getRate() * multiplier)
+
+      if (subtotal === null) {
+        var priceEl = document.querySelector('[data-loyal-target="total_price"]');
+
+        if (!priceEl) {
+          EasyPoints.Debug.print('recalculate(el): missing total price target.', 'error');
+          return;
+        }
+
+        subtotal = priceEl.dataset.loyalTotalPrice;
+      }
+
+      try {
+        var nextTier = EasyPointsCore.Tiers.getNextTier(subtotal - discountNoDecimal);
+
+        if (nextTier) {
+          Array.prototype.slice.call(
+            document.querySelectorAll('[data-loyal-target="rank-advancement-tier-name"]')
+          ).forEach((target) => {
+            target.textContent = nextTier.name;
+          });
+
+          Array.prototype.slice.call(
+            document.querySelectorAll('[data-loyal-target="rank-advancement-amount"]')
+          ).forEach((target) => {
+            target.innerHTML = EasyPointsCore.Currency.format(nextTier.advancementAmountMultiplied);
+          });
+        } else {
+          Array.prototype.slice.call(
+            document.querySelectorAll('[data-loyal-target="rank-advancement-data"] > span')
+          ).forEach((target) => {
+            target.style.display = target.dataset.loyalTarget == 'max-rank'
+              ? ''
+              : 'none';
+          });
+        }
+      } catch {
+        EasyPoints.Debug.print('EasyPoints Tiers: error getting next tier.', 'error')
+        return;
+      }
+    },
+  },
+
   /**
    * Applies the discount from session storage if it's greater than 0. Updates the UI accordingly.
    */
@@ -598,7 +712,7 @@ var EasyPoints = {
       window.easyPointsSDK.updateLoyaltyTargets();
       window.easyPointsSDK.setup();
       EasyPoints.Points.insertTotalPoints(document);
-      EasyPoints.Tiers.recalculate()
+      //EasyPoints.Tiers.recalculate()
 
       this.setEventListeners();
       EasyPoints.loadDiscount();
