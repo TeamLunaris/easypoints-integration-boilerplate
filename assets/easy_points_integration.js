@@ -596,6 +596,7 @@ var EasyPoints = {
      */
     run: function() {
       window.easyPointsSDK.updateLoyaltyTargets();
+      window.easyPointsSDK.setup();
       EasyPoints.Points.insertTotalPoints(document);
       EasyPoints.Tiers.recalculate()
 
