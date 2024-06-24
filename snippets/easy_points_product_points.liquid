@@ -2,6 +2,7 @@
 {%- assign shop_ep_metafield = shop.metafields.loyalty.easy_points_attributes.value -%}
 {%- unless shop_ep_metafield.stealth_mode -%}
   {%- liquid
+
     assign class = class | default: 'easy-points easy-points__product-points'
     assign style = style | default: 'easy-points__text easy-points__text--suffix'
     assign text = text | default: 'easypoints.points'

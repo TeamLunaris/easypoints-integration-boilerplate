@@ -29,6 +29,7 @@ window.addEventListener('DOMContentLoaded', function() {
     return;
   }
 
+  window.easyPointsSDK.setup();
   EasyPoints.Register.run();
   EasyPoints.removeDiscount();
   // var cartNode = document.querySelector('form[action="/cart"]');
@@ -157,29 +158,6 @@ var EasyPoints = {
           .reduce((acc, node) => acc + parseInt(node.dataset.loyalCurrencyCost), 0);
 
       return excluded;
-    },
-
-    /**
-     * Retrieves the total bonus points available in the document or the given element.
-     *
-     * @param {Document | HTMLElement} [el=document] - The root element to start the search from.
-     * @returns {number} - The total bonus points.
-     */
-    getTotalBonusPoints(el = document) {
-      var total =
-        Array.from(el.querySelectorAll('[data-loyal-bonus-points]'))
-          .reduce((acc, node) => {
-            var { bonusPoints } = JSON.parse(node.dataset.loyalBonusPoints);
-            bonusPoints = parseInt(bonusPoints);
-
-            if (!isNaN(bonusPoints) && bonusPoints > 0) {
-              return acc + bonusPoints;
-            }
-
-            return acc;
-          }, 0);
-
-      return total;
     },
 
     /**
@@ -710,7 +688,6 @@ var EasyPoints = {
      */
     run: function() {
       window.easyPointsSDK.updateLoyaltyTargets();
-      window.easyPointsSDK.setup();
       EasyPoints.Points.insertTotalPoints(document);
       //EasyPoints.Tiers.recalculate()
 

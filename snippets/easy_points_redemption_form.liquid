@@ -25,7 +25,9 @@
 
       <input type="hidden" id="redemption-max-points" name="coupon[max_redeemable]" value="{{ max_redeemable }}">
       <input type="{%- if hide_points_form -%}hidden{%- else -%}text{%- endif -%}" id="redemption-point-value" name="coupon[point_value]" value="0">
-      <input type="hidden" id="redemption-balance" name="balance" value="{{ customer.metafields.loyalty.easy_points_attributes.value.balance }}">
+      {%- if customer -%}
+        <input type="hidden" id="redemption-balance" name="balance" value="{{ customer.metafields.loyalty.easy_points_attributes.value.balance }}">
+      {%- endif -%}
       {%- unless hide_points_form -%}
         <button type="button" class="btn" id="redemption_button">
           Redeem

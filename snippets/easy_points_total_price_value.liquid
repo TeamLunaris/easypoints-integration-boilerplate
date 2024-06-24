@@ -3,6 +3,7 @@
     class="points-after-applied-discount"
     data-loyal-target="total-points-value"
     {% render 'easy_points_taxable', price: price %}
+    {% render 'easy_points_total_bonus', price: price %}
   >
     <span data-loyal-target="point-value-location">-</span>
   </span>

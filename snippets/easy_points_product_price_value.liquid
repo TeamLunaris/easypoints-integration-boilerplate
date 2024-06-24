@@ -24,7 +24,7 @@
         data-loyal-quantity="{{ item.quantity }}"
       {%- endif -%}
       {% render 'easy_points_taxable', price: price, product: current_product %}
-      {% render 'easy_points_bonus', product: current_product, quantity: item.quantity %}
+      {% render 'easy_points_bonus', price: price, product: current_product, quantity: item.quantity %}
     >
       <span data-loyal-target="point-value-location">-</span>
     </span>
