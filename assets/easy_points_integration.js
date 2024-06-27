@@ -21,15 +21,22 @@
  */
 
 window.addEventListener('DOMContentLoaded', function() {
+  let interval;
+  interval = setInterval(() => {
+    if (window.easyPointsSDK !== undefined) {
+      clearInterval(interval);
+      window.easyPointsSDK.setup();
+    }
+  }, 50);
+
+  // TODO: fix that everything runs after ths sdk is available
+  // only run on the `/cart` page
   var path = this.window.location.pathname;
   var re = /\/cart/i;
-
-
   if (!path.match(re)) {
     return;
   }
 
-  window.easyPointsSDK.setup();
   EasyPoints.Register.run();
   EasyPoints.removeDiscount();
   // var cartNode = document.querySelector('form[action="/cart"]');
@@ -465,10 +472,7 @@ var EasyPoints = {
           var costTaxed = EasyPoints.Points.getTaxedCost({ price: cost, tax: null }, totalPointsEl);
 
           window.easyPointsSDK.insertPointValueIntoElement(
-            totalPointsEl,
-            window.easyPointsSDK.formatBigNumber(
-              Math.max(0, Math.ceil((costTaxed / subtotalTaxed) * totalPoints))
-            )
+            totalPointsEl, Math.max(0, Math.ceil((costTaxed / subtotalTaxed) * totalPoints))
           );
         }
       }
@@ -594,7 +598,7 @@ var EasyPoints = {
   /**
    * Applies the discount from session storage if it's greater than 0. Updates the UI accordingly.
    */
-  loadDiscount: function() {
+  applyDiscount: function() {
     var discount = window.easyPointsSDK.getDiscountSession()
 
     EasyPoints.Debug.print('Applying discount: ' + discount);
@@ -689,10 +693,10 @@ var EasyPoints = {
     run: function() {
       window.easyPointsSDK.updateLoyaltyTargets();
       EasyPoints.Points.insertTotalPoints(document);
-      //EasyPoints.Tiers.recalculate()
+      EasyPoints.Tiers.recalculate();
 
       this.setEventListeners();
-      EasyPoints.loadDiscount();
+      EasyPoints.applyDiscount();
     },
 
     /**

@@ -1,4 +1,5 @@
-const POINT_RATIO = 1.0;
+// const POINT_RATIO = 1.0;
+const SESSION_KEY = 'easyPoints';
 
 function getMultiplier() {
   if (!window.EasyPointsData) {
@@ -12,6 +13,7 @@ function formatBigNumber(int) {
   return int.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
 
+// @deprecated
 function totalBonusPoints() {
   var eles = document.querySelectorAll("[data-loyal-bonus-points]");
   var productBonusPoints = {};
@@ -38,10 +40,10 @@ function totalBonusPoints() {
   return points;
 }
 
-var easyPointsSession = getEasyPointsSession();
-var pointRulePointValue = easyPointsSession.customerPointRulePointValue;
-var pointRuleCurrencyValue = easyPointsSession.customerPointRuleCurrencyValue;
-var pointRulePercent = null;
+// var easyPointsSession = getEasyPointsSession();
+// var pointRulePointValue = easyPointsSession.customerPointRulePointValue;
+// var pointRuleCurrencyValue = easyPointsSession.customerPointRuleCurrencyValue;
+// var pointRulePercent = null;
 
 function htmlRedirectInput() {
   var input = document.createElement("input");
@@ -78,23 +80,18 @@ function submitForm(form) {
 }
 
 function getEasyPointsSession() {
-  var easyPointsSession = sessionStorage.getItem("easyPoints");
+  var easyPointsSession = sessionStorage.getItem(SESSION_KEY);
   return easyPointsSession ? JSON.parse(easyPointsSession) : {};
 }
 
-function setEasyPointsSession(easyPointsSession) {
-  sessionStorage.setItem("easyPoints", JSON.stringify(easyPointsSession));
+function setEasyPointsSession(session) {
+  sessionStorage.setItem(SESSION_KEY, JSON.stringify(session));
 }
 
+// @deprecated
 function setEasyPointsSessionItem(key, value) {
   var easyPointsSession = getEasyPointsSession();
   easyPointsSession[key] = value;
-  setEasyPointsSession(easyPointsSession);
-}
-
-function removeEasyPointsSessionItem(key) {
-  var easyPointsSession = getEasyPointsSession();
-  delete easyPointsSession[key];
   setEasyPointsSession(easyPointsSession);
 }
 
@@ -109,6 +106,49 @@ var EasyPointsCore = {
     REDEMPTION: {
       POINTS_VALUE: '#redemption-point-value',
       POINTS_MAX: '#redemption-max-points'
+    },
+  },
+
+  Currency: {
+    getFormatOptions() {
+      if (EasyPointsData && EasyPointsData.shop) {
+        var { money_format_options = null } = EasyPointsData.shop;
+        return money_format_options;
+      }
+
+      return null;
+    },
+
+    getRate: function () {
+      return (Shopify && Shopify.currency && Shopify.currency.rate) || 1;
+    },
+
+    getActiveString: function (fallback = "JPY") {
+      return (
+        (Shopify && Shopify.currency && Shopify.currency.active) || fallback
+      );
+    },
+
+    format(amount, { convert = false, multiplier = 1, format = null } = {}) {
+      amount = Math.round(
+        (convert ? amount * EasyPointsCore.Currency.getRate() : amount) *
+          multiplier
+      );
+      var money =
+        amount / 100 + " " + EasyPointsCore.Currency.getActiveString();
+
+      if (
+        Shopify &&
+        Shopify.formatMoney !== undefined &&
+        ((EasyPointsData && EasyPointsData.shop.money_format) || format)
+      ) {
+        money = Shopify.formatMoney(
+          amount,
+          format || EasyPointsData.shop.money_format
+        );
+      }
+
+      return money;
     },
   },
 
@@ -165,6 +205,7 @@ var EasyPointsCore = {
     },
   },
 
+  // @deprecated
   PointExchangeProducts: {
     addToCart: function(productId, quantity = 1) {
       var pointExchangeProductEle = document.querySelector(
@@ -380,21 +421,46 @@ var EasyPointsUI = {
   }
 };
 
+function updateLoyaltyTargets() {
+  var easyPointsSession = getEasyPointsSession();
+  var expirationDate = easyPointsSession.expirationDate;
+
+  var targetNodes = document.querySelectorAll("[data-loyal-target]");
+  var targets = Array.prototype.slice.call(targetNodes);
+
+  targets.find(function(ele) {
+    var target = ele.getAttribute("data-loyal-target");
+
+    // if (target == "shop-point-rule-currency-value") {
+    //   pointRuleCurrencyValue = pointRuleCurrencyValue || ele.value;
+    // } else if (target == "shop-point-rule-point-value") {
+    //   pointRulePointValue = pointRulePointValue || ele.value;
+    // } else if ((typeof pointBalance == "number") && target == "balance") {
+    //   ele.textContent = formatBigNumber(pointBalance);
+    // } else
+
+    if (expirationDate && target == 'balance-expiration') {
+      EasyPointsUI.renderBalanceExpiration(expirationDate);
+    }
+  });
+
+  // if (pointRulePointValue && pointRuleCurrencyValue) {
+  //   updatePointValueTargets();
+  // }
+}
+
+function updateAllLoyaltyTargets() {
+  updateLoyaltyTargets();
+  EasyPointsUI.Tiers.render();
+}
+
 window.addEventListener('DOMContentLoaded', function() {
   EasyPointsUI.Note.addSubmitListener();
   EasyPointsUI.Note.addValuesChangedListener();
-});
 
-window.addEventListener('DOMContentLoaded', function() {
-  EasyPointsUI.Tiers.render();
+  updateAllLoyaltyTargets();
 
-  var shopDomainEle = document.getElementById("shopDomain");
-  var shopDomain = shopDomainEle ? shopDomainEle.value : null;
-
-  var redirectUrlEle = document.body.querySelector(
-    'input[data-loyal-target="redirect_url"]'
-  );
-
+  var redirectUrlEle = document.body.querySelector('input[data-loyal-target="redirect_url"]');
   if (redirectUrlEle) {
     redirectUrlEle.value = window.location.pathname;
   }
@@ -402,21 +468,19 @@ window.addEventListener('DOMContentLoaded', function() {
   var custIdEle = document.getElementById("customerId");
   var custId = custIdEle ? custIdEle.value : null;
 
-  function staleSessionKey(key, easyPointsSession = null) {
-    easyPointsSession = easyPointsSession || getEasyPointsSession();
-    var date = easyPointsSession[key];
-    return !date || (new Date() - new Date(date)) > 300000;
+  function staleSessionKey(session, key) {
+    if (Object.keys(session).includes(key)) {
+      return (new Date() - new Date(session[key])) > 300000;
+    }
+
+    return true;
   }
 
-  function fetchAndUpdatePointRule(force = false) {
+  function fetchSession() {
     var easyPointsSession = getEasyPointsSession();
+    var updatedAt = custId ? 'customerMetafieldUpdatedAt' : 'shopMetafieldUpdatedAt';
 
-    if (shopDomain && (
-      force ||
-      (custId && staleSessionKey('customerMetafieldUpdatedAt', easyPointsSession)) ||
-      staleSessionKey('shopMetafieldUpdatedAt', easyPointsSession)
-    )) {
-      var data = {};
+    if (staleSessionKey(easyPointsSession, updatedAt)) {
       var route = "/apps/loyalty/order_point_rule";
 
       if (custId) {
@@ -440,12 +504,14 @@ window.addEventListener('DOMContentLoaded', function() {
             easyPointsSession.rankAdvancementData = resp.tier_maintenance_data.advancement_data;
           }
 
-          if (!custId) {
+          if (custId) {
+            easyPointsSession.customerMetafieldUpdatedAt = new Date();
+          } else {
             easyPointsSession.shopMetafieldUpdatedAt = new Date();
           }
 
           setEasyPointsSession(easyPointsSession);
-          updatePointRule(easyPointsSession);
+          updateAllLoyaltyTargets();
         };
       };
 
@@ -453,6 +519,7 @@ window.addEventListener('DOMContentLoaded', function() {
     }
   }
 
+  // @deprecated
   function updatePointRule(easyPointsSession = null) {
     easyPointsSession = easyPointsSession || getEasyPointsSession();
 
@@ -472,7 +539,7 @@ window.addEventListener('DOMContentLoaded', function() {
     pointValueEle.value = pointValue;
     currencyValueEle.value = currencyValue;
 
-    EasyPointsUI.Tiers.render();
+    // EasyPointsUI.Tiers.render();
 
     document.querySelectorAll('[data-loyal-target="point-value"]:not([data-loyal-block])')
       .forEach(function(ele) {
@@ -518,7 +585,7 @@ window.addEventListener('DOMContentLoaded', function() {
       });
     });
 
-    if (orderIds.length > 0 && custId && shopDomain) {
+    if (orderIds.length > 0 && custId) {
       var params = new URLSearchParams({"order_ids": orderIds});
       var xhr = new XMLHttpRequest();
       xhr.open("GET", `/apps/loyalty/customers/${custId}/orders?` + params.toString());
@@ -563,6 +630,6 @@ window.addEventListener('DOMContentLoaded', function() {
     }, 0);
   }
 
-  async(fetchAndUpdatePointRule);
+  async(fetchSession);
   async(fetchOrderDetails);
 });
