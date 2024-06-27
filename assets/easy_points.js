@@ -109,6 +109,20 @@ var EasyPointsCore = {
     },
   },
 
+  Locale: {
+    get() {
+      const defaultLocale = 'en';
+
+      if (EasyPointsData && EasyPointsData.shop) {
+        const { locale } =  EasyPointsData.shop;
+
+        return locale || defaultLocale;
+      }
+
+      return defaultLocale;
+    }
+  },
+
   Currency: {
     getFormatOptions() {
       if (EasyPointsData && EasyPointsData.shop) {
