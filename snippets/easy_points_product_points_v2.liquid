@@ -1,0 +1,115 @@
+{%- unless shop.metafields.loyalty.easy_points_attributes.value.stealth_mode -%}
+  {%- if product -%}
+    <div class="easy-points easy-points__product-points">
+      {%- liquid
+        assign price = product.selected_or_first_available_variant.price
+        assign tax_rate = 1.1
+        assign worth_points = true
+        assign bpr_ratio = 0.0
+        assign final_bpr_ratio = 0.0
+        assign final_bpr_point_value = 0.0
+
+        for tag in product.tags
+          if tag == 'no-easy-points'
+            assign worth_points = false
+            break
+          endif
+        endfor
+
+        for collection in product.collections
+          if collection.handle == 'easy-points-point-exclusion'
+            assign worth_points = false
+            break
+          endif
+
+          assign metafield_bonus_points = collection.metafields.loyalty.bonus_points
+          if metafield_bonus_points and metafield_bonus_points.active == true
+            assign bpr_point_value = metafield_bonus_points.point_value | times: 1.0
+            assign bpr_currency_value = metafield_bonus_points.currency_value | times: 1.0
+            assign bpr_ratio = bpr_point_value | divided_by: bpr_currency_value
+
+            if bpr_ratio >= final_bpr_ratio
+              assign final_bpr_ratio = bpr_ratio
+            endif
+
+            if bpr_point_value >= final_bpr_point_value
+              assign final_bpr_point_value = bpr_point_value
+            endif
+          endif
+
+          if collection.metafields.loyalty.tax_override_percentage
+            assign tax_override_percentage = collection.metafields.loyalty.tax_override_percentage | divided_by: 100
+            assign tax_rate = 1 | plus: tax_override_percentage
+          endif
+        endfor
+      -%}
+
+      {%- if worth_points -%}
+        {%- liquid
+          assign using_shop_currency = true
+          if shop.currency != cart.currency.iso_code
+            assign using_shop_currency = false
+          endif
+
+          assign multiplier = 1
+          assign currencies = 'JPY,KRW,BIF,CLP,DJF,GNF,ISK,KMF,PYG,RWF,UGX,VND,VUV,XAF,XOF,XPF'
+          assign currencies = currencies | split: ','
+          if currencies contains shop.currency
+            assign multiplier = 100
+          endif
+
+          assign shop_metafield = shop.metafields.loyalty.easy_points_attributes.value
+          if customer
+            assign customer_metafield = customer.metafields.loyalty.easy_points_attributes.value
+          endif
+
+          assign currency_value = shop_metafield.currency_value | times: 1.0
+          assign point_value = shop_metafield.point_value
+
+          if customer_metafield
+            assign currency_value = shop_metafield.point_rules[customer_metafield.tier_uid].currency_value | times: 1.0
+            assign point_value = shop_metafield.point_rules[customer_metafield.tier_uid].point_value
+          endif
+
+          capture currency_cost
+            render 'epi_currency_cost', price: price, tax_rate: tax_rate
+          endcapture
+
+          assign currency_cost = currency_cost | strip_html
+          assign final_point_value = point_value | plus: final_bpr_point_value
+        -%}
+
+        <span
+          data-loyal-target="point-value"
+          data-loyal-currency-cost="{{ currency_cost }}"
+          {%- if final_bpr_ratio != 0.0 -%}
+            {%- assign bonus_points = currency_cost | divided_by: multiplier | divided_by: currency_value | times: final_bpr_point_value | floor -%}
+            {% raw %}
+              data-loyal-bonus-points="{ &quot;currencyCost&quot;: {% endraw %}{{- currency_cost -}}{% raw %}, &quot;bonusPoints&quot;: {% endraw %}{%- if using_shop_currency -%}{{ bonus_points }}{%- else -%}null{%- endif -%}{% raw %}, &quot;quantity&quot;: {% endraw %}{{- line_item.quantity | default: 1 -}}{% raw %}, &quot;percentage&quot;: {% endraw %}{{- final_bpr_ratio | times: 100 -}}{% raw %} }"
+            {% endraw %}
+          {%- endif -%}
+          {%- unless using_shop_currency -%}
+            data-loyal-js
+          {%- endunless -%}
+        >
+          <span data-loyal-target="point-value-location">
+            {%- liquid
+              if using_shop_currency
+                assign points = currency_cost | divided_by: multiplier | divided_by: currency_value | times: final_point_value | ceil
+                render 'epi_format_number', number: points
+              else
+                echo '-'
+              endif
+            -%}
+          </span>
+        </span>
+
+        <span class="easy-points__text easy-points__text--suffix">
+          {{ 'easypoints.points' | t }}
+        </span>
+      {%- else -%}
+        <span style="display:none;" data-loyal-target="point-exclusion-product"></span>
+      {%- endif -%}
+    </div>
+  {%- endif -%}
+{%- endunless -%}
