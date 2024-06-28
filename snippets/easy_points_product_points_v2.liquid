@@ -1,8 +1,23 @@
+{%- comment -%}
+  Ability to pass the product or item object to the snippet to calculate the points for the product.
+
+  Args:
+    (optional) `product`: The product object will be used as fallback if the item object is not provided.
+    (required on when using within the `cart` object) `line_item`: The line item cart object.
+    (optional) `price`: Override the price that is otherwise fetched from the `product` or `line_item`.
+{%- endcomment -%}
 {%- unless shop.metafields.loyalty.easy_points_attributes.value.stealth_mode -%}
-  {%- if product -%}
+  {%- if product or line_item -%}
     <div class="easy-points easy-points__product-points">
       {%- liquid
-        assign price = product.selected_or_first_available_variant.price
+        assign product = product | default: product
+        assign price = price | default: product.selected_or_first_available_variant.price
+
+        if line_item
+          assign product = line_item.product
+          assign price = price | default: line_item.final_price
+        endif
+
         assign tax_rate = 1.1
         assign worth_points = true
         assign bpr_ratio = 0.0
@@ -87,6 +102,10 @@
             {% raw %}
               data-loyal-bonus-points="{ &quot;currencyCost&quot;: {% endraw %}{{- currency_cost -}}{% raw %}, &quot;bonusPoints&quot;: {% endraw %}{%- if using_shop_currency -%}{{ bonus_points }}{%- else -%}null{%- endif -%}{% raw %}, &quot;quantity&quot;: {% endraw %}{{- line_item.quantity | default: 1 -}}{% raw %}, &quot;percentage&quot;: {% endraw %}{{- final_bpr_ratio | times: 100 -}}{% raw %} }"
             {% endraw %}
+          {%- endif -%}
+          {%- if line_item -%}
+            data-loyal-item-id="{{ line_item.id }}"
+            data-loyal-quantity="{{ line_item.quantity }}"
           {%- endif -%}
           {%- unless using_shop_currency -%}
             data-loyal-js
