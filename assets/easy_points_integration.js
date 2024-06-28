@@ -198,11 +198,36 @@ var EasyPoints = {
     },
 
     /**
+     * Retrieves the total bonus points available in the document or the given element.
+     *
+     * @param {Document | HTMLElement} [el=document] - The root element to start the search from.
+     * @returns {number} - The total bonus points.
+     */
+     getTotalBonusPoints(el = document) {
+      var total =
+        Array.from(el.querySelectorAll('[data-loyal-bonus-points]:not([data-loyal-target="total-points-value"])'))
+          .reduce((acc, node) => {
+            var { bonusPoints, quantity = 1 } = JSON.parse(node.dataset.loyalBonusPoints);
+            bonusPoints = parseInt(bonusPoints);
+            quantity = parseInt(quantity);
+
+            if (!isNaN(bonusPoints) && bonusPoints > 0) {
+              return acc + (bonusPoints * quantity);
+            }
+
+            return acc;
+          }, 0);
+
+      return total;
+    },
+
+    /**
      * Inserts total loyalty points to all matching elements within the container.
      *
      * @param {Document | HTMLElement} containerEl - The container within which to search for elements.
      */
     insertTotalPoints(containerEl) {
+      // COMBAK: Fix this. (Lorenzo ~ 2024-06-28)
       EasyPoints.Selectors.getTotalPointsEl(containerEl, true)
         .forEach(node => {
           var ignoreTax = false;
@@ -722,7 +747,8 @@ var EasyPoints = {
      */
     run: function() {
       EasyPoints.sdk().updateLoyaltyTargets();
-      EasyPoints.Points.insertTotalPoints(document);
+      // COMBAK: Once function is fixed re-apply this. (Lorenzo ~ 2024-06-28)
+      // EasyPoints.Points.insertTotalPoints(document);
       EasyPoints.Tiers.recalculate();
 
       this.setEventListeners();
