@@ -31,32 +31,40 @@
           endif
         endfor
 
-        for collection in product.collections
-          if collection.handle == 'easy-points-point-exclusion'
-            assign worth_points = false
-            break
-          endif
-
-          assign metafield_bonus_points = collection.metafields.loyalty.bonus_points
-          if metafield_bonus_points and metafield_bonus_points.active == true
-            assign bpr_point_value = metafield_bonus_points.point_value | times: 1.0
-            assign bpr_currency_value = metafield_bonus_points.currency_value | times: 1.0
-            assign bpr_ratio = bpr_point_value | divided_by: bpr_currency_value
-
-            if bpr_ratio >= final_bpr_ratio
-              assign final_bpr_ratio = bpr_ratio
+        unless worth_points
+          for collection in product.collections
+            if collection.handle == 'easy-points-point-exclusion'
+              assign worth_points = false
+              break
             endif
 
-            if bpr_point_value >= final_bpr_point_value
-              assign final_bpr_point_value = bpr_point_value
-            endif
-          endif
+            assign metafield_bonus_points = collection.metafields.loyalty.bonus_points
+            if metafield_bonus_points and metafield_bonus_points.active == true
+              assign bpr_point_value = metafield_bonus_points.point_value | times: 1.0
+              assign bpr_currency_value = metafield_bonus_points.currency_value | times: 1.0
+              assign bpr_ratio = bpr_point_value | divided_by: bpr_currency_value
 
-          if collection.metafields.loyalty.tax_override_percentage
-            assign tax_override_percentage = collection.metafields.loyalty.tax_override_percentage | divided_by: 100
-            assign tax_rate = 1 | plus: tax_override_percentage
-          endif
-        endfor
+              if bpr_ratio >= final_bpr_ratio
+                assign final_bpr_ratio = bpr_ratio
+              endif
+
+              if bpr_point_value >= final_bpr_point_value
+                assign final_bpr_point_value = bpr_point_value
+              endif
+            endif
+
+            if collection.metafields.loyalty.tax_override_percentage
+              assign tax_override_percentage = collection.metafields.loyalty.tax_override_percentage | divided_by: 100
+              assign tax_rate = 1 | plus: tax_override_percentage
+            endif
+          endfor
+        endunless
+
+        capture currency_cost
+          render 'epi_currency_cost', price: price, tax_rate: tax_rate
+        endcapture
+
+        assign currency_cost = currency_cost | strip_html
       -%}
 
       {%- if worth_points -%}
@@ -86,11 +94,6 @@
             assign point_value = shop_metafield.point_rules[customer_metafield.tier_uid].point_value
           endif
 
-          capture currency_cost
-            render 'epi_currency_cost', price: price, tax_rate: tax_rate
-          endcapture
-
-          assign currency_cost = currency_cost | strip_html
           assign final_point_value = point_value | plus: final_bpr_point_value
         -%}
 
@@ -127,7 +130,11 @@
           {{ 'easypoints.points' | t }}
         </span>
       {%- else -%}
-        <span style="display:none;" data-loyal-target="point-exclusion-product"></span>
+        <span
+          style="display:none;"
+          data-loyal-target="point-exclusion-product"
+          data-loyal-currency-cost="{{ currency_cost }}"
+        ></span>
       {%- endif -%}
     </div>
   {%- endif -%}
