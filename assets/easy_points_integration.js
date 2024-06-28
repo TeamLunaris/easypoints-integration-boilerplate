@@ -1,5 +1,7 @@
+var EASY_POINTS_INTEGRATION_VERSION = 200;
+
 /**
- * v2.0.0-a
+ * v2.0.0
  *
  * Only supported from `easy_points.js`
  * Tiers, Notes
