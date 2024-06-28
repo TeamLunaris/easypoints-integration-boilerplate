@@ -20,27 +20,8 @@
  *
  */
 
-window.addEventListener('DOMContentLoaded', function() {
-  let interval;
-  interval = setInterval(() => {
-    if (window.easyPointsSDK !== undefined) {
-      clearInterval(interval);
-      window.easyPointsSDK.setup();
-    }
-  }, 50);
-
-  // TODO: fix that everything runs after ths sdk is available
-  // only run on the `/cart` page
-  var path = this.window.location.pathname;
-  var re = /\/cart/i;
-  if (!path.match(re)) {
-    return;
-  }
-
-  EasyPoints.Register.run();
-  EasyPoints.removeDiscount();
+function cartObserver() {
   // var cartNode = document.querySelector('form[action="/cart"]');
-
   // if (cartNode) {
   //   var callback = function(mutationsList, observer) {
   //     for (var mutation of mutationsList) {
@@ -71,6 +52,43 @@ window.addEventListener('DOMContentLoaded', function() {
   //       subtree: true
   //     });
   // }
+};
+
+// COMBAK: maybe we can omit an event listener from the SDK
+function afterEasyPointsSDK() {
+  // only run on the `/cart` page
+  var path = this.window.location.pathname;
+  var re = /\/cart/i;
+  if (!path.match(re)) {
+    return;
+  }
+
+  EasyPoints.Register.run();
+  EasyPoints.removeDiscount();
+
+  cartObserver();
+};
+
+window.addEventListener('DOMContentLoaded', function() {
+  let tries = 0;
+  let interval;
+  interval = setInterval(() => {
+    if (tries > 100) {
+      console.warn('easyPointsSDK was not loaded.');
+      clearInterval(interval);
+      return;
+    }
+
+    if (window.easyPointsSDK !== undefined) {
+      clearInterval(interval);
+
+      window.easyPointsSDK.setup();
+      afterEasyPointsSDK();
+      return;
+    }
+
+    tries++;
+  }, 50);
 });
 
 var EasyPoints = {
