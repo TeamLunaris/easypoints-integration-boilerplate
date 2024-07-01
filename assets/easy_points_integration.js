@@ -28,7 +28,7 @@ function cartObserver() {
   //   var callback = function(mutationsList, observer) {
   //     for (var mutation of mutationsList) {
   //       if (mutation.type === 'childList' && mutation.target == cartNode) {
-  //         EasyPoints.hideDiscountUI({});
+  //         EasyPoints.hideDiscountUI();
 
   //         document.querySelectorAll('[data-loyal-target="subtotal"]')
   //           .forEach(node => {
@@ -474,26 +474,27 @@ var EasyPoints = {
      * Clones the element(s) with '[data-loyal-target="subtotal"]' and hides original element(s).
      */
     cloneSubtotal: function() {
-      EasyPoints.Selectors.getElementBy$(document, '[data-loyal-target="subtotal"]', true)
-        .forEach(node => {
-          var clone = node.cloneNode(true);
-          clone.removeAttribute('data-loyal-target');
-          clone.setAttribute('data-loyal-clone', 'subtotal');
+      // Uncomment if the theme does not support `fetchShopifyUI`
+      // EasyPoints.Selectors.getElementBy$(document, '[data-loyal-target="subtotal"]', true)
+      //   .forEach(node => {
+      //     var clone = node.cloneNode(true);
+      //     clone.removeAttribute('data-loyal-target');
+      //     clone.setAttribute('data-loyal-clone', 'subtotal');
 
-          node.classList.add('easy-points-hide');
-          node.insertAdjacentElement('beforebegin', this.modifySubtotal(clone));
-        });
+      //     node.classList.add('easy-points-hide');
+      //     node.insertAdjacentElement('beforebegin', this.modifySubtotal(clone));
+      //   });
     },
 
     /**
      * Removes all cloned 'subtotal' elements and shows the original 'subtotal' elements.
      */
     resetClonedSubtotal: function() {
-      EasyPoints.Selectors.getElementBy$(document, '[data-loyal-clone]', true)
-        .forEach(node => node.remove());
-
-      EasyPoints.Selectors.getElementBy$(document, '[data-loyal-target="subtotal"]', true)
-        .forEach(node => node.classList.remove('easy-points-hide'));
+      // Uncomment if the theme does not support `fetchShopifyUI`
+      // EasyPoints.Selectors.getElementBy$(document, '[data-loyal-clone]', true)
+      //   .forEach(node => node.remove());
+      // EasyPoints.Selectors.getElementBy$(document, '[data-loyal-target="subtotal"]', true)
+      //   .forEach(node => node.classList.remove('easy-points-hide'));
     },
 
     /**
@@ -651,6 +652,42 @@ var EasyPoints = {
   },
 
   /**
+   * Fetches the Shopify UI section elements and updates the UI accordingly.
+   */
+  fetchShopifyUI: function() {
+    // COMBAK: Add support for `cart-drawers` types. (Lorenzo ~ 2024-07-01)
+    if (window.Shopify.routes === undefined) return;
+    if (CartItems === undefined) return;
+
+    let cartItems = new CartItems();
+    if (cartItems.getSectionsToRender === undefined) return;
+    if (cartItems.getSectionInnerHTML === undefined) return;
+
+    var sections = cartItems.getSectionsToRender();
+
+    var templates =
+      sections.map((section) => section.section)
+        .join(',');
+
+    fetch(`${window.Shopify.routes.root}?sections=${templates}`)
+        .then((response) => response.json())
+        .then((updatedSections) => {
+          cartItems.getSectionsToRender().forEach((section) => {
+            const elementToReplace =
+              document.getElementById(section.id).querySelector(section.selector) || document.getElementById(section.id);
+
+            elementToReplace.innerHTML = cartItems.getSectionInnerHTML(
+              updatedSections[section.section],
+              section.selector
+            );
+          });
+        })
+        .catch((e) => {
+          console.error(e);
+        });
+  },
+
+  /**
    * Applies the discount from session storage if it's greater than 0. Updates the UI accordingly.
    */
   showDiscountUI: function() {
@@ -671,9 +708,8 @@ var EasyPoints = {
   /**
    * Resets the applied discount, updates the UI, and clears the discount from the session storage.
    * @param {Object} options The options for the reset.
-   * @param {Event} [options.event=null] The event that triggered the reset, if applicable.
    */
-  hideDiscountUI: function({ event = null }) {
+  hideDiscountUI: function() {
     EasyPoints.UI.hideDiscount();
     EasyPoints.UI.resetClonedSubtotal();
     EasyPoints.Selectors.getAdditionalCheckoutButtonEl(document, true)
@@ -698,11 +734,14 @@ var EasyPoints = {
       resetBtn.setAttribute('disabled', true);
       checkoutBtn.forEach((node) => node.setAttribute('disabled', true));
 
-      EasyPoints.sdk().removeDiscount().then(() => {
-        EasyPoints.hideDiscountUI({});
-        resetBtn.removeAttribute('disabled');
-        checkoutBtn.forEach((node) => node.removeAttribute('disabled'));
-      });
+      EasyPoints.sdk().removeDiscount()
+        .then(() => {
+          EasyPoints.fetchShopifyUI();
+          EasyPoints.hideDiscountUI();
+
+          resetBtn.removeAttribute('disabled');
+          checkoutBtn.forEach((node) => node.removeAttribute('disabled'));
+        });
     }
   },
 
@@ -811,6 +850,7 @@ var EasyPoints = {
 
         EasyPoints.sdk().applyDiscount(EasyPoints.sdk().getDiscountSession())
           .then(() => {
+            EasyPoints.fetchShopifyUI();
             EasyPoints.showDiscountUI();
             e.target.style.cursor = 'unset';
             e.target.removeAttribute('disabled');
@@ -830,18 +870,7 @@ var EasyPoints = {
       e.preventDefault();
       EasyPoints.Debug.print('Clicked: Reset');
 
-      var checkoutBtn = EasyPoints.Selectors.getCheckoutButtonEl(document, true);
-      e.target.style.cursor = 'progress';
-      e.target.setAttribute('disabled', true);
-      checkoutBtn.forEach((node) => node.setAttribute('disabled', true));
-
-      EasyPoints.sdk().removeDiscount()
-        .then(() => {
-          EasyPoints.hideDiscountUI({ event: e })
-          e.target.style.cursor = 'unset';
-          e.target.removeAttribute('disabled');
-          checkoutBtn.forEach((node) => node.removeAttribute('disabled'));
-        });
+      EasyPoints.removeDiscount();
     }
   }
 };
