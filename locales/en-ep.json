@@ -7,9 +7,7 @@
     "cart_redeem": "Redeem",
     "cart_reset": "Reset",
     "expiration_date": "Expires",
-    "date_year": " -",
-    "date_month": " -",
-    "date_day": " ",
+    "date": "{{ year }}/{{ month }}/{{ day }}",
     "login_prompt": "You must be logged in to use points.",
     "note_form": {
       "birthday": "Birthday",

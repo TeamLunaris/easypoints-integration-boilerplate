@@ -2,9 +2,8 @@
   {%- assign shop_ep_metafield = shop.metafields.loyalty.easy_points_attributes.value -%}
   {%- unless shop_ep_metafield.stealth_mode -%}
     {%- if customer -%}
-      {%- assign customer_ep_metafield = customer.metafields.loyalty.easy_points_attributes.value -%}
-
       {%- liquid
+        assign customer_ep_metafield = customer.metafields.loyalty.easy_points_attributes.value
         assign has_feature_tiers = false
         for key_value in shop.metafields.loyalty['features']
           if key_value[0] == "tiers" and key_value[1] == true
@@ -25,18 +24,27 @@
         {% render 'easy_points_tiers_rank_advancement', class: 'easy-points-text__muted' %}
       </div>
       {%- endif -%}
+
       <h2>{{ 'easypoints.points_balance' | t }}</h2>
       <div class="easy-points__account">
         <p class="easy-points-balance__container">
           <span class="easy-points">
             <span data-loyal-target="balance">{{ customer_ep_metafield.balance }}</span> <span class="easy-points__text">{{ 'easypoints.points' | t }}</span>
           </span>
-          <span data-loyal-target="balance-expiration" class="easy-points-text__muted easy-points-hide">
-            <span>{{ 'easypoints.expiration_date' | t }}</span>
-            <span data-loyal-target="balance-expiration__yy">-</span>{{ 'easypoints.date_year' | t }}
-            <span data-loyal-target="balance-expiration__mm">-</span>{{ 'easypoints.date_month' | t }}
-            <span data-loyal-target="balance-expiration__dd">-</span>{{ 'easypoints.date_day' | t }}
-          </span>
+
+          {% if customer_ep_metafield.expiration_date %}
+            {%- liquid
+              assign expiration_date = customer_ep_metafield.expiration_date
+              if expiration_date
+                assign exp_year = expiration_date | date: "%Y"
+                assign exp_month = expiration_date | date: "%m"
+                assign exp_day = expiration_date | date: "%d"
+              endif
+            -%}
+            <span data-loyal-target="balance-expiration" class="easy-points-text__muted">
+              {{ 'easypoints.expiration_date' | t }} {{ 'easypoints.date' | t: year: exp_year, month: exp_month, day: exp_day }}
+            </span>
+          {% endif %}
         </p>
       </div>
     {%- endif -%}

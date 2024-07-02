@@ -257,52 +257,6 @@ var EasyPointsCore = {
 };
 
 var EasyPointsUI = {
-
-  BALANCE_EXPIRATION_CONTAINER_SELECTOR: '[data-loyal-target="balance-expiration"]',
-  BALANCE_EXPIRATION_DATE_SELECTORS: {
-    YY: '[data-loyal-target="balance-expiration__yy"]',
-    MM: '[data-loyal-target="balance-expiration__mm"]',
-    DD: '[data-loyal-target="balance-expiration__dd"]',
-  },
-
-  renderBalanceExpiration: function(date) {
-    var containers = document.body.querySelectorAll(EasyPointsUI.BALANCE_EXPIRATION_CONTAINER_SELECTOR);
-
-    if (containers.length == 0) {
-      return;
-    }
-
-    if (date == null) {
-      containers.forEach(function(container) {
-        container.classList.add('easy-points-hide');
-      });
-
-      return;
-    }
-
-    date = new Date(date);
-
-    var yy = date.getFullYear();
-    var mm = date.getMonth() + 1;
-    var dd = date.getDate();
-
-    containers.forEach(function(container) {
-      container.classList.remove('easy-points-hide');
-
-      container
-        .querySelectorAll(EasyPointsUI.BALANCE_EXPIRATION_DATE_SELECTORS.YY)
-        .forEach(function(el) { el.textContent = yy; });
-
-      container
-        .querySelectorAll(EasyPointsUI.BALANCE_EXPIRATION_DATE_SELECTORS.MM)
-        .forEach(function(el) {el.textContent = mm; });
-
-      container
-        .querySelectorAll(EasyPointsUI.BALANCE_EXPIRATION_DATE_SELECTORS.DD)
-        .forEach(function(el) { el.textContent = dd; });
-    });
-  },
-
   Note: {
     showSubmit() {
       var form = document.getElementById('easypoints-note-update');
@@ -435,36 +389,7 @@ var EasyPointsUI = {
   }
 };
 
-function updateLoyaltyTargets() {
-  var easyPointsSession = getEasyPointsSession();
-  var expirationDate = easyPointsSession.expirationDate;
-
-  var targetNodes = document.querySelectorAll("[data-loyal-target]");
-  var targets = Array.prototype.slice.call(targetNodes);
-
-  targets.find(function(ele) {
-    var target = ele.getAttribute("data-loyal-target");
-
-    // if (target == "shop-point-rule-currency-value") {
-    //   pointRuleCurrencyValue = pointRuleCurrencyValue || ele.value;
-    // } else if (target == "shop-point-rule-point-value") {
-    //   pointRulePointValue = pointRulePointValue || ele.value;
-    // } else if ((typeof pointBalance == "number") && target == "balance") {
-    //   ele.textContent = formatBigNumber(pointBalance);
-    // } else
-
-    if (expirationDate && target == 'balance-expiration') {
-      EasyPointsUI.renderBalanceExpiration(expirationDate);
-    }
-  });
-
-  // if (pointRulePointValue && pointRuleCurrencyValue) {
-  //   updatePointValueTargets();
-  // }
-}
-
 function updateAllLoyaltyTargets() {
-  updateLoyaltyTargets();
   EasyPointsUI.Tiers.render();
 }
 
