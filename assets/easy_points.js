@@ -1,4 +1,3 @@
-// const POINT_RATIO = 1.0;
 const SESSION_KEY = 'easyPoints';
 
 function getMultiplier() {
@@ -12,38 +11,6 @@ function getMultiplier() {
 function formatBigNumber(int) {
   return int.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
-
-// @deprecated
-function totalBonusPoints() {
-  var eles = document.querySelectorAll("[data-loyal-bonus-points]");
-  var productBonusPoints = {};
-  var points = 0;
-
-  eles.forEach(function(ele) {
-    var bonusPointAttributes = ele.getAttribute("data-loyal-bonus-points");
-    bonusPointAttributes = JSON.parse(bonusPointAttributes);
-
-    var productPoints = bonusPointAttributes.bonusPoints;
-    var currentProductPoints = productBonusPoints[bonusPointAttributes.productId];
-
-    if (!currentProductPoints || currentProductPoints < productPoints) {
-      productBonusPoints[bonusPointAttributes.productId] = productPoints;
-    }
-  });
-
-  var values = Object.values(productBonusPoints);
-
-  for (i = 0; i < values.length; i++) {
-    points += values[i];
-  }
-
-  return points;
-}
-
-// var easyPointsSession = getEasyPointsSession();
-// var pointRulePointValue = easyPointsSession.customerPointRulePointValue;
-// var pointRuleCurrencyValue = easyPointsSession.customerPointRuleCurrencyValue;
-// var pointRulePercent = null;
 
 function htmlRedirectInput() {
   var input = document.createElement("input");
@@ -86,13 +53,6 @@ function getEasyPointsSession() {
 
 function setEasyPointsSession(session) {
   sessionStorage.setItem(SESSION_KEY, JSON.stringify(session));
-}
-
-// @deprecated
-function setEasyPointsSessionItem(key, value) {
-  var easyPointsSession = getEasyPointsSession();
-  easyPointsSession[key] = value;
-  setEasyPointsSession(easyPointsSession);
 }
 
 var EasyPointsCore = {
@@ -218,42 +178,6 @@ var EasyPointsCore = {
       return rankAdvancementData.tiers.sort((a, b) => b.raw_amount - a.raw_amount)[0];
     },
   },
-
-  // @deprecated
-  PointExchangeProducts: {
-    addToCart: function(productId, quantity = 1) {
-      var pointExchangeProductEle = document.querySelector(
-        `[data-loyal_product_id="${productId}"][data-loyal_point_exchange]`
-      );
-
-      if (!pointExchangeProductEle) { return true; }
-
-      var easyPointsSession = getEasyPointsSession();
-      var pointBalance = easyPointsSession.pointBalance;
-      var pointExchangeProductAttrs = JSON.parse(pointExchangeProductEle.dataset.loyal_point_exchange);
-      var newPointBalance = pointBalance - pointExchangeProductAttrs.point_cost * quantity;
-
-      if (newPointBalance < 0) { return false; }
-      setEasyPointsSessionItem("pointBalance", newPointBalance);
-      return true;
-    },
-
-    removeFromCart: function(productId, quantity = 1) {
-      var pointExchangeProductEle = document.querySelector(
-        `[data-loyal_product_id="${productId}"][data-loyal_point_exchange]`
-      );
-
-      if (!pointExchangeProductEle) { return true; }
-
-      var easyPointsSession = getEasyPointsSession();
-      var pointBalance = easyPointsSession.pointBalance;
-      var pointExchangeProductAttrs = JSON.parse(pointExchangeProductEle.dataset.loyal_point_exchange);
-      var newPointBalance = pointBalance + pointExchangeProductAttrs.point_cost * quantity;
-
-      setEasyPointsSessionItem("pointBalance", newPointBalance);
-      return true;
-    },
-  }
 };
 
 var EasyPointsUI = {
@@ -378,15 +302,6 @@ var EasyPointsUI = {
       }
     }
   },
-
-  PointExchangeProducts: {
-    addEventListeners() {
-      var buyWithPoints = document.getElementById('easypoints_buy-with-points');
-      if (buyWithPoints) {
-        buyWithPoints.addEventListener('click', EasyPointsCore.PointExchangeProducts.addToCart);
-      }
-    }
-  }
 };
 
 function updateAllLoyaltyTargets() {
@@ -404,7 +319,7 @@ window.addEventListener('DOMContentLoaded', function() {
     redirectUrlEle.value = window.location.pathname;
   }
 
-  var custIdEle = document.getElementById("customerId");
+  var custIdEle = document.getElementById('customerId');
   var custId = custIdEle ? custIdEle.value : null;
 
   function staleSessionKey(session, key) {
@@ -456,57 +371,6 @@ window.addEventListener('DOMContentLoaded', function() {
 
       xhr.send();
     }
-  }
-
-  // @deprecated
-  function updatePointRule(easyPointsSession = null) {
-    easyPointsSession = easyPointsSession || getEasyPointsSession();
-
-    var percentEle = document.body.querySelector(
-      'input[data-loyal-target="shop-point-rule-percent"]'
-    );
-    var pointValueEle = document.body.querySelector(
-      'input[data-loyal-target="shop-point-rule-point-value"]'
-    );
-    var currencyValueEle = document.body.querySelector(
-      'input[data-loyal-target="shop-point-rule-currency-value"]'
-    );
-
-    var pointValue = easyPointsSession.customerPointRulePointValue;
-    var currencyValue = easyPointsSession.customerPointRuleCurrencyValue;
-    percentEle.value = easyPointsSession.customerPointRulePercentage;
-    pointValueEle.value = pointValue;
-    currencyValueEle.value = currencyValue;
-
-    // EasyPointsUI.Tiers.render();
-
-    document.querySelectorAll('[data-loyal-target="point-value"]:not([data-loyal-block])')
-      .forEach(function(ele) {
-        var currencyCost = parseInt(ele.dataset.loyalCurrencyCost) / getMultiplier();
-        var points = currencyCost * (pointValue / currencyValue);
-        var target = ele.querySelector('[data-loyal-target="point-value-location"]');
-
-        var bonusPointAttributes = ele.getAttribute("data-loyal-bonus-points");
-        if (bonusPointAttributes) {
-          bonusPointAttributes = JSON.parse(bonusPointAttributes);
-          var bonusPointPercent = bonusPointAttributes.pointValue / bonusPointAttributes.currencyValue;
-          bonusPointAttributes.bonusPoints = Math.floor(currencyCost * bonusPointPercent);
-          ele.setAttribute("data-loyal-bonus-points", JSON.stringify(bonusPointAttributes));
-          points += bonusPointAttributes.bonusPoints;
-        }
-
-        if (ele.hasAttribute("data-loyal-cart-subtotal")) {
-          points += totalBonusPoints();
-        }
-
-        if (ele.dataset.loyalRound === "up") {
-          points = Math.ceil(points);
-        } else {
-          points = Math.floor(points);
-        }
-
-        target.textContent = formatBigNumber(points);
-      });
   }
 
   function fetchOrderDetails() {
