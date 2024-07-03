@@ -1,4 +1,4 @@
-const SESSION_KEY = 'easyPoints';
+var SESSION_KEY = 'easyPoints';
 
 function getMultiplier() {
   if (!window.EasyPointsData) {
