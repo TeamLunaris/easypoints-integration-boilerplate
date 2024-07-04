@@ -634,7 +634,6 @@ var EasyPoints = {
    */
   fetchShopifyUI: function() {
     // COMBAK: Add support for `cart-drawers` types. (Lorenzo ~ 2024-07-01)
-    if (window.Shopify.routes === undefined) return;
     if (CartItems === undefined) return;
 
     let cartItems = new CartItems();
@@ -647,23 +646,22 @@ var EasyPoints = {
       sections.map((section) => section.section)
         .join(',');
 
-    // COMBAK: put this in the sdk. (Lorenzo ~ 2024-07-03)
-    fetch(`${window.Shopify.routes.root}?sections=${templates}`)
-        .then((response) => response.json())
-        .then((updatedSections) => {
-          cartItems.getSectionsToRender().forEach((section) => {
-            const elementToReplace =
-              document.getElementById(section.id).querySelector(section.selector) || document.getElementById(section.id);
+    EasyPoints.sdk().Shopify.fetchSections(templates)
+      .then((response) => response.json())
+      .then((updatedSections) => {
+        cartItems.getSectionsToRender().forEach((section) => {
+          const elementToReplace =
+            document.getElementById(section.id).querySelector(section.selector) || document.getElementById(section.id);
 
-            elementToReplace.innerHTML = cartItems.getSectionInnerHTML(
-              updatedSections[section.section],
-              section.selector
-            );
-          });
-        })
-        .catch((e) => {
-          console.error(e);
+          elementToReplace.innerHTML = cartItems.getSectionInnerHTML(
+            updatedSections[section.section],
+            section.selector
+          );
         });
+      })
+      .catch((e) => {
+        console.error(e);
+      });
   },
 
   /**
