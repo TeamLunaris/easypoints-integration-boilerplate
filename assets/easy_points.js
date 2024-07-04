@@ -1,11 +1,11 @@
 var SESSION_KEY = 'easyPoints';
 
 function getMultiplier() {
-  if (!window.EasyPointsData) {
+  if (!window.EasyPointsAppBlockData) {
     throw new Error('missing loyalty data, make sure required liquid is rendered.');
   }
 
-  return window.EasyPointsData.shop.multiplier * EasyPointsCore.Currency.getRate();
+  return window.EasyPointsAppBlockData.shop.multiplier * EasyPointsCore.Currency.getRate();
 }
 
 function formatBigNumber(int) {
@@ -74,8 +74,8 @@ var EasyPointsCore = {
     get() {
       const defaultLocale = 'en';
 
-      if (EasyPointsData && EasyPointsData.shop) {
-        const { locale } =  EasyPointsData.shop;
+      if (EasyPointsAppBlockData && EasyPointsAppBlockData.shop) {
+        const { locale } =  EasyPointsAppBlockData.shop;
 
         return locale || defaultLocale;
       }
@@ -87,8 +87,8 @@ var EasyPointsCore = {
   // COMBAK: Can be removed once SDK supports tiers display. (Lorenzo ~ 2024-07-04)
   Currency: {
     getFormatOptions() {
-      if (EasyPointsData && EasyPointsData.shop) {
-        var { money_format_options = null } = EasyPointsData.shop;
+      if (EasyPointsAppBlockData && EasyPointsAppBlockData.shop) {
+        var { money_format_options = null } = EasyPointsAppBlockData.shop;
         return money_format_options;
       }
 
@@ -116,11 +116,11 @@ var EasyPointsCore = {
       if (
         Shopify &&
         Shopify.formatMoney !== undefined &&
-        ((EasyPointsData && EasyPointsData.shop.money_format) || format)
+        ((EasyPointsAppBlockData && EasyPointsAppBlockData.shop.money_format) || format)
       ) {
         money = Shopify.formatMoney(
           amount,
-          format || EasyPointsData.shop.money_format
+          format || EasyPointsAppBlockData.shop.money_format
         );
       }
 
@@ -323,8 +323,10 @@ window.addEventListener('DOMContentLoaded', function() {
     redirectUrlEle.value = window.location.pathname;
   }
 
-  var custIdEle = document.getElementById('customerId');
-  var custId = custIdEle ? custIdEle.value : null;
+  var custId = null;
+  if (window.EasyPointsAppBlockData.customer !== null) {
+    custId = window.EasyPointsAppBlockData.customer.id;
+  }
 
   function staleSessionKey(session, key) {
     if (Object.keys(session).includes(key)) {
