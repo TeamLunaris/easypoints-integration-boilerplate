@@ -13,16 +13,14 @@
       -%}
 
       {%- if has_feature_tiers and shop.metafields.loyalty['tiers_active'] == "true" -%}
-      <h2>{{ 'easypoints.tiers.current_rank_title' | t }}</h2>
-      <div class="easy-points__account">
-        <p class="easy-points-tiers__container">
-          {{
-            'easypoints.tiers.current_rank_html' | t:
-              rank: customer_ep_metafield.tier
-          }}
-        </p>
-        {% render 'easy_points_tiers_rank_advancement', class: 'easy-points-text__muted' %}
-      </div>
+        <h2>{{ 'easypoints.tiers.current_rank_title' | t }}</h2>
+        <div class="easy-points__account">
+          <p class="easy-points-tiers__container">
+            {{ 'easypoints.tiers.current_rank_html' | t: rank: customer_ep_metafield.tier }}
+          </p>
+
+          {% render 'epi_tiers_advancement' %}
+        </div>
       {%- endif -%}
 
       <h2>{{ 'easypoints.points_balance' | t }}</h2>
