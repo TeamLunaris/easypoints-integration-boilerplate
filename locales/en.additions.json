@@ -1,4 +1,5 @@
-"easypoints": {
+{
+  "easypoints": {
     "points": "Points",
     "no_points": "No points will be rewarded",
     "points_earned": "Points Earned",
@@ -55,3 +56,4 @@
       }
     }
   }
+}

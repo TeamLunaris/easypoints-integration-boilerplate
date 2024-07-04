@@ -1,5 +1,5 @@
-
-"easypoints": {
+{
+  "easypoints": {
     "points": "ポイント",
     "no_points": "ポイント対象外",
     "points_earned": "ポイント\/円 還元",
@@ -56,3 +56,4 @@
       }
     }
   }
+}
