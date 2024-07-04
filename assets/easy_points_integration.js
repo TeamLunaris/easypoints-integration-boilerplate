@@ -4,7 +4,7 @@ var EASY_POINTS_INTEGRATION_VERSION = 200;
  * v2.0.0
  *
  * Only supported from `easy_points.js`
- * Tiers, Notes
+ * Tiers, Notes & Order Details
  *
  * Supported in easyPointsSDK
  * insertPointValue
@@ -669,6 +669,7 @@ var EasyPoints = {
       sections.map((section) => section.section)
         .join(',');
 
+    // COMBAK: put this in the sdk. (Lorenzo ~ 2024-07-03)
     fetch(`${window.Shopify.routes.root}?sections=${templates}`)
         .then((response) => response.json())
         .then((updatedSections) => {

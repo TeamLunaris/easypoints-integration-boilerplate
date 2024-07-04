@@ -69,6 +69,7 @@ var EasyPointsCore = {
     },
   },
 
+  // COMBAK: Can be removed once SDK supports tiers display. (Lorenzo ~ 2024-07-04)
   Locale: {
     get() {
       const defaultLocale = 'en';
@@ -83,6 +84,7 @@ var EasyPointsCore = {
     }
   },
 
+  // COMBAK: Can be removed once SDK supports tiers display. (Lorenzo ~ 2024-07-04)
   Currency: {
     getFormatOptions() {
       if (EasyPointsData && EasyPointsData.shop) {
@@ -204,6 +206,7 @@ var EasyPointsUI = {
     }
   },
 
+  // COMBAK: Can be removed once SDK supports tiers display. (Lorenzo ~ 2024-07-04)
   Tiers: {
     render() {
       const { tierName, rankMaintenanceData, rankAdvancementData } = getEasyPointsSession();
@@ -304,6 +307,7 @@ var EasyPointsUI = {
   },
 };
 
+// COMBAK: Can be removed once SDK supports tiers display. (Lorenzo ~ 2024-07-04)
 function updateAllLoyaltyTargets() {
   EasyPointsUI.Tiers.render();
 }
