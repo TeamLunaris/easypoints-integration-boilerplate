@@ -227,39 +227,17 @@ var EasyPoints = {
      * @param {Document | HTMLElement} containerEl - The container within which to search for elements.
      */
     insertTotalPoints(containerEl) {
-      // COMBAK: Fix this. (Lorenzo ~ 2024-06-28)
       EasyPoints.Selectors.getTotalPointsEl(containerEl, true)
         .forEach(node => {
-          var ignoreTax = false;
-          var { tax } = JSON.parse(node.dataset.loyalOpts);
+          // NOTE: does not support flexible tax options
           var total = parseInt(node.dataset.loyalCurrencyCost);
+          total -= EasyPoints.Points.getExcludedCost();
 
-          if (!tax.awardable || !tax.included) {
-            var pointEls = [
-              ...document.querySelectorAll('[data-loyal-target="point-value"]')
-            ];
-
-            // calculate the total price from all cart item point values
-            // must use the `item.final_price` otherwise qty must be ignored
-            // {% render 'points', item: item, price: item.final_price %}
-
-            // ignore tax because we calculate total cost from all point values on the page
-            ignoreTax = true;
-
-            total = pointEls.reduce((acc, pointEl) => {
-              var { loyalCurrencyCost: cost, loyalQuantity: qty } = pointEl.dataset;
-              return (cost * qty) + acc;
-            }, 0);
-          } else {
-            total -= EasyPoints.Points.getExcludedCost();
-          }
-
-          EasyPoints.Points.setCurrencyCost(node, { price: Math.floor(total), ignoreTax: ignoreTax });
+          EasyPoints.Points.setCurrencyCost(node, { price: Math.floor(total), ignoreTax: true });
           EasyPoints.sdk().insertPointValue(node);
 
           var totalPoints = parseInt(node.innerText.replace(/\D/g, ''));
-
-          // hack: some themes innerText returns empty string
+          // HACK: some themes innerText returns empty string
           if (isNaN(totalPoints)) {
             totalPoints = parseInt(node.textContent.replace(/\D/g, ''));
           }
@@ -787,8 +765,6 @@ var EasyPoints = {
      */
     run: function() {
       EasyPoints.sdk().updateLoyaltyTargets();
-      // COMBAK: Once function is fixed re-apply this. (Lorenzo ~ 2024-06-28)
-      // EasyPoints.Points.insertTotalPoints(document);
       EasyPoints.Tiers.recalculate();
 
       this.setEventListeners();
