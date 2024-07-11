@@ -31,7 +31,7 @@
           endif
         endfor
 
-        unless worth_points
+        if worth_points
           for collection in product.collections
             if collection.handle == 'easy-points-point-exclusion'
               assign worth_points = false
@@ -58,7 +58,7 @@
               assign tax_rate = 1 | plus: tax_override_percentage
             endif
           endfor
-        endunless
+        endif
 
         capture currency_cost
           render 'epi_currency_cost', price: price, tax_rate: tax_rate
