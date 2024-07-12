@@ -84,7 +84,7 @@
       assign final_points = points | plus: final_bonus_points | ceil
     -%}
 
-    {%- capture total_points_value -%}
+    {%- capture total_points_value_html -%}
       <span
         class="points-after-applied-discount"
         data-loyal-target="total-points-value"
@@ -93,7 +93,6 @@
           data-loyal-bonus-points="{&quot;bonusPoints&quot;: {{ final_bonus_points }}}"
         {%- else -%}
           data-loyal-bonus-points="[{{ json_bonus_points | split: ',' | join: ', ' }}]"
-          data-loyal-js
         {%- endif -%}
       >
         <span
@@ -115,7 +114,13 @@
       </h3>
 
       <p class="easy-points easy-points__total-points totals__subtotal-value">
-        {{ total_points_value }}
+        {%- if using_shop_currency -%}
+          {{ total_points_value_html }}
+        {%- else -%}
+          <epi-point-value>
+            {{ total_points_value_html }}
+          </epi-point-value>
+        {%- endif -%}
 
         <span class="easy-points-total__point__label easy-points__text easy-points__text--suffix">
           {{ 'easypoints.points' | t }}
