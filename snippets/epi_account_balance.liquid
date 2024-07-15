@@ -30,7 +30,7 @@
             <span data-loyal-target="balance">{{ customer_ep_metafield.balance }}</span> <span class="easy-points__text">{{ 'easypoints.points' | t }}</span>
           </span>
 
-          {% if customer_ep_metafield.expiration_date %}
+          {%- if customer_ep_metafield.expiration_date -%}
             {%- liquid
               assign expiration_date = customer_ep_metafield.expiration_date
               if expiration_date
@@ -42,7 +42,7 @@
             <span data-loyal-target="balance-expiration" class="easy-points-text__muted">
               {{ 'easypoints.expiration_date' | t }} {{ 'easypoints.date' | t: year: exp_year, month: exp_month, day: exp_day }}
             </span>
-          {% endif %}
+          {%- endif -%}
         </p>
       </div>
     {%- endif -%}
