@@ -12,7 +12,7 @@
       -%}
 
       {%- if has_feature_tiers and shop.metafields.loyalty['tiers_active'] == "true" -%}
-        {%- assign class = class | default: '' -%}
+        {%- assign class = class | default: 'easy-points-text__muted' -%}
         <span data-loyal-target="rank-advancement-data" class="{{ class }}">
           <span style="display: none;" data-loyal-target="max-rank">
             {{

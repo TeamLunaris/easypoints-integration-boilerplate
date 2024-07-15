@@ -1,47 +1,16 @@
-const POINT_RATIO = 1.0;
+var SESSION_KEY = 'easyPoints';
 
 function getMultiplier() {
-  if (!window.EasyPointsData) {
+  if (!window.EasyPointsAppBlockData) {
     throw new Error('missing loyalty data, make sure required liquid is rendered.');
   }
 
-  return window.EasyPointsData.shop.multiplier * EasyPointsCore.Currency.getRate();
+  return window.EasyPointsAppBlockData.shop.multiplier * EasyPointsCore.Currency.getRate();
 }
 
 function formatBigNumber(int) {
   return int.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
-
-function totalBonusPoints() {
-  var eles = document.querySelectorAll("[data-loyal-bonus-points]");
-  var productBonusPoints = {};
-  var points = 0;
-
-  eles.forEach(function(ele) {
-    var bonusPointAttributes = ele.getAttribute("data-loyal-bonus-points");
-    bonusPointAttributes = JSON.parse(bonusPointAttributes);
-
-    var productPoints = bonusPointAttributes.bonusPoints;
-    var currentProductPoints = productBonusPoints[bonusPointAttributes.productId];
-
-    if (!currentProductPoints || currentProductPoints < productPoints) {
-      productBonusPoints[bonusPointAttributes.productId] = productPoints;
-    }
-  });
-
-  var values = Object.values(productBonusPoints);
-
-  for (i = 0; i < values.length; i++) {
-    points += values[i];
-  }
-
-  return points;
-}
-
-var easyPointsSession = getEasyPointsSession();
-var pointRulePointValue = easyPointsSession.customerPointRulePointValue;
-var pointRuleCurrencyValue = easyPointsSession.customerPointRuleCurrencyValue;
-var pointRulePercent = null;
 
 function htmlRedirectInput() {
   var input = document.createElement("input");
@@ -78,24 +47,12 @@ function submitForm(form) {
 }
 
 function getEasyPointsSession() {
-  var easyPointsSession = sessionStorage.getItem("easyPoints");
+  var easyPointsSession = sessionStorage.getItem(SESSION_KEY);
   return easyPointsSession ? JSON.parse(easyPointsSession) : {};
 }
 
-function setEasyPointsSession(easyPointsSession) {
-  sessionStorage.setItem("easyPoints", JSON.stringify(easyPointsSession));
-}
-
-function setEasyPointsSessionItem(key, value) {
-  var easyPointsSession = getEasyPointsSession();
-  easyPointsSession[key] = value;
-  setEasyPointsSession(easyPointsSession);
-}
-
-function removeEasyPointsSessionItem(key) {
-  var easyPointsSession = getEasyPointsSession();
-  delete easyPointsSession[key];
-  setEasyPointsSession(easyPointsSession);
+function setEasyPointsSession(session) {
+  sessionStorage.setItem(SESSION_KEY, JSON.stringify(session));
 }
 
 var EasyPointsCore = {
@@ -109,6 +66,65 @@ var EasyPointsCore = {
     REDEMPTION: {
       POINTS_VALUE: '#redemption-point-value',
       POINTS_MAX: '#redemption-max-points'
+    },
+  },
+
+  // COMBAK: Can be removed once SDK supports tiers display. (Lorenzo ~ 2024-07-04)
+  Locale: {
+    get() {
+      const defaultLocale = 'en';
+
+      if (EasyPointsAppBlockData && EasyPointsAppBlockData.shop) {
+        const { locale } =  EasyPointsAppBlockData.shop;
+
+        return locale || defaultLocale;
+      }
+
+      return defaultLocale;
+    }
+  },
+
+  // COMBAK: Can be removed once SDK supports tiers display. (Lorenzo ~ 2024-07-04)
+  Currency: {
+    getFormatOptions() {
+      if (EasyPointsAppBlockData && EasyPointsAppBlockData.shop) {
+        var { money_format_options = null } = EasyPointsAppBlockData.shop;
+        return money_format_options;
+      }
+
+      return null;
+    },
+
+    getRate: function () {
+      return (Shopify && Shopify.currency && Shopify.currency.rate) || 1;
+    },
+
+    getActiveString: function (fallback = "JPY") {
+      return (
+        (Shopify && Shopify.currency && Shopify.currency.active) || fallback
+      );
+    },
+
+    format(amount, { convert = false, multiplier = 1, format = null } = {}) {
+      amount = Math.round(
+        (convert ? amount * EasyPointsCore.Currency.getRate() : amount) *
+          multiplier
+      );
+      var money =
+        amount / 100 + " " + EasyPointsCore.Currency.getActiveString();
+
+      if (
+        Shopify &&
+        Shopify.formatMoney !== undefined &&
+        ((EasyPointsAppBlockData && EasyPointsAppBlockData.shop.money_format) || format)
+      ) {
+        money = Shopify.formatMoney(
+          amount,
+          format || EasyPointsAppBlockData.shop.money_format
+        );
+      }
+
+      return money;
     },
   },
 
@@ -164,90 +180,9 @@ var EasyPointsCore = {
       return rankAdvancementData.tiers.sort((a, b) => b.raw_amount - a.raw_amount)[0];
     },
   },
-
-  PointExchangeProducts: {
-    addToCart: function(productId, quantity = 1) {
-      var pointExchangeProductEle = document.querySelector(
-        `[data-loyal_product_id="${productId}"][data-loyal_point_exchange]`
-      );
-
-      if (!pointExchangeProductEle) { return true; }
-
-      var easyPointsSession = getEasyPointsSession();
-      var pointBalance = easyPointsSession.pointBalance;
-      var pointExchangeProductAttrs = JSON.parse(pointExchangeProductEle.dataset.loyal_point_exchange);
-      var newPointBalance = pointBalance - pointExchangeProductAttrs.point_cost * quantity;
-
-      if (newPointBalance < 0) { return false; }
-      setEasyPointsSessionItem("pointBalance", newPointBalance);
-      return true;
-    },
-
-    removeFromCart: function(productId, quantity = 1) {
-      var pointExchangeProductEle = document.querySelector(
-        `[data-loyal_product_id="${productId}"][data-loyal_point_exchange]`
-      );
-
-      if (!pointExchangeProductEle) { return true; }
-
-      var easyPointsSession = getEasyPointsSession();
-      var pointBalance = easyPointsSession.pointBalance;
-      var pointExchangeProductAttrs = JSON.parse(pointExchangeProductEle.dataset.loyal_point_exchange);
-      var newPointBalance = pointBalance + pointExchangeProductAttrs.point_cost * quantity;
-
-      setEasyPointsSessionItem("pointBalance", newPointBalance);
-      return true;
-    },
-  }
 };
 
 var EasyPointsUI = {
-
-  BALANCE_EXPIRATION_CONTAINER_SELECTOR: '[data-loyal-target="balance-expiration"]',
-  BALANCE_EXPIRATION_DATE_SELECTORS: {
-    YY: '[data-loyal-target="balance-expiration__yy"]',
-    MM: '[data-loyal-target="balance-expiration__mm"]',
-    DD: '[data-loyal-target="balance-expiration__dd"]',
-  },
-
-  renderBalanceExpiration: function(date) {
-    var containers = document.body.querySelectorAll(EasyPointsUI.BALANCE_EXPIRATION_CONTAINER_SELECTOR);
-
-    if (containers.length == 0) {
-      return;
-    }
-
-    if (date == null) {
-      containers.forEach(function(container) {
-        container.classList.add('easy-points-hide');
-      });
-
-      return;
-    }
-
-    date = new Date(date);
-
-    var yy = date.getFullYear();
-    var mm = date.getMonth() + 1;
-    var dd = date.getDate();
-
-    containers.forEach(function(container) {
-      container.classList.remove('easy-points-hide');
-
-      container
-        .querySelectorAll(EasyPointsUI.BALANCE_EXPIRATION_DATE_SELECTORS.YY)
-        .forEach(function(el) { el.textContent = yy; });
-
-      container
-        .querySelectorAll(EasyPointsUI.BALANCE_EXPIRATION_DATE_SELECTORS.MM)
-        .forEach(function(el) {el.textContent = mm; });
-
-      container
-        .querySelectorAll(EasyPointsUI.BALANCE_EXPIRATION_DATE_SELECTORS.DD)
-        .forEach(function(el) { el.textContent = dd; });
-    });
-  },
-
   Note: {
     showSubmit() {
       var form = document.getElementById('easypoints-note-update');
@@ -271,6 +206,7 @@ var EasyPointsUI = {
     }
   },
 
+  // COMBAK: Can be removed once SDK supports tiers display. (Lorenzo ~ 2024-07-04)
   Tiers: {
     render() {
       const { tierName, rankMaintenanceData, rankAdvancementData } = getEasyPointsSession();
@@ -369,54 +305,42 @@ var EasyPointsUI = {
       }
     }
   },
-
-  PointExchangeProducts: {
-    addEventListeners() {
-      var buyWithPoints = document.getElementById('easypoints_buy-with-points');
-      if (buyWithPoints) {
-        buyWithPoints.addEventListener('click', EasyPointsCore.PointExchangeProducts.addToCart);
-      }
-    }
-  }
 };
+
+// COMBAK: Can be removed once SDK supports tiers display. (Lorenzo ~ 2024-07-04)
+function updateAllLoyaltyTargets() {
+  EasyPointsUI.Tiers.render();
+}
 
 window.addEventListener('DOMContentLoaded', function() {
   EasyPointsUI.Note.addSubmitListener();
   EasyPointsUI.Note.addValuesChangedListener();
-});
 
-window.addEventListener('DOMContentLoaded', function() {
-  EasyPointsUI.Tiers.render();
+  updateAllLoyaltyTargets();
 
-  var shopDomainEle = document.getElementById("shopDomain");
-  var shopDomain = shopDomainEle ? shopDomainEle.value : null;
-
-  var redirectUrlEle = document.body.querySelector(
-    'input[data-loyal-target="redirect_url"]'
-  );
-
+  var redirectUrlEle = document.body.querySelector('input[data-loyal-target="redirect_url"]');
   if (redirectUrlEle) {
     redirectUrlEle.value = window.location.pathname;
   }
 
-  var custIdEle = document.getElementById("customerId");
-  var custId = custIdEle ? custIdEle.value : null;
-
-  function staleSessionKey(key, easyPointsSession = null) {
-    easyPointsSession = easyPointsSession || getEasyPointsSession();
-    var date = easyPointsSession[key];
-    return !date || (new Date() - new Date(date)) > 300000;
+  var custId = null;
+  if (window.EasyPointsAppBlockData.customer !== null) {
+    custId = window.EasyPointsAppBlockData.customer.id;
   }
 
-  function fetchAndUpdatePointRule(force = false) {
-    var easyPointsSession = getEasyPointsSession();
+  function staleSessionKey(session, key) {
+    if (Object.keys(session).includes(key)) {
+      return (new Date() - new Date(session[key])) > 300000;
+    }
 
-    if (shopDomain && (
-      force ||
-      (custId && staleSessionKey('customerMetafieldUpdatedAt', easyPointsSession)) ||
-      staleSessionKey('shopMetafieldUpdatedAt', easyPointsSession)
-    )) {
-      var data = {};
+    return true;
+  }
+
+  function fetchSession() {
+    var easyPointsSession = getEasyPointsSession();
+    var updatedAt = custId ? 'customerMetafieldUpdatedAt' : 'shopMetafieldUpdatedAt';
+
+    if (staleSessionKey(easyPointsSession, updatedAt)) {
       var route = "/apps/loyalty/order_point_rule";
 
       if (custId) {
@@ -440,67 +364,19 @@ window.addEventListener('DOMContentLoaded', function() {
             easyPointsSession.rankAdvancementData = resp.tier_maintenance_data.advancement_data;
           }
 
-          if (!custId) {
+          if (custId) {
+            easyPointsSession.customerMetafieldUpdatedAt = new Date();
+          } else {
             easyPointsSession.shopMetafieldUpdatedAt = new Date();
           }
 
           setEasyPointsSession(easyPointsSession);
-          updatePointRule(easyPointsSession);
+          updateAllLoyaltyTargets();
         };
       };
 
       xhr.send();
     }
-  }
-
-  function updatePointRule(easyPointsSession = null) {
-    easyPointsSession = easyPointsSession || getEasyPointsSession();
-
-    var percentEle = document.body.querySelector(
-      'input[data-loyal-target="shop-point-rule-percent"]'
-    );
-    var pointValueEle = document.body.querySelector(
-      'input[data-loyal-target="shop-point-rule-point-value"]'
-    );
-    var currencyValueEle = document.body.querySelector(
-      'input[data-loyal-target="shop-point-rule-currency-value"]'
-    );
-
-    var pointValue = easyPointsSession.customerPointRulePointValue;
-    var currencyValue = easyPointsSession.customerPointRuleCurrencyValue;
-    percentEle.value = easyPointsSession.customerPointRulePercentage;
-    pointValueEle.value = pointValue;
-    currencyValueEle.value = currencyValue;
-
-    EasyPointsUI.Tiers.render();
-
-    document.querySelectorAll('[data-loyal-target="point-value"]:not([data-loyal-block])')
-      .forEach(function(ele) {
-        var currencyCost = parseInt(ele.dataset.loyalCurrencyCost) / getMultiplier();
-        var points = currencyCost * (pointValue / currencyValue);
-        var target = ele.querySelector('[data-loyal-target="point-value-location"]');
-
-        var bonusPointAttributes = ele.getAttribute("data-loyal-bonus-points");
-        if (bonusPointAttributes) {
-          bonusPointAttributes = JSON.parse(bonusPointAttributes);
-          var bonusPointPercent = bonusPointAttributes.pointValue / bonusPointAttributes.currencyValue;
-          bonusPointAttributes.bonusPoints = Math.floor(currencyCost * bonusPointPercent);
-          ele.setAttribute("data-loyal-bonus-points", JSON.stringify(bonusPointAttributes));
-          points += bonusPointAttributes.bonusPoints;
-        }
-
-        if (ele.hasAttribute("data-loyal-cart-subtotal")) {
-          points += totalBonusPoints();
-        }
-
-        if (ele.dataset.loyalRound === "up") {
-          points = Math.ceil(points);
-        } else {
-          points = Math.floor(points);
-        }
-
-        target.textContent = formatBigNumber(points);
-      });
   }
 
   function fetchOrderDetails() {
@@ -518,7 +394,7 @@ window.addEventListener('DOMContentLoaded', function() {
       });
     });
 
-    if (orderIds.length > 0 && custId && shopDomain) {
+    if (orderIds.length > 0 && custId) {
       var params = new URLSearchParams({"order_ids": orderIds});
       var xhr = new XMLHttpRequest();
       xhr.open("GET", `/apps/loyalty/customers/${custId}/orders?` + params.toString());
@@ -563,6 +439,6 @@ window.addEventListener('DOMContentLoaded', function() {
     }, 0);
   }
 
-  async(fetchAndUpdatePointRule);
+  async(fetchSession);
   async(fetchOrderDetails);
 });

@@ -1,5 +1,5 @@
-
-"easypoints": {
+{
+  "easypoints": {
     "points": "ポイント",
     "no_points": "ポイント対象外",
     "points_earned": "ポイント\/円 還元",
@@ -8,9 +8,7 @@
     "cart_redeem": "ポイントを使う",
     "cart_reset": "リセット",
     "expiration_date": "有効期限",
-    "date_year": "年",
-    "date_month": "月",
-    "date_day": "日",
+    "date": "{{ year }}年{{ month }}月{{ day }}日",
     "login_prompt": "ポイントのご利用にはログインしていただく必要がございます。",
     "note_form": {
       "birthday": "生年月日",
@@ -58,3 +56,4 @@
       }
     }
   }
+}

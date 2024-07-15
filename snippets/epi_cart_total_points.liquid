@@ -1,0 +1,131 @@
+{%- unless shop.metafields.loyalty.easy_points_attributes.value.stealth_mode -%}
+  {%- if cart -%}
+    {%- liquid
+      assign using_shop_currency = true
+      if shop.currency != cart.currency.iso_code
+        assign using_shop_currency = false
+      endif
+
+      assign multiplier = 1
+      assign currencies = 'JPY,KRW,BIF,CLP,DJF,GNF,ISK,KMF,PYG,RWF,UGX,VND,VUV,XAF,XOF,XPF'
+      assign currencies = currencies | split: ','
+      if currencies contains shop.currency
+        assign multiplier = 100
+      endif
+
+      assign final_price = 0
+      assign final_price_exclusion = 0
+      assign final_bonus_points = 0
+      assign json_bonus_points = ''
+
+      for item in cart.items
+        assign tax_rate = 1.1
+        assign bpr_ratio = 0.0
+        assign final_bpr_ratio = 0.0
+
+        for collection in item.product.collections
+          if collection.handle == 'easy-points-point-exclusion'
+            assign final_price_exclusion = final_price_exclusion | plus: item.final_line_price
+            break
+          else
+            assign metafield_bonus_points = collection.metafields.loyalty.bonus_points
+            if metafield_bonus_points and metafield_bonus_points.active == true
+              assign bpr_point_value = metafield_bonus_points.point_value | times: 1.0
+              assign bpr_currency_value = metafield_bonus_points.currency_value | times: 1.0
+              assign bpr_ratio = bpr_point_value | divided_by: bpr_currency_value
+
+              if bpr_ratio >= final_bpr_ratio
+                assign final_bpr_ratio = bpr_ratio
+              endif
+            endif
+
+            if collection.metafields.loyalty.tax_override_percentage
+              assign tax_override_percentage = collection.metafields.loyalty.tax_override_percentage | divided_by: 100
+              assign tax_rate = 1 | plus: tax_override_percentage
+            endif
+          endif
+        endfor
+
+        capture currency_cost
+          render 'epi_currency_cost', price: item.final_line_price, tax_rate: tax_rate
+        endcapture
+
+        assign currency_cost = currency_cost | strip_html
+        assign final_price = final_price | plus: currency_cost
+
+        if final_bpr_ratio > 0.0
+          assign bonus_points = currency_cost | divided_by: multiplier | times: final_bpr_ratio
+          assign final_bonus_points = final_bonus_points | plus: bonus_points
+
+          assign item_bpr_percentage = final_bpr_ratio | times: 100
+          assign item_json = '{'
+          assign item_json = item_json | append: '&quot;currencyCost&quot;: ' | append: currency_cost | append: ','
+          assign item_json = item_json | append: '&quot;quantity&quot;: ' | append: item.quantity | append: ','
+          assign item_json = item_json | append: '&quot;percentage&quot;: ' | append: item_bpr_percentage | append: ','
+          assign item_json = item_json | append: '&quot;currencyValue&quot;: ' | append: bpr_currency_value | append: ','
+          assign item_json = item_json | append: '&quot;bonusPoints&quot;: null' | append: '},'
+
+          assign json_bonus_points = json_bonus_points | append: item_json
+        endif
+      endfor
+
+      assign metafield_ep = shop.metafields.loyalty.easy_points_attributes.value
+      if customer
+        assign metafield_ep = customer.metafields.loyalty.easy_points_attributes.value
+      endif
+
+      assign opr_point_value = metafield_ep.point_value | times: 1.0
+      assign opr_currency_value = metafield_ep.currency_value | times: 1.0
+      assign opr_ratio = opr_point_value | divided_by: opr_currency_value
+
+      assign final_price = final_price | minus: final_price_exclusion
+      assign points = final_price | divided_by: multiplier | times: opr_ratio | ceil
+
+      assign final_points = points | plus: final_bonus_points | ceil
+    -%}
+
+    {%- capture total_points_value_html -%}
+      <span
+        class="points-after-applied-discount"
+        data-loyal-target="total-points-value"
+        data-loyal-currency-cost="{{ final_price }}"
+        {%- if using_shop_currency -%}
+          data-loyal-bonus-points="{&quot;bonusPoints&quot;: {{ final_bonus_points }}}"
+        {%- else -%}
+          data-loyal-bonus-points="[{{ json_bonus_points | split: ',' | join: ', ' }}]"
+        {%- endif -%}
+      >
+        <span
+          class="easy-points-total__point__value"
+          data-loyal-target="point-value-location"
+        >
+          {%- if using_shop_currency -%}
+            {% render 'epi_format_number', number: final_points %}
+          {%- else -%}
+            -
+          {%- endif -%}
+        </span>
+      </span>
+    {%- endcapture -%}
+
+    <div class="easy-points__cart-points totals">
+      <h3 class="totals__subtotal">
+        {{ 'easypoints.points_earned_total' | t }}
+      </h3>
+
+      <p class="easy-points easy-points__total-points totals__subtotal-value">
+        {%- if using_shop_currency -%}
+          {{ total_points_value_html }}
+        {%- else -%}
+          <epi-point-value>
+            {{ total_points_value_html }}
+          </epi-point-value>
+        {%- endif -%}
+
+        <span class="easy-points-total__point__label easy-points__text easy-points__text--suffix">
+          {{ 'easypoints.points' | t }}
+        </span>
+      </p>
+    </div>
+  {%- endif -%}
+{%- endunless -%}
