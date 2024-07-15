@@ -452,7 +452,7 @@ var EasyPoints = {
      * Clones the element(s) with '[data-loyal-target="subtotal"]' and hides original element(s).
      */
     cloneSubtotal: function() {
-      // Uncomment if the theme does not support `fetchShopifyUI`
+      // Uncomment if the theme does not support `fetchShopifyCartUI`
       // EasyPoints.Selectors.getElementBy$(document, '[data-loyal-target="subtotal"]', true)
       //   .forEach(node => {
       //     var clone = node.cloneNode(true);
@@ -468,7 +468,7 @@ var EasyPoints = {
      * Removes all cloned 'subtotal' elements and shows the original 'subtotal' elements.
      */
     resetClonedSubtotal: function() {
-      // Uncomment if the theme does not support `fetchShopifyUI`
+      // Uncomment if the theme does not support `fetchShopifyCartUI`
       // EasyPoints.Selectors.getElementBy$(document, '[data-loyal-clone]', true)
       //   .forEach(node => node.remove());
       // EasyPoints.Selectors.getElementBy$(document, '[data-loyal-target="subtotal"]', true)
@@ -632,8 +632,7 @@ var EasyPoints = {
   /**
    * Fetches the Shopify UI section elements and updates the UI accordingly.
    */
-  fetchShopifyUI: function() {
-    // COMBAK: Add support for `cart-drawers` types. (Lorenzo ~ 2024-07-01)
+  fetchShopifyCartUI: function() {
     if (CartItems === undefined) return;
 
     let cartItems = new CartItems();
@@ -713,7 +712,7 @@ var EasyPoints = {
 
       EasyPoints.sdk().removeDiscount()
         .then(() => {
-          EasyPoints.fetchShopifyUI();
+          EasyPoints.fetchShopifyCartUI();
           EasyPoints.hideDiscountUI();
 
           resetBtn.removeAttribute('disabled');
@@ -825,7 +824,7 @@ var EasyPoints = {
 
         EasyPoints.sdk().applyDiscount(EasyPoints.sdk().getDiscountSession())
           .then(() => {
-            EasyPoints.fetchShopifyUI();
+            EasyPoints.fetchShopifyCartUI();
             EasyPoints.showDiscountUI();
             e.target.style.cursor = 'unset';
             e.target.removeAttribute('disabled');
