@@ -1,0 +1,31 @@
+{%- unless shop.metafields.loyalty.easy_points_attributes.value.stealth_mode -%}
+  {%- if cart and customer -%}
+    <div id="easy-points-form" style="display: none;" aria-hidden="true" tabindex="-1">
+      {%- liquid
+        assign max_redeemable = 0
+        for item in cart.items
+          assign discountable = true
+          for collection in item.product.collections
+            if collection.handle == 'easy-points-discount-exclusion'
+              assign discountable = false
+              break
+            endif
+          endfor
+
+          if discountable
+            assign line_price = item.price | times: item.quantity
+            assign max_redeemable = max_redeemable | plus: line_price
+            assign template = '<input type="hidden" name="coupon[product_ids][]" value="{$1}">'
+            echo template | replace_first: '{$1}', item.product.id
+          endif
+        endfor
+      -%}
+
+      <input type="hidden" name="coupon[shop_domain]" value="{{ shop.domain }}">
+      <input type="hidden" name="coupon[customer_id]" value="{{ customer.id }}">
+      <input type="hidden" id="redemption-point-value" name="coupon[point_value]" value="0">
+      <input type="hidden" id="redemption-max-points" name="coupon[max_redeemable]" value="{{ max_redeemable }}">
+      <input type="hidden" id="redemption-balance" name="balance" value="{{ customer.metafields.loyalty.easy_points_attributes.value.balance }}">
+    </div>
+  {%- endif -%}
+{%- endunless -%}

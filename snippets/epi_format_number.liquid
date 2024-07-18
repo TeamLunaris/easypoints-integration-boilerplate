@@ -1,0 +1,12 @@
+{%- liquid
+  assign number = number | default: '0' | strip_newlines | strip
+  assign digits = number | split: ''
+  for digit in digits
+    assign threeFromEnd = digits.size | minus: forloop.index | modulo: 3
+    if threeFromEnd == 2 and forloop.index != 1
+      echo digit | prepend: ','
+    else
+      echo digit
+    endif
+  endfor
+-%}

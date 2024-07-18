@@ -1,36 +1,34 @@
+var EASY_POINTS_INTEGRATION_VERSION = 200;
+
 /**
- * v1.91
+ * v2.0.0
  *
- * Required functions from `easy_points.js`
- *  - updateLoyaltyTargets/0
- *  - updateDisplayedDiscount/0
- *  - displayDiscount/1
- *  - formatBigNumber/1
- *  - insertPointValue/1
+ * Only supported from `easy_points.js`
+ * Tiers, Notes & Order Details
+ *
+ * Supported in easyPointsSDK
+ * insertPointValue
+ * insertPointValueIntoElement
+ * updateLoyaltyTargets
+ * getDiscountSession
+ * Currency.getFormatOptions
+ * Currency.getRate
+ * Currency.format
+ * formatBigNumber
+ * setup
+ * applyDiscount
+ * removeDiscount
+ * setRedemptionPoints
+ *
  */
 
- window.addEventListener('DOMContentLoaded', function() {
-  var path = this.window.location.pathname;
-  var re = /\/cart/i;
-
-
-  if (!path.match(re)) {
-    return;
-  }
-
-  EasyPoints.Register.run();
-
-
-  EasyPoints.removeDiscount();
-
-
+function cartObserver() {
   // var cartNode = document.querySelector('form[action="/cart"]');
-
   // if (cartNode) {
   //   var callback = function(mutationsList, observer) {
   //     for (var mutation of mutationsList) {
   //       if (mutation.type === 'childList' && mutation.target == cartNode) {
-  //         EasyPoints.reset({});
+  //         EasyPoints.hideDiscountUI();
 
   //         document.querySelectorAll('[data-loyal-target="subtotal"]')
   //           .forEach(node => {
@@ -56,9 +54,56 @@
   //       subtree: true
   //     });
   // }
+};
+
+// COMBAK: maybe we can omit an event listener from the SDK
+function afterEasyPointsSDK() {
+  // only run on the `/cart` page
+  var path = this.window.location.pathname;
+  var re = /\/cart/i;
+  if (!path.match(re)) {
+    return;
+  }
+
+  EasyPoints.Register.run();
+  EasyPoints.removeDiscount();
+
+  cartObserver();
+};
+
+window.addEventListener('DOMContentLoaded', function() {
+  let tries = 0;
+  let interval;
+  interval = setInterval(() => {
+    if (tries > 100) {
+      console.warn('easyPointsSDK was not loaded.');
+      clearInterval(interval);
+      return;
+    }
+
+    if (window.easyPointsSDK !== undefined) {
+      clearInterval(interval);
+
+      EasyPoints.sdk().setup();
+      afterEasyPointsSDK();
+      return;
+    }
+
+    tries++;
+  }, 50);
 });
 
 var EasyPoints = {
+  sdk: function() {
+    var sdk = window.easyPointsSDK;
+
+    if (sdk === undefined) {
+      console.warn('easyPointsSDK was not loaded.');
+      return;
+    }
+
+    return sdk;
+  },
 
   Debug: {
     DEBUG: false,
@@ -93,7 +138,7 @@ var EasyPoints = {
      * @param {boolean} [nodes=false] - If true, the method will return all matching elements, otherwise it will return the first matching element.
      * @returns {HTMLElement | NodeList | null} - Returns the first matching element if `nodes` is false, a NodeList of matching elements if `nodes` is true, or null if no match is found.
      */
-    getElementBy$: function (element, selector, nodes = false) {
+    getElementBy$: function(element, selector, nodes = false) {
       var element =
         nodes ? element.querySelectorAll(selector) : element.querySelector(selector);
 
@@ -109,31 +154,31 @@ var EasyPoints = {
      * @param {boolean} [nodes=false] - If true, the method will return all matching elements with attribute data-loyal-target equals to "total-points-value", otherwise it will return the first matching element.
      * @returns {HTMLElement | NodeList | null} - Returns the first matching element if `nodes` is false, a NodeList of matching elements if `nodes` is true, or null if no match is found.
      */
-    getTotalPointsEl: function (element, nodes = false) {
+    getTotalPointsEl: function(element, nodes = false) {
       return this.getElementBy$(element, '[data-loyal-target="total-points-value"]', nodes);
     },
 
-    getRedeemContainerEl: function (element, nodes = false) {
+    getRedeemContainerEl: function(element, nodes = false) {
       return this.getElementBy$(element, '.easy-points-form__container', nodes);
     },
 
-    getRedeemPointsButtonEl: function (element, nodes = false) {
+    getRedeemPointsButtonEl: function(element, nodes = false) {
       return this.getElementBy$(element, '.easy-points-button__redeem', nodes);
     },
 
-    getResetPointsButtonEl: function (element, nodes = false) {
+    getResetPointsButtonEl: function(element, nodes = false) {
       return this.getElementBy$(element, '.easy-points-button__reset', nodes);
     },
 
-    getRedeemPointsInputEl: function (element, nodes = false) {
+    getRedeemPointsInputEl: function(element, nodes = false) {
       return this.getElementBy$(element, '.easy-points-form__input input', nodes);
     },
 
-    getCheckoutButtonEl: function (element, nodes = false) {
+    getCheckoutButtonEl: function(element, nodes = false) {
       return this.getElementBy$(element, '[type="submit"][name="checkout"]', nodes);
     },
 
-    getAdditionalCheckoutButtonEl: function (element, nodes = false) {
+    getAdditionalCheckoutButtonEl: function(element, nodes = false) {
       return this.getElementBy$(element, '.additional-checkout-buttons', nodes);
     },
   },
@@ -158,15 +203,16 @@ var EasyPoints = {
      * @param {Document | HTMLElement} [el=document] - The root element to start the search from.
      * @returns {number} - The total bonus points.
      */
-    getTotalBonusPoints(el = document) {
+     getTotalBonusPoints(el = document) {
       var total =
-        Array.from(el.querySelectorAll('[data-loyal-bonus-points]'))
+        Array.from(el.querySelectorAll('[data-loyal-bonus-points]:not([data-loyal-target="total-points-value"])'))
           .reduce((acc, node) => {
-            var { bonusPoints } = JSON.parse(node.dataset.loyalBonusPoints);
+            var { bonusPoints, quantity = 1 } = JSON.parse(node.dataset.loyalBonusPoints);
             bonusPoints = parseInt(bonusPoints);
+            quantity = parseInt(quantity);
 
             if (!isNaN(bonusPoints) && bonusPoints > 0) {
-              return acc + bonusPoints;
+              return acc + (bonusPoints * quantity);
             }
 
             return acc;
@@ -183,42 +229,21 @@ var EasyPoints = {
     insertTotalPoints(containerEl) {
       EasyPoints.Selectors.getTotalPointsEl(containerEl, true)
         .forEach(node => {
-          var ignoreTax = false;
-          var { tax } = JSON.parse(node.dataset.loyalOpts);
+          // NOTE: does not support flexible tax options
           var total = parseInt(node.dataset.loyalCurrencyCost);
+          total -= EasyPoints.Points.getExcludedCost();
 
-          if (!tax.awardable || !tax.included) {
-            var pointEls = [
-              ...document.querySelectorAll('[data-loyal-target="point-value"]')
-            ];
-
-            // calculate the total price from all cart item point values
-            // must use the `item.final_price` otherwise qty must be ignored
-            // {% render 'points', item: item, price: item.final_price %}
-
-            // ignore tax because we calculate total cost from all point values on the page
-            ignoreTax = true;
-
-            total = pointEls.reduce((acc, pointEl) => {
-              var { loyalCurrencyCost: cost, loyalQuantity: qty } = pointEl.dataset;
-              return (cost * qty) + acc;
-            }, 0);
-          } else {
-            total -= EasyPoints.Points.getExcludedCost();
-          }
-
-          EasyPoints.Points.setCurrencyCost(node, { price: Math.floor(total), ignoreTax: ignoreTax });
-          insertPointValue(node);
+          EasyPoints.Points.setCurrencyCost(node, { price: Math.floor(total), ignoreTax: true });
+          EasyPoints.sdk().insertPointValue(node);
 
           var totalPoints = parseInt(node.innerText.replace(/\D/g, ''));
-
-          // hack: some themes innerText returns empty string
+          // HACK: some themes innerText returns empty string
           if (isNaN(totalPoints)) {
             totalPoints = parseInt(node.textContent.replace(/\D/g, ''));
           }
 
           totalPoints += Math.round(EasyPoints.Points.getTotalBonusPoints(containerEl));
-          insertPointValueIntoElement(node, totalPoints);
+          EasyPoints.sdk().insertPointValueIntoElement(node, totalPoints);
         });
     },
 
@@ -230,7 +255,7 @@ var EasyPoints = {
      * @param {RegExp} [regex=/[^\d]/g] - A regex to clean the price text.
      * @returns {number | null} - The price found, or null if no price could be found.
      */
-    getPriceFromEl: function (element, selector = null, regex = /[^\d]/g) {
+    getPriceFromEl: function(element, selector = null, regex = /[^\d]/g) {
       var el = selector ? element.querySelector(selector) : element;
 
       if (el) {
@@ -249,7 +274,7 @@ var EasyPoints = {
      * @param {HTMLElement} [el=null] - An optional element from which to retrieve tax information if not provided in `params`.
      * @returns {number} - The cost including tax if applicable, or the original price if not.
      */
-    getTaxedCost: function ({ price, tax }, el = null) {
+    getTaxedCost: function({ price, tax }, el = null) {
       if (el !== null && el.dataset.loyalOpts) {
         var opts = JSON.parse(el.dataset.loyalOpts);
         tax = opts.tax
@@ -277,7 +302,7 @@ var EasyPoints = {
      * @param {number} [params.multiplier=1] - The multiplier to apply to the price.
      * @param {boolean} [params.ignoreTax=false] - Whether to ignore tax when calculating the price.
      */
-    setCost(node, attribute, {price = null, multiplier = 1, ignoreTax = false}) {
+    setCost(node, attribute, { price = null, multiplier = 1, ignoreTax = false }) {
       price = (price !== null ? price : parseInt(node.dataset.loyalCurrencyCost)) * multiplier;
 
       if (price <= 0) {
@@ -289,7 +314,7 @@ var EasyPoints = {
         var opts = JSON.parse(node.dataset.loyalOpts);
 
         if (!ignoreTax) {
-          price = this.getTaxedCost({price: price, tax: opts.tax});
+          price = this.getTaxedCost({ price: price, tax: opts.tax });
         }
       }
 
@@ -333,7 +358,7 @@ var EasyPoints = {
       if (callback) {
         callback();
       } else {
-        updateLoyaltyTargets();
+        EasyPoints.sdk().updateLoyaltyTargets();
       }
     }
   },
@@ -357,7 +382,7 @@ var EasyPoints = {
       var req = new XMLHttpRequest();
 
       req.onreadystatechange = function() {
-        if(req.readyState === XMLHttpRequest.DONE) {
+        if (req.readyState === XMLHttpRequest.DONE) {
           var status = req.status;
 
           if (status === 0 || (status >= 200 && status < 400)) {
@@ -378,7 +403,7 @@ var EasyPoints = {
      */
     setRedemptionForm: function() {
       this.getFromJSON(function(cart) {
-        var form = document.getElementById('point-redemption-form');
+        var form = document.getElementById('easy-points-form');
 
         if (form) {
           if (maxRedeemableInput = form.querySelector('input[name="coupon[max_redeemable]"]')) {
@@ -387,7 +412,7 @@ var EasyPoints = {
 
           cart.items.forEach(function(item) {
             var inputs = form.querySelectorAll('input[name="coupon[product_ids][]"]');
-            var exists = Array.prototype.find.call(inputs, function (el) {
+            var exists = Array.prototype.find.call(inputs, function(el) {
               return el.value == item.product_id;
             });
 
@@ -427,26 +452,27 @@ var EasyPoints = {
      * Clones the element(s) with '[data-loyal-target="subtotal"]' and hides original element(s).
      */
     cloneSubtotal: function() {
-      EasyPoints.Selectors.getElementBy$(document, '[data-loyal-target="subtotal"]', true)
-        .forEach(node => {
-          var clone = node.cloneNode(true);
-          clone.removeAttribute('data-loyal-target');
-          clone.setAttribute('data-loyal-clone', 'subtotal');
+      // Uncomment if the theme does not support `fetchShopifyCartUI`
+      // EasyPoints.Selectors.getElementBy$(document, '[data-loyal-target="subtotal"]', true)
+      //   .forEach(node => {
+      //     var clone = node.cloneNode(true);
+      //     clone.removeAttribute('data-loyal-target');
+      //     clone.setAttribute('data-loyal-clone', 'subtotal');
 
-          node.classList.add('easy-points-hide');
-          node.insertAdjacentElement('beforebegin', this.modifySubtotal(clone));
-        });
+      //     node.classList.add('easy-points-hide');
+      //     node.insertAdjacentElement('beforebegin', this.modifySubtotal(clone));
+      //   });
     },
 
     /**
      * Removes all cloned 'subtotal' elements and shows the original 'subtotal' elements.
      */
     resetClonedSubtotal: function() {
-      EasyPoints.Selectors.getElementBy$(document, '[data-loyal-clone]', true)
-        .forEach(node => node.remove());
-
-      EasyPoints.Selectors.getElementBy$(document, '[data-loyal-target="subtotal"]', true)
-        .forEach(node => node.classList.remove('easy-points-hide'));
+      // Uncomment if the theme does not support `fetchShopifyCartUI`
+      // EasyPoints.Selectors.getElementBy$(document, '[data-loyal-clone]', true)
+      //   .forEach(node => node.remove());
+      // EasyPoints.Selectors.getElementBy$(document, '[data-loyal-target="subtotal"]', true)
+      //   .forEach(node => node.classList.remove('easy-points-hide'));
     },
 
     /**
@@ -463,27 +489,24 @@ var EasyPoints = {
         return el;
       }
 
-      var discount = EasyPoints.getDiscountSession();
+      var discount = EasyPoints.sdk().getDiscountSession();
       var subtotal = priceEl.dataset.loyalTotalPrice;
 
-      var { multiplier } = EasyPointsCore.Currency.getFormatOptions() || { multiplier: 100 };
-      var discountNoDecimal = Math.round(discount * EasyPointsCore.Currency.getRate() * multiplier)
+      var { multiplier } = EasyPoints.sdk().Currency.getFormatOptions() || { multiplier: 100 };
+      var discountNoDecimal = Math.round(discount * EasyPoints.sdk().Currency.getRate() * multiplier)
       var cost = subtotal - discountNoDecimal;
 
       if (cost >= 0) {
-        priceEl.innerHTML = EasyPointsCore.Currency.format(cost);
+        priceEl.innerHTML = EasyPoints.sdk().Currency.format(cost);
 
         var totalPointsEl = el.querySelector('.points-after-applied-discount');
         if (totalPointsEl) {
           var totalPoints = parseInt(totalPointsEl.innerText.replace(/\D/g, ''));
-          var subtotalTaxed = EasyPoints.Points.getTaxedCost({price: subtotal, tax: null}, totalPointsEl);
-          var costTaxed = EasyPoints.Points.getTaxedCost({price: cost, tax: null}, totalPointsEl);
+          var subtotalTaxed = EasyPoints.Points.getTaxedCost({ price: subtotal, tax: null }, totalPointsEl);
+          var costTaxed = EasyPoints.Points.getTaxedCost({ price: cost, tax: null }, totalPointsEl);
 
-          insertPointValueIntoElement(
-            totalPointsEl,
-            formatBigNumber(
-              Math.max(0, Math.ceil((costTaxed / subtotalTaxed) * totalPoints))
-            )
+          EasyPoints.sdk().insertPointValueIntoElement(
+            totalPointsEl, Math.max(0, Math.ceil((costTaxed / subtotalTaxed) * totalPoints))
           );
         }
       }
@@ -529,7 +552,7 @@ var EasyPoints = {
         .forEach(pointsInput => {
           pointsInput.setAttribute('disabled', true);
 
-          var discount = EasyPoints.getDiscountSession();
+          var discount = EasyPoints.sdk().getDiscountSession();
 
           if (
             !pointsInput.classList.contains('valid') &&
@@ -581,7 +604,7 @@ var EasyPoints = {
         if (nextTier) {
           Array.prototype.slice.call(
             document.querySelectorAll('[data-loyal-target="rank-advancement-tier-name"]')
-          ).forEach((target) =>  {
+          ).forEach((target) => {
             target.textContent = nextTier.name;
           });
 
@@ -607,48 +630,49 @@ var EasyPoints = {
   },
 
   /**
-   * Retrieves the applied discount value from the session storage.
-   * @return {number} The applied discount value, or 0.
+   * Fetches the Shopify UI section elements and updates the UI accordingly.
    */
-  getDiscountSession: function() {
-    var discount = sessionStorage.getItem("appliedDiscount");
+  fetchShopifyCartUI: function() {
+    if (CartItems === undefined) return;
 
-    return discount ? parseInt(discount) : 0;
-  },
+    let cartItems = new CartItems();
+    if (cartItems.getSectionsToRender === undefined) return;
+    if (cartItems.getSectionInnerHTML === undefined) return;
 
-  /**
-   * Removes the applied discount if it's greater than 0. Disables the checkout and reset buttons during the process.
-   */
-  removeDiscount: function() {
-    if (this.getDiscountSession() > 0) {
-      EasyPoints.Debug.print('Removing discount');
-      var checkoutBtn = EasyPoints.Selectors.getCheckoutButtonEl(document, true);
-      var resetBtn = EasyPoints.Selectors.getResetPointsButtonEl(document);
+    var sections = cartItems.getSectionsToRender();
 
-      resetBtn.setAttribute('disabled', true);
-      checkoutBtn.forEach((node) => node.setAttribute('disabled', true));
+    var templates =
+      sections.map((section) => section.section)
+        .join(',');
 
-      EasyPoints.Form.setCoupon(
-        function() {
-          EasyPoints.reset({});
+    EasyPoints.sdk().Shopify.fetchSections(templates)
+      .then((response) => response.json())
+      .then((updatedSections) => {
+        cartItems.getSectionsToRender().forEach((section) => {
+          const elementToReplace =
+            document.getElementById(section.id).querySelector(section.selector) || document.getElementById(section.id);
 
-          resetBtn.removeAttribute('disabled');
-          checkoutBtn.forEach((node) => node.removeAttribute('disabled'));
-        }
-      )
-    }
+          elementToReplace.innerHTML = cartItems.getSectionInnerHTML(
+            updatedSections[section.section],
+            section.selector
+          );
+        });
+      })
+      .catch((e) => {
+        console.error(e);
+      });
   },
 
   /**
    * Applies the discount from session storage if it's greater than 0. Updates the UI accordingly.
    */
-  applyDiscount: function() {
-    var discount = this.getDiscountSession();
+  showDiscountUI: function() {
+    var discount = EasyPoints.sdk().getDiscountSession()
 
     EasyPoints.Debug.print('Applying discount: ' + discount);
 
     if (discount > 0) {
-      displayDiscount(discount);
+      EasyPoints.sdk().displayDiscount(discount);
 
       EasyPoints.UI.showDiscount();
       EasyPoints.UI.cloneSubtotal();
@@ -660,55 +684,44 @@ var EasyPoints = {
   /**
    * Resets the applied discount, updates the UI, and clears the discount from the session storage.
    * @param {Object} options The options for the reset.
-   * @param {Event} [options.event=null] The event that triggered the reset, if applicable.
    */
-  reset: function({event = null}) {
+  hideDiscountUI: function() {
     EasyPoints.UI.hideDiscount();
     EasyPoints.UI.resetClonedSubtotal();
     EasyPoints.Selectors.getAdditionalCheckoutButtonEl(document, true)
-        .forEach(node => node.classList.remove('easy-points-hide'));
+      .forEach(node => node.classList.remove('easy-points-hide'));
 
     sessionStorage.removeItem('appliedDiscount');
+    sessionStorage.removeItem('appliedDiscountAt');
 
     EasyPoints.Selectors.getRedeemPointsInputEl(document, true)
       .forEach(node => node.value = '');
   },
 
+  /**
+   * Removes the applied discount if it's greater than 0. Disables the checkout and reset buttons during the process.
+   */
+  removeDiscount: function() {
+    if (EasyPoints.sdk().getDiscountSession() > 0) {
+      EasyPoints.Debug.print('Removing discount');
+      var checkoutBtn = EasyPoints.Selectors.getCheckoutButtonEl(document, true);
+      var resetBtn = EasyPoints.Selectors.getResetPointsButtonEl(document);
+
+      resetBtn.setAttribute('disabled', true);
+      checkoutBtn.forEach((node) => node.setAttribute('disabled', true));
+
+      EasyPoints.sdk().removeDiscount()
+        .then(() => {
+          EasyPoints.fetchShopifyCartUI();
+          EasyPoints.hideDiscountUI();
+
+          resetBtn.removeAttribute('disabled');
+          checkoutBtn.forEach((node) => node.removeAttribute('disabled'));
+        });
+    }
+  },
+
   Form: {
-    /**
-     * Updates the value of redemption points input and validates it. Also, updates the session storage accordingly.
-     *
-     * @param {Object} options The options for the update.
-     * @param {number} options.points The new value for the points input.
-     * @returns {boolean} Whether the update was successful.
-     */
-    update({points}) {
-      var input = EasyPoints.Selectors.getElementBy$(document, '#redemption-point-value');
-
-      if (!input) {
-        sessionStorage.removeItem('appliedDiscount');
-        return false;
-      }
-
-      input.value = points;
-
-      if (!EasyPointsCore.Validate.pointRedemption()) {
-        sessionStorage.removeItem('appliedDiscount');
-
-        EasyPoints.Selectors.getRedeemPointsInputEl(document, true)
-          .forEach(node => node.classList.add('invalid'));
-
-        return false;
-      } else {
-        sessionStorage.setItem('appliedDiscount', points);
-
-        EasyPoints.Selectors.getRedeemPointsInputEl(document, true)
-          .forEach(node => node.classList.remove('invalid'));
-
-        return true;
-      }
-    },
-
     /**
      * Redeems the given points or the points value from the event's related form.
      *
@@ -717,7 +730,7 @@ var EasyPoints = {
      * @param {number} [options.points=null] The points to redeem, if provided.
      * @returns {boolean} Whether the redemption was successful.
      */
-    redeem({event = null, points = null}) {
+    redeem({ event = null, points = null }) {
       if (points == null) {
         if (event == null) {
           EasyPoints.Debug.print('redeem({event, points}): cant get the points value', 'error')
@@ -737,48 +750,7 @@ var EasyPoints = {
         }
       }
 
-      return this.update({points: points});
-    },
-
-    /**
-     * Sets a coupon using the given endpoints based on the value of reset and the discount session.
-     * Executes the provided callback function after the AJAX request is completed.
-     *
-     * @param {function} [callback=null] The function to call after the AJAX request is completed.
-     * @param {boolean} [reset=null] The flag to indicate whether to reset the coupon.
-     */
-    setCoupon(callback = null, reset = null) {
-      if ((reset != null && !reset) || EasyPoints.getDiscountSession() > 0) {
-        EasyPoints.Debug.print('Using /redeem')
-        form = buildForm('/apps/loyalty/redeem');
-      } else {
-        EasyPoints.Debug.print('Using /reset')
-        form = buildForm('/apps/loyalty/reset');
-      }
-
-      if (form) {
-        var xhr = new XMLHttpRequest();
-
-        xhr.onreadystatechange = function(event) {
-          if (this.readyState == 4) {
-            EasyPoints.Debug.print('Submitted');
-
-            if (callback) {
-              callback();
-            }
-          }
-        };
-
-        xhr.open('POST', form.action);
-        var formData = new FormData(form);
-        xhr.send(formData);
-
-        EasyPoints.Debug.print('Submitting form');
-      } else {
-        if (callback) {
-          callback();
-        }
-      }
+      return EasyPoints.sdk().setRedemptionPoints({ points: points });
     },
   },
 
@@ -789,12 +761,11 @@ var EasyPoints = {
      * and applying any discount.
      */
     run: function() {
-      updateLoyaltyTargets();
-      EasyPoints.Points.insertTotalPoints(document);
-      EasyPoints.Tiers.recalculate()
+      EasyPoints.sdk().updateLoyaltyTargets();
+      EasyPoints.Tiers.recalculate();
 
       this.setEventListeners();
-      EasyPoints.applyDiscount();
+      EasyPoints.showDiscountUI();
     },
 
     /**
@@ -810,7 +781,7 @@ var EasyPoints = {
           node.addEventListener('focus', this.onPointsInput);
 
           if (node.value > 0) {
-            EasyPoints.Form.update({points: EasyPoints.getDiscountSession()});
+            EasyPoints.sdk().setRedemptionPoints({ points: node.value })
           }
         });
 
@@ -844,24 +815,24 @@ var EasyPoints = {
       e.preventDefault();
       EasyPoints.Debug.print('Clicked: Redeem');
 
-      if (EasyPoints.Form.redeem({event: e})) {
+      if (EasyPoints.Form.redeem({ event: e })) {
         var checkoutBtn = EasyPoints.Selectors.getCheckoutButtonEl(document, true);
 
         e.target.style.cursor = 'progress';
         e.target.setAttribute('disabled', true);
         checkoutBtn.forEach((node) => node.setAttribute('disabled', true));
 
-        EasyPoints.Form.setCoupon(
-          function() {
-            EasyPoints.applyDiscount();
-
+        EasyPoints.sdk().applyDiscount(EasyPoints.sdk().getDiscountSession())
+          .then(() => {
+            EasyPoints.fetchShopifyCartUI();
+            EasyPoints.showDiscountUI();
             e.target.style.cursor = 'unset';
             e.target.removeAttribute('disabled');
-
-            var checkoutBtn = EasyPoints.Selectors.getCheckoutButtonEl(document, true);
             checkoutBtn.forEach((node) => node.removeAttribute('disabled'));
-          }
-        )
+          })
+      } else {
+        EasyPoints.Selectors.getRedeemPointsInputEl(document, true)
+          .forEach(node => node.classList.add('invalid'));
       }
     },
 
@@ -876,21 +847,7 @@ var EasyPoints = {
       e.preventDefault();
       EasyPoints.Debug.print('Clicked: Reset');
 
-      var checkoutBtn = EasyPoints.Selectors.getCheckoutButtonEl(document, true);
-      e.target.style.cursor = 'progress';
-      e.target.setAttribute('disabled', true);
-      checkoutBtn.forEach((node) => node.setAttribute('disabled', true));
-      sessionStorage.removeItem('appliedDiscount')
-
-      EasyPoints.Form.setCoupon(
-        function() {
-          EasyPoints.reset({event: e});
-
-          e.target.style.cursor = 'unset';
-          e.target.removeAttribute('disabled');
-          checkoutBtn.forEach((node) => node.removeAttribute('disabled'));
-        }
-      )
+      EasyPoints.removeDiscount();
     }
   }
 };

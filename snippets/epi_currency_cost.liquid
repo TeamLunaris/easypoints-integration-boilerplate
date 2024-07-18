@@ -1,0 +1,35 @@
+{%- liquid
+  assign price = price
+
+  assign metafield_ep = shop.metafields.loyalty.easy_points_attributes.value
+  if customer
+    assign metafield_ep = customer.metafields.loyalty.easy_points_attributes.value
+  endif
+
+  assign tax_rate = tax_rate | default: 1.1
+  assign include_tax = metafield_ep.include_tax
+  assign customer_tax_exempt = false
+  if customer and customer.tax_exempt
+    assign customer_tax_exempt = true
+  endif
+
+  if shop.taxes_included
+    if customer_tax_exempt
+      assign price = price | divided_by: tax_rate
+    elsif include_tax
+      assign price = price
+    else
+      assign price = price | divided_by: tax_rate
+    endif
+  else
+    if customer_tax_exempt
+      assign price = price
+    elsif include_tax
+      assign price = price | times: tax_rate
+    else
+      assign price = price
+    endif
+  endif
+
+  echo price | floor
+-%}
