@@ -20,7 +20,7 @@ function htmlRedirectInput() {
   return input;
 }
 
-function buildForm(action, formId = "point-redemption-form", name = "coupon") {
+function buildForm(action, formId) {
   var virtualForm = document.getElementById(formId);
   if (virtualForm) {
     var inputs = Array.from(virtualForm.getElementsByTagName("input"));
@@ -28,7 +28,6 @@ function buildForm(action, formId = "point-redemption-form", name = "coupon") {
     var form = document.createElement("form");
     form.method = "post";
     form.action = action;
-    form.classList.add("easy-points-hide");
 
     inputs.forEach(function(input, ind) {
       form.appendChild(input.cloneNode());
@@ -136,7 +135,7 @@ var EasyPointsCore = {
         btn.style.cursor = 'progress';
       }
 
-      var form = buildForm('/apps/loyalty/customers', 'easypoints-note-update', 'customer');
+      var form = buildForm('/apps/loyalty/customers', 'easypoints-note-update');
       if (form) {
         fetch(form.action, {
           method: 'post',

@@ -403,7 +403,7 @@ var EasyPoints = {
      */
     setRedemptionForm: function() {
       this.getFromJSON(function(cart) {
-        var form = document.getElementById('point-redemption-form');
+        var form = document.getElementById('easy-points-form');
 
         if (form) {
           if (maxRedeemableInput = form.querySelector('input[name="coupon[max_redeemable]"]')) {
@@ -830,6 +830,9 @@ var EasyPoints = {
             e.target.removeAttribute('disabled');
             checkoutBtn.forEach((node) => node.removeAttribute('disabled'));
           })
+      } else {
+        EasyPoints.Selectors.getRedeemPointsInputEl(document, true)
+          .forEach(node => node.classList.add('invalid'));
       }
     },
 
