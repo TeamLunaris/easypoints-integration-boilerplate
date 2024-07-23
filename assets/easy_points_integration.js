@@ -24,6 +24,10 @@ var EPI_SETTING_CART_DRAWER = false;
  */
 
 function handleCartDrawerOpened() {
+  // Should be used to detect the opening of a cart drawer,
+  // often the cart drawer content is loaded dynamically (after the drawer is opened)
+  // and we need to run certain functions (e.g. `EasyPoints.Register.run`) after the content has been loaded.
+
   // var cartDrawer = document.querySelector('.drawer--cart');
   // if (!cartDrawer) return;
 
