@@ -1,7 +1,8 @@
-var EASY_POINTS_INTEGRATION_VERSION = 200;
+var EASY_POINTS_INTEGRATION_VERSION = 201;
+var EPI_SETTING_CART_DRAWER = false;
 
 /**
- * v2.0.0
+ * v2.0.1
  *
  * Only supported from `easy_points.js`
  * Tiers, Notes & Order Details
@@ -22,7 +23,34 @@ var EASY_POINTS_INTEGRATION_VERSION = 200;
  *
  */
 
-function cartObserver() {
+function handleCartDrawerOpened() {
+  // Should be used to detect the opening of a cart drawer,
+  // often the cart drawer content is loaded dynamically (after the drawer is opened)
+  // and we need to run certain functions (e.g. `EasyPoints.Register.run`) after the content has been loaded.
+
+  // var cartDrawer = document.querySelector('.drawer--cart');
+  // if (!cartDrawer) return;
+
+  // var callback = function(mutationsList, observer) {
+  //   for (var mutation of mutationsList) {
+  //     if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+  //       if (mutation.target.classList.contains('activated')) {
+  //         EasyPoints.Register.run();
+  //         break;
+  //       }
+  //     }
+  //   }
+  // }
+
+  // (new MutationObserver(callback))
+  //   .observe(cartNode, {
+  //     attributes: true,
+  //     childList: false,
+  //     subtree: false
+  //   });
+};
+
+function handleCartChanges() {
   // var cartNode = document.querySelector('form[action="/cart"]');
   // if (cartNode) {
   //   var callback = function(mutationsList, observer) {
@@ -58,17 +86,23 @@ function cartObserver() {
 
 // COMBAK: maybe we can omit an event listener from the SDK
 function afterEasyPointsSDK() {
-  // only run on the `/cart` page
-  var path = this.window.location.pathname;
-  var re = /\/cart/i;
-  if (!path.match(re)) {
-    return;
+  if (EPI_SETTING_CART_DRAWER) {
+    handleCartDrawerOpened();
+    EasyPoints.removeDiscount();
+  } else {
+    // only run on the `/cart` page
+    var path = this.window.location.pathname;
+    var re = /\/cart/i;
+
+    if (!path.match(re)) {
+      return;
+    }
+
+    EasyPoints.Register.run();
+    EasyPoints.removeDiscount();
   }
 
-  EasyPoints.Register.run();
-  EasyPoints.removeDiscount();
-
-  cartObserver();
+  handleCartChanges();
 };
 
 window.addEventListener('DOMContentLoaded', function() {
@@ -629,17 +663,34 @@ var EasyPoints = {
     },
   },
 
+  getCartClass: function() {
+    try {
+      // The class name can change based on the theme but these are the most common ones
+      var clazzName = EPI_SETTING_CART_DRAWER ? CartDrawer : CartItems;
+      var clazz = new clazzName();
+
+      if (clazz.getSectionsToRender === undefined) return null;
+      if (clazz.getSectionInnerHTML === undefined) return null;
+
+      return clazz;
+    } catch (e) {
+      if (e instanceof ReferenceError) {
+        console.error('[epi]: `CartItems` or `CartDrawer` is undefined.');
+        return null;
+      } else {
+        throw e;
+      }
+    }
+  },
+
   /**
    * Fetches the Shopify UI section elements and updates the UI accordingly.
    */
   fetchShopifyCartUI: function() {
-    if (CartItems === undefined) return;
+    var cartItemsClass = this.getCartClass();
+    if (cartItemsClass === null) return;
 
-    let cartItems = new CartItems();
-    if (cartItems.getSectionsToRender === undefined) return;
-    if (cartItems.getSectionInnerHTML === undefined) return;
-
-    var sections = cartItems.getSectionsToRender();
+    var sections = cartItemsClass.getSectionsToRender();
 
     var templates =
       sections.map((section) => section.section)
@@ -648,11 +699,11 @@ var EasyPoints = {
     EasyPoints.sdk().Shopify.fetchSections(templates)
       .then((response) => response.json())
       .then((updatedSections) => {
-        cartItems.getSectionsToRender().forEach((section) => {
+        cartItemsClass.getSectionsToRender().forEach((section) => {
           const elementToReplace =
             document.getElementById(section.id).querySelector(section.selector) || document.getElementById(section.id);
 
-          elementToReplace.innerHTML = cartItems.getSectionInnerHTML(
+          elementToReplace.innerHTML = cartItemsClass.getSectionInnerHTML(
             updatedSections[section.section],
             section.selector
           );
