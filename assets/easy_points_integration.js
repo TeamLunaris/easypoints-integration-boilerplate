@@ -1,8 +1,8 @@
-var EASY_POINTS_INTEGRATION_VERSION = 201;
+var EASY_POINTS_INTEGRATION_VERSION = 202;
 var EPI_SETTING_CART_DRAWER = false;
 
 /**
- * v2.0.1
+ * v2.0.2
  *
  * Only supported from `easy_points.js`
  * Tiers, Notes & Order Details
@@ -10,6 +10,8 @@ var EPI_SETTING_CART_DRAWER = false;
  * Supported in easyPointsSDK
  * insertPointValue
  * insertPointValueIntoElement
+ * recalculatePointValue
+ * replaceBonusPoints
  * updateLoyaltyTargets
  * getDiscountSession
  * Currency.getFormatOptions
@@ -263,21 +265,11 @@ var EasyPoints = {
     insertTotalPoints(containerEl) {
       EasyPoints.Selectors.getTotalPointsEl(containerEl, true)
         .forEach(node => {
-          // NOTE: does not support flexible tax options
           var total = parseInt(node.dataset.loyalCurrencyCost);
           total -= EasyPoints.Points.getExcludedCost();
 
           EasyPoints.Points.setCurrencyCost(node, { price: Math.floor(total), ignoreTax: true });
           EasyPoints.sdk().insertPointValue(node);
-
-          var totalPoints = parseInt(node.innerText.replace(/\D/g, ''));
-          // HACK: some themes innerText returns empty string
-          if (isNaN(totalPoints)) {
-            totalPoints = parseInt(node.textContent.replace(/\D/g, ''));
-          }
-
-          totalPoints += Math.round(EasyPoints.Points.getTotalBonusPoints(containerEl));
-          EasyPoints.sdk().insertPointValueIntoElement(node, totalPoints);
         });
     },
 
