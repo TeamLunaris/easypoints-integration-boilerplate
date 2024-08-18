@@ -2,8 +2,10 @@
   {%- assign shop_ep_metafield = shop.metafields.loyalty.easy_points_attributes.value -%}
   {%- unless shop_ep_metafield.stealth_mode -%}
     {%- if customer -%}
-      {%- assign customer_ep_metafield = customer.metafields.loyalty.easy_points_attributes.value -%}
-      {% assign class_button = class_button | default: 'button' %}
+      {%- liquid
+        assign customer_ep_metafield = customer.metafields.loyalty.easy_points_attributes.value
+        assign class_button = class_button | default: 'button'
+      -%}
       <epi-redemption-form>
         <div class="easy-points-form__container">
           <div class="easy-points-form__balance">
