@@ -59,6 +59,7 @@
 
           assign item_bpr_percentage = final_bpr_ratio | times: 100
           assign item_json = '{'
+          assign item_json = item_json | append: '&quot;id&quot;: ' | append: item.id | append: ', '
           assign item_json = item_json | append: '&quot;currencyCost&quot;: ' | append: currency_cost | append: ','
           assign item_json = item_json | append: '&quot;quantity&quot;: ' | append: item.quantity | append: ','
           assign item_json = item_json | append: '&quot;percentage&quot;: ' | append: item_bpr_percentage | append: ','
