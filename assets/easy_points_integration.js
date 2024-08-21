@@ -807,8 +807,10 @@ var EasyPoints = {
       EasyPoints.sdk().updateLoyaltyTargets();
       EasyPoints.Tiers.recalculate();
 
-      this.setEventListeners();
-      EasyPoints.showDiscountUI();
+      // Handled by the `<epi-redemption-form>` component
+      // (uncomment lines below if not using the component)
+      // this.setEventListeners();
+      // EasyPoints.showDiscountUI();
     },
 
     /**
