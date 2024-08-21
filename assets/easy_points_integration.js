@@ -807,19 +807,21 @@ var EasyPoints = {
       EasyPoints.sdk().updateLoyaltyTargets();
       EasyPoints.Tiers.recalculate();
 
-      this.setEventListeners();
-      EasyPoints.showDiscountUI();
+      // Handled by the `<epi-redemption-form>` component
+      // (uncomment lines below if not using the component)
+      // this.setEventListeners();
+      // EasyPoints.showDiscountUI();
     },
 
     /**
      * Set up the necessary event listeners for redeeming points and resetting the form.
      */
-    setEventListeners: function() {
-      if (EasyPoints.Selectors.getRedeemContainerEl(document, true).length == 0) {
+    setEventListeners: function(el = document) {
+      if (EasyPoints.Selectors.getRedeemContainerEl(el, true).length == 0) {
         return;
       }
 
-      EasyPoints.Selectors.getRedeemPointsInputEl(document, true)
+      EasyPoints.Selectors.getRedeemPointsInputEl(el, true)
         .forEach(node => {
           node.addEventListener('focus', this.onPointsInput);
 
@@ -828,10 +830,10 @@ var EasyPoints = {
           }
         });
 
-      EasyPoints.Selectors.getRedeemPointsButtonEl(document, true)
+      EasyPoints.Selectors.getRedeemPointsButtonEl(el, true)
         .forEach(node => node.addEventListener('click', this.onClickRedeemBtn));
 
-      EasyPoints.Selectors.getResetPointsButtonEl(document, true)
+      EasyPoints.Selectors.getResetPointsButtonEl(el, true)
         .forEach(node => node.addEventListener('click', this.onClickResetBtn));
 
       EasyPoints.Debug.print('Applied all required event listeners');
