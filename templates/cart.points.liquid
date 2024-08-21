@@ -1,0 +1,22 @@
+{% # Render point information for the cart page %}
+{% layout none %}
+
+<div
+  data-loyal-cart
+  data-cart-item-count="{{ cart.item_count }}"
+  data-cart-total-price="{{ cart.total_price }}"
+>
+  {% for item in cart.items %}
+    <div data-loyal-snippet="epi_product_points" data-loyal-item-id="{{ item.id }}">
+      {% render 'epi_product_points', line_item: item %}
+    </div>
+  {% endfor %}
+
+  <div data-loyal-snippet="epi_cart_total_points">
+    {% render 'epi_cart_total_points' %}
+  </div>
+
+  <div data-loyal-snippet="epi_redemption_form">
+    {% render 'epi_redemption_form' %}
+  </div>
+</div>
