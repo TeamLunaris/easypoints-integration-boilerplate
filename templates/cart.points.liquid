@@ -19,4 +19,11 @@
   <div data-loyal-snippet="epi_redemption_form">
     {% render 'epi_redemption_form' %}
   </div>
+
+  <div data-loyal-snippet="epi_subtotal">
+    {%# Replace the element below to match the theme %}
+    <span data-loyal-target="subtotal">
+      {{ cart.total_price | money_with_currency }}
+    </span>
+  </div>
 </div>

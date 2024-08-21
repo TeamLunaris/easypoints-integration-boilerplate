@@ -1,5 +1,7 @@
 var EASY_POINTS_INTEGRATION_VERSION = 210;
-var EPI_SETTING_CART_DRAWER = false;
+
+var EPI_SETTING_CART_DRAWER = false; // options: true, false
+var EPI_SETTING_CART_RENDERER = 'WebComponents'; // options: 'WebComponents', 'Fallback'
 
 /**
  * v2.1.0
@@ -97,13 +99,9 @@ function afterEasyPointsSDK() {
     handleCartDrawerOpened();
     EasyPoints.removeDiscount();
   } else {
-    // only run on the `/cart` page
     var path = this.window.location.pathname;
     var re = /\/cart/i;
-
-    if (!path.match(re)) {
-      return;
-    }
+    if (!path.match(re)) { return; }
 
     EasyPoints.Register.run();
     EasyPoints.removeDiscount();
@@ -684,31 +682,35 @@ var EasyPoints = {
    * Fetches the Shopify UI section elements and updates the UI accordingly.
    */
   fetchShopifyCartUI: function() {
-    var cartItemsClass = this.getCartClass();
-    if (cartItemsClass === null) return;
+    if (EPI_SETTING_CART_RENDERER === 'WebComponents') {
+      var cartItemsClass = this.getCartClass();
+      if (cartItemsClass === null) return;
 
-    var sections = cartItemsClass.getSectionsToRender();
+      var sections = cartItemsClass.getSectionsToRender();
 
-    var templates =
-      sections.map((section) => section.section)
-        .join(',');
+      var templates =
+        sections.map((section) => section.section)
+          .join(',');
 
-    EasyPoints.sdk().Shopify.fetchSections(templates)
-      .then((response) => response.json())
-      .then((updatedSections) => {
-        cartItemsClass.getSectionsToRender().forEach((section) => {
-          const elementToReplace =
-            document.getElementById(section.id).querySelector(section.selector) || document.getElementById(section.id);
+      EasyPoints.sdk().Shopify.fetchSections(templates)
+        .then((response) => response.json())
+        .then((updatedSections) => {
+          cartItemsClass.getSectionsToRender().forEach((section) => {
+            const elementToReplace =
+              document.getElementById(section.id).querySelector(section.selector) || document.getElementById(section.id);
 
-          elementToReplace.innerHTML = cartItemsClass.getSectionInnerHTML(
-            updatedSections[section.section],
-            section.selector
-          );
+            elementToReplace.innerHTML = cartItemsClass.getSectionInnerHTML(
+              updatedSections[section.section],
+              section.selector
+            );
+          });
+        })
+        .catch((e) => {
+          console.error(e);
         });
-      })
-      .catch((e) => {
-        console.error(e);
-      });
+    } else {
+      EasyPoints.sdk().Cart.replaceTargets();
+    }
   },
 
   /**
