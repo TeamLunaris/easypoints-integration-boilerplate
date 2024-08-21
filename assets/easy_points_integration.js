@@ -1,19 +1,21 @@
-var EASY_POINTS_INTEGRATION_VERSION = 202;
+var EASY_POINTS_INTEGRATION_VERSION = 210;
 var EPI_SETTING_CART_DRAWER = false;
 
 /**
- * v2.0.2
+ * v2.1.0
  *
  * Only supported from `easy_points.js`
  * Tiers, Notes & Order Details
  *
- * Supported in easyPointsSDK
+ * Supported in easyPointsSDK:
  * insertPointValue
  * insertPointValueIntoElement
  * recalculatePointValue
  * replaceBonusPoints
  * updateLoyaltyTargets
  * getDiscountSession
+ * Cart.getHTML
+ * Cart.replaceTargets
  * Currency.getFormatOptions
  * Currency.getRate
  * Currency.format
@@ -22,6 +24,9 @@ var EPI_SETTING_CART_DRAWER = false;
  * applyDiscount
  * removeDiscount
  * setRedemptionPoints
+ * Shopify.routes
+ * Shopify.fetchSections
+ * Shopify.fetchTemplate
  *
  */
 
