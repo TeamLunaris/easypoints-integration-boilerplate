@@ -69,9 +69,9 @@
 
       {%- if worth_points -%}
         {%- liquid
-          assign using_shop_currency = true
+          assign use_js_fallback = false
           if shop.currency != cart.currency.iso_code
-            assign using_shop_currency = false
+            assign use_js_fallback = true
           endif
 
           assign multiplier = 1
@@ -103,9 +103,9 @@
             data-loyal-currency-cost="{{ currency_cost }}"
             {%- if final_bpr_ratio != 0.0 -%}
               {%- assign bonus_points = currency_cost | divided_by: multiplier | divided_by: currency_value | times: final_bpr_point_value | floor -%}
-              {% raw %}
-                data-loyal-bonus-points="{ &quot;currencyCost&quot;: {% endraw %}{{- currency_cost -}}{% raw %}, &quot;bonusPoints&quot;: {% endraw %}{%- if using_shop_currency -%}{{ bonus_points }}{%- else -%}null{%- endif -%}{% raw %}, &quot;quantity&quot;: {% endraw %}{{- line_item.quantity | default: 1 -}}{% raw %}, &quot;percentage&quot;: {% endraw %}{{- final_bpr_ratio | times: 100 -}}{% raw %} }"
-              {% endraw %}
+              {%- raw -%}
+                data-loyal-bonus-points="{ &quot;currencyCost&quot;: {% endraw %}{{- currency_cost -}}{% raw %}, &quot;bonusPoints&quot;: {% endraw %}{%- if use_js_fallback -%}null{%- else -%}{{- bonus_points -}}{%- endif -%}{% raw %}, &quot;quantity&quot;: {% endraw %}{{- line_item.quantity | default: 1 -}}{% raw %}, &quot;percentage&quot;: {% endraw %}{{- final_bpr_ratio | times: 100 -}}{% raw %} }"
+              {%- endraw -%}
             {%- endif -%}
             {%- if line_item -%}
               data-loyal-item-id="{{ line_item.id }}"
@@ -114,24 +114,20 @@
           >
             <span data-loyal-target="point-value-location">
               {%- liquid
-                if using_shop_currency
+                if use_js_fallback
+                  echo '-'
+                else
                   assign points = currency_cost | divided_by: multiplier | divided_by: currency_value | times: final_point_value | ceil
                   render 'epi_format_number', number: points
-                else
-                  echo '-'
                 endif
               -%}
             </span>
           </span>
         {% endcapture %}
 
-        {%- if using_shop_currency -%}
+        <epi-point-value data-fallback="{{ use_js_fallback }}">
           {{ point_value_html }}
-        {%- else -%}
-          <epi-point-value>
-            {{ point_value_html }}
-          </epi-point-value>
-        {%- endif -%}
+        </epi-point-value>
 
         <span class="easy-points__text easy-points__text--suffix">
           {{ 'easypoints.points' | t }}

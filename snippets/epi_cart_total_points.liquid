@@ -1,9 +1,9 @@
 {%- unless shop.metafields.loyalty.easy_points_attributes.value.stealth_mode -%}
   {%- if cart -%}
     {%- liquid
-      assign using_shop_currency = true
+      assign use_js_fallback = false
       if shop.currency != cart.currency.iso_code
-        assign using_shop_currency = false
+        assign use_js_fallback = true
       endif
 
       assign multiplier = 1
@@ -90,21 +90,22 @@
         class="points-after-applied-discount"
         data-loyal-target="total-points-value"
         data-loyal-currency-cost="{{ final_price }}"
-        {%- if using_shop_currency -%}
-          data-loyal-bonus-points="{&quot;bonusPoints&quot;: {{ final_bonus_points }}}"
-        {%- else -%}
-          data-loyal-bonus-points="[{{ json_bonus_points | split: ',' | join: ', ' }}]"
-        {%- endif -%}
+        data-loyal-bonus-points="[{{ json_bonus_points | split: ',' | join: ', ' }}]"
+        {%- unless use_js_fallback -%}
+          data-loyal-bonus-points-value="{{ final_bonus_points }}"
+        {%- endunless -%}
       >
         <span
           class="easy-points-total__point__value"
           data-loyal-target="point-value-location"
         >
-          {%- if using_shop_currency -%}
-            {% render 'epi_format_number', number: final_points %}
-          {%- else -%}
-            -
-          {%- endif -%}
+          {%- liquid
+            if use_js_fallback
+              echo '-'
+            else
+              render 'epi_format_number', number: final_points
+            endif
+          -%}
         </span>
       </span>
     {%- endcapture -%}
@@ -115,13 +116,9 @@
       </h3>
 
       <p class="easy-points easy-points__total-points totals__subtotal-value">
-        {%- if using_shop_currency -%}
+        <epi-point-value data-fallback="{{ use_js_fallback }}">
           {{ total_points_value_html }}
-        {%- else -%}
-          <epi-point-value>
-            {{ total_points_value_html }}
-          </epi-point-value>
-        {%- endif -%}
+        </epi-point-value>
 
         <span class="easy-points-total__point__label easy-points__text easy-points__text--suffix">
           {{ 'easypoints.points' | t }}
