@@ -1,4 +1,4 @@
-var EASY_POINTS_INTEGRATION_VERSION = 210;
+var EASY_POINTS_INTEGRATION_VERSION = 211;
 
 var EPI_SETTING_CART_DRAWER = false; // options: true, false
 var EPI_SETTING_CART_RENDERER = 'WebComponents'; // options: 'WebComponents', 'Fallback'
@@ -220,6 +220,18 @@ var EasyPoints = {
     getAdditionalCheckoutButtonEl: function(element, nodes = false) {
       return this.getElementBy$(element, '.additional-checkout-buttons', nodes);
     },
+
+    getBirthdayForm: function(element, nodes = false) {
+      return this.getElementBy$(element, '#easypoints-note-update', nodes);
+    },
+
+    getBirthdayFormInputEl: function(element, nodes = false) {
+      return this.getElementBy$(element, '#easypoints-note-update input[name="customer[easypoints_birthday]"]', nodes);
+    },
+
+    getNoteSubmissionEL: function(element, nodes = false) {
+      return this.getElementBy$(element, '#easypoints-note-update-submit', nodes);
+    },
   },
 
   Points: {
@@ -242,7 +254,7 @@ var EasyPoints = {
      * @param {Document | HTMLElement} [el=document] - The root element to start the search from.
      * @returns {number} - The total bonus points.
      */
-     getTotalBonusPoints(el = document) {
+    getTotalBonusPoints(el = document) {
       var total =
         Array.from(el.querySelectorAll('[data-loyal-bonus-points]:not([data-loyal-target="total-points-value"])'))
           .reduce((acc, node) => {
@@ -598,6 +610,69 @@ var EasyPoints = {
     }
   },
 
+  Note: {
+    setListeners: function() {
+      let birthdayFormInput = EasyPoints.Selectors.getBirthdayFormInputEl(document, false);
+      if (birthdayFormInput) {
+        birthdayFormInput.addEventListener('input', EasyPoints.Note.setNoteFormChanged);
+      }
+      let noteSubmission = EasyPoints.Selectors.getNoteSubmissionEL(document, false);
+      if (noteSubmission) {
+        noteSubmission.addEventListener('click', EasyPoints.Note.submit);
+      }
+    },
+
+    setNoteFormChanged: function() {
+      let form = EasyPoints.Selectors.getBirthdayForm(document, false);
+      if (form) {
+        form.classList.add('easy-points__form--changed');
+      }
+    },
+
+    buildForm: function() {
+      let virtualForm = EasyPoints.Selectors.getBirthdayForm(document, false);
+      if (virtualForm) {
+        let inputs = Array.from(virtualForm.getElementsByTagName("input"));
+
+        let form = document.createElement("form");
+        form.method = "post";
+        form.action = action;
+
+        inputs.forEach(function(input, ind) {
+          form.appendChild(input.cloneNode());
+        });
+
+        let redirectInput = document.createElement("input");
+        redirectInput.type = "text";
+        redirectInput.setAttribute("name", "html_redirect");
+        redirectInput.value = "true";
+
+        form.appendChild(redirectInput);
+        return form;
+      } else {
+        return null;
+      }
+    },
+
+    submit: function(element) {
+      let btn = element.target;
+      if (btn) {
+        btn.setAttribute('disabled', true);
+        btn.style.cursor = 'progress';
+      }
+
+      let form = EasyPoints.Note.buildForm();
+      if (form) {
+        fetch(form.action, {
+          method: 'post',
+          body: new FormData(form)
+        }).then(() => {
+          window.location.reload();
+        });
+      }
+    }
+  },
+
   Tiers: {
     /**
      * Recalculates the next tier rank and updates the associated HTML elements accordingly.
@@ -813,6 +888,7 @@ var EasyPoints = {
     run: function() {
       EasyPoints.sdk().updateLoyaltyTargets();
       EasyPoints.Tiers.recalculate();
+      EasyPoints.Note.setListeners();
 
       // Handled by the `<epi-redemption-form>` component
       // (uncomment lines below if not using the component)
