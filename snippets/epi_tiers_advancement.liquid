@@ -13,22 +13,24 @@
 
       {%- if has_feature_tiers and shop.metafields.loyalty['tiers_active'] == "true" -%}
         {%- assign class = class | default: 'easy-points-text__muted' -%}
-        <span data-loyal-target="rank-advancement-data" class="{{ class }}">
-          <span style="display: none;" data-loyal-target="max-rank">
-            {{
-              'easypoints.tiers.highest_rank_html' | t:
-                rank: '<strong data-loyal-target="rank-advancement-tier-name">-</strong>'
-            }}
-          </span>
+        <epi-tier-advancement>
+          <span data-loyal-target="rank-advancement-data" class="{{ class }}" >
+            <span style="display: none;" data-loyal-target="max-rank">
+              {{
+                'easypoints.tiers.highest_rank_html' | t:
+                  rank: '<strong data-loyal-target="rank-advancement-tier-name">-</strong>'
+              }}
+            </span>
 
-          <span data-loyal-target="not-max-rank">
-            {{
-              'easypoints.tiers.spend_additional_html' | t:
-                amount: '<strong data-loyal-target="rank-advancement-amount">-</strong>',
-                rank: '<strong data-loyal-target="rank-advancement-tier-name">-</strong>'
-            }}
+            <span data-loyal-target="not-max-rank">
+              {{
+                'easypoints.tiers.spend_additional_html' | t:
+                  amount: '<strong data-loyal-target="rank-advancement-amount">-</strong>',
+                  rank: '<strong data-loyal-target="rank-advancement-tier-name">-</strong>'
+              }}
+            </span>
           </span>
-        </span>
+        </epi-tier-advancement>
       {%- endif -%}
     {%- endif -%}
   {%- endunless -%}

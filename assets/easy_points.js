@@ -68,65 +68,6 @@ var EasyPointsCore = {
     },
   },
 
-  // COMBAK: Can be removed once SDK supports tiers display. (Lorenzo ~ 2024-07-04)
-  Locale: {
-    get() {
-      const defaultLocale = 'en';
-
-      if (EasyPointsAppBlockData && EasyPointsAppBlockData.shop) {
-        const { locale } =  EasyPointsAppBlockData.shop;
-
-        return locale || defaultLocale;
-      }
-
-      return defaultLocale;
-    }
-  },
-
-  // COMBAK: Can be removed once SDK supports tiers display. (Lorenzo ~ 2024-07-04)
-  Currency: {
-    getFormatOptions() {
-      if (EasyPointsAppBlockData && EasyPointsAppBlockData.shop) {
-        var { money_format_options = null } = EasyPointsAppBlockData.shop;
-        return money_format_options;
-      }
-
-      return null;
-    },
-
-    getRate: function () {
-      return (Shopify && Shopify.currency && Shopify.currency.rate) || 1;
-    },
-
-    getActiveString: function (fallback = "JPY") {
-      return (
-        (Shopify && Shopify.currency && Shopify.currency.active) || fallback
-      );
-    },
-
-    format(amount, { convert = false, multiplier = 1, format = null } = {}) {
-      amount = Math.round(
-        (convert ? amount * EasyPointsCore.Currency.getRate() : amount) *
-          multiplier
-      );
-      var money =
-        amount / 100 + " " + EasyPointsCore.Currency.getActiveString();
-
-      if (
-        Shopify &&
-        Shopify.formatMoney !== undefined &&
-        ((EasyPointsAppBlockData && EasyPointsAppBlockData.shop.money_format) || format)
-      ) {
-        money = Shopify.formatMoney(
-          amount,
-          format || EasyPointsAppBlockData.shop.money_format
-        );
-      }
-
-      return money;
-    },
-  },
-
   Note: {
     submit(e) {
       var btn = e.target;
@@ -145,39 +86,6 @@ var EasyPointsCore = {
         });
       }
     }
-  },
-
-  Tiers: {
-    getNextTier: function(subtotal = 0) {
-      var { rankAdvancementData } = getEasyPointsSession();
-
-      if (!rankAdvancementData) {
-        throw Error('EasyPointsCore: missing tiers rank data.')
-      }
-
-      var nextTier =
-        rankAdvancementData.tiers
-          .find((tier) => {
-            var diff = (tier.raw_amount * getMultiplier()) - subtotal;
-            return Math.max(diff, 0) > 0;
-          });
-
-      if (nextTier) {
-        return {
-          name: nextTier.name,
-          advancementAmountRaw: nextTier.raw_amount,
-          advancementAmountMultiplied: (nextTier.raw_amount * getMultiplier()) - subtotal,
-        }
-      }
-
-      return null;
-    },
-
-    getMaxTier: function() {
-      var { rankAdvancementData } = getEasyPointsSession();
-
-      return rankAdvancementData.tiers.sort((a, b) => b.raw_amount - a.raw_amount)[0];
-    },
   },
 };
 
@@ -204,118 +112,11 @@ var EasyPointsUI = {
       }
     }
   },
-
-  // COMBAK: Can be removed once SDK supports tiers display. (Lorenzo ~ 2024-07-04)
-  Tiers: {
-    render() {
-      const { tierName, rankMaintenanceData, rankAdvancementData } = getEasyPointsSession();
-      const formatOptions = EasyPointsCore.Currency.getFormatOptions() || { convert: true, multiplier: 100 };
-
-      if (tierName) {
-        document.querySelectorAll('[data-loyal-target="tier-name"]')
-          .forEach((tierNameEl) => {
-            tierNameEl.textContent = tierName;
-          });
-      }
-
-      if (rankMaintenanceData) {
-        Array.prototype.slice.call(
-          document.querySelectorAll('[data-loyal-target="rank-maintenance-amount"]')
-        ).forEach((target) => {
-          target.textContent = EasyPointsCore.Currency.format(rankMaintenanceData.raw_amount, formatOptions);
-        });
-
-        var rankMaintenanceDeadline;
-        if (rankMaintenanceData.deadline) {
-          rankMaintenanceDeadline = new Date(rankMaintenanceData.deadline);
-          rankMaintenanceDeadline = rankMaintenanceDeadline.toLocaleDateString(EasyPointsCore.Locale.get());
-        } else {
-          rankMaintenanceDeadline = 'N/A';
-        }
-
-        Array.prototype.slice.call(
-          document.querySelectorAll('[data-loyal-target="rank-maintenance-deadline"]')
-        ).forEach((target) => {
-          target.textContent = rankMaintenanceDeadline;
-        });
-      }
-
-      if (rankAdvancementData) {
-        var nextTier = EasyPointsCore.Tiers.getNextTier();
-        var maxTier = EasyPointsCore.Tiers.getMaxTier();
-
-        if (nextTier) {
-          Array.prototype.slice.call(
-            document.querySelectorAll('[data-loyal-target="rank-advancement-amount"]')
-          ).forEach((target) => {
-            target.textContent = EasyPointsCore.Currency.format(nextTier.advancementAmountRaw, formatOptions);
-          });
-
-          var rankAdvancementDeadline;
-          if (rankAdvancementData.deadline) {
-            rankAdvancementDeadline = new Date(rankAdvancementData.deadline);
-            rankAdvancementDeadline = rankAdvancementDeadline.toLocaleDateString(EasyPointsCore.Locale.get());
-          } else {
-            rankAdvancementDeadline = 'N/A';
-          }
-
-          Array.prototype.slice.call(
-            document.querySelectorAll('[data-loyal-target="rank-advancement-deadline"]')
-          ).forEach((target) => {
-            target.textContent = rankAdvancementDeadline;
-          });
-
-          Array.prototype.slice.call(
-            document.querySelectorAll('[data-loyal-target="rank-advancement-tier-name"]')
-          ).forEach((target) => {
-            target.textContent = nextTier.name;
-          });
-        } else if (maxTier) {
-          Array.prototype.slice.call(
-            document.querySelectorAll('[data-loyal-target="not-max-rank"]')
-          ).forEach((target) => {
-            target.style.display = "none";
-          });
-
-          Array.prototype.slice.call(
-            document.querySelectorAll('[data-loyal-target="rank-advancement-tier-name"]')
-          ).forEach((target) => {
-            target.textContent = maxTier.name;
-          });
-
-          Array.prototype.slice.call(
-            document.querySelectorAll('[data-loyal-target="max-rank"]')
-          ).forEach((target) => {
-            target.style.removeProperty("display");
-          });
-        } else {
-          Array.prototype.slice.call(
-            document.querySelectorAll('[data-loyal-target="max-rank"]')
-          ).forEach((target) => {
-            target.style.display = "none";
-          });
-
-          Array.prototype.slice.call(
-            document.querySelectorAll('[data-loyal-target="not-max-rank"]')
-          ).forEach((target) => {
-            target.style.display = "none";
-          });
-        }
-      }
-    }
-  },
 };
-
-// COMBAK: Can be removed once SDK supports tiers display. (Lorenzo ~ 2024-07-04)
-function updateAllLoyaltyTargets() {
-  EasyPointsUI.Tiers.render();
-}
 
 window.addEventListener('DOMContentLoaded', function() {
   EasyPointsUI.Note.addSubmitListener();
   EasyPointsUI.Note.addValuesChangedListener();
-
-  updateAllLoyaltyTargets();
 
   var redirectUrlEle = document.body.querySelector('input[data-loyal-target="redirect_url"]');
   if (redirectUrlEle) {
@@ -394,7 +195,7 @@ window.addEventListener('DOMContentLoaded', function() {
     });
 
     if (orderIds.length > 0 && custId) {
-      var params = new URLSearchParams({"order_ids": orderIds});
+      var params = new URLSearchParams({ "order_ids": orderIds });
       var xhr = new XMLHttpRequest();
       xhr.open("GET", `/apps/loyalty/customers/${custId}/orders?` + params.toString());
 
