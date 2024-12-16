@@ -179,60 +179,6 @@ window.addEventListener('DOMContentLoaded', function() {
     }
   }
 
-  function fetchOrderDetails() {
-    orderIds = [];
-    var orderDetailNodes = document.querySelectorAll("[data-loyal-order-points]");
-    var orderDetails = Array.prototype.slice.call(orderDetailNodes);
-
-    orderDetails.forEach(function(orderDetail) {
-      var orderEleNodes = orderDetail.querySelectorAll("[data-loyal-order-id]");
-      var orderEles = Array.prototype.slice.call(orderEleNodes);
-
-      orderEles.forEach(function(orderEle) {
-        var orderId = orderEle.getAttribute("data-loyal-order-id");
-        orderIds.push(orderId);
-      });
-    });
-
-    if (orderIds.length > 0 && custId) {
-      var params = new URLSearchParams({ "order_ids": orderIds });
-      var xhr = new XMLHttpRequest();
-      xhr.open("GET", `/apps/loyalty/customers/${custId}/orders?` + params.toString());
-
-      xhr.onload = function() {
-        if (xhr.status === 200) {
-          var resp = JSON.parse(xhr.response);
-
-          orderDetails.forEach(function(orderDetail) {
-            var orderEleNodes = orderDetail.querySelectorAll("[data-loyal-order-id]");
-            var orderEles = Array.prototype.slice.call(orderEleNodes);
-
-            orderEles.forEach(function(orderEle) {
-              var orderId = orderEle.getAttribute("data-loyal-order-id");
-              var orderData = resp.orders[orderId];
-
-              if (orderData) {
-                orderEle.querySelectorAll("[data-loyal-target]").forEach(function(target) {
-                  var loyaltyTarget = target.getAttribute("data-loyal-target");
-
-                  if (loyaltyTarget == "awardable-points") {
-                    target.innerHTML = formatBigNumber(orderData.awardable_points);
-                  } else if (loyaltyTarget == "points-redeemed") {
-                    target.innerHTML = formatBigNumber(orderData.points_redeemed);
-                  } else if (loyaltyTarget == "points-awarded") {
-                    target.innerHTML = formatBigNumber(orderData.points_awarded);
-                  }
-                });
-              }
-            });
-          });
-        }
-      };
-
-      xhr.send();
-    }
-  }
-
   function async(fn) {
     setTimeout(function() {
       fn();
@@ -240,5 +186,4 @@ window.addEventListener('DOMContentLoaded', function() {
   }
 
   async(fetchSession);
-  async(fetchOrderDetails);
 });
