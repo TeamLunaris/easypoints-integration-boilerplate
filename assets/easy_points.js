@@ -12,50 +12,7 @@ function formatBigNumber(int) {
   return int.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
 
-function htmlRedirectInput() {
-  var input = document.createElement("input");
-  input.type = "text";
-  input.setAttribute("name", "html_redirect");
-  input.value = "true";
-  return input;
-}
-
-function buildForm(action, formId) {
-  var virtualForm = document.getElementById(formId);
-  if (virtualForm) {
-    var inputs = Array.from(virtualForm.getElementsByTagName("input"));
-
-    var form = document.createElement("form");
-    form.method = "post";
-    form.action = action;
-
-    inputs.forEach(function(input, ind) {
-      form.appendChild(input.cloneNode());
-    });
-
-    form.appendChild(htmlRedirectInput());
-    return form;
-  } else {
-    return null;
-  }
-}
-
-function submitForm(form) {
-  document.body.appendChild(form);
-  form.submit();
-}
-
-function getEasyPointsSession() {
-  var easyPointsSession = sessionStorage.getItem(SESSION_KEY);
-  return easyPointsSession ? JSON.parse(easyPointsSession) : {};
-}
-
-function setEasyPointsSession(session) {
-  sessionStorage.setItem(SESSION_KEY, JSON.stringify(session));
-}
-
 var EasyPointsCore = {
-
   Selectors: {
     TARGETS: {
       BALANCE: '[data-loyal-target="balance"]',
@@ -67,62 +24,9 @@ var EasyPointsCore = {
       POINTS_MAX: '#redemption-max-points'
     },
   },
-
-  Note: {
-    submit(e) {
-      var btn = e.target;
-      if (btn) {
-        btn.setAttribute('disabled', true);
-        btn.style.cursor = 'progress';
-      }
-
-      var form = buildForm('/apps/loyalty/customers', 'easypoints-note-update');
-      if (form) {
-        fetch(form.action, {
-          method: 'post',
-          body: new FormData(form)
-        }).then(() => {
-          window.location.reload();
-        });
-      }
-    }
-  },
-};
-
-var EasyPointsUI = {
-  Note: {
-    showSubmit() {
-      var form = document.getElementById('easypoints-note-update');
-      if (form) {
-        form.classList.add('easy-points__form--changed');
-      }
-    },
-
-    addValuesChangedListener() {
-      var input = document.querySelector('#easypoints-note-update input[name="customer[easypoints_birthday]"]');
-      if (input) {
-        input.addEventListener('input', this.showSubmit)
-      }
-    },
-
-    addSubmitListener() {
-      var noteUpdateSubmit = document.getElementById('easypoints-note-update-submit');
-      if (noteUpdateSubmit) {
-        noteUpdateSubmit.addEventListener('click', EasyPointsCore.Note.submit);
-      }
-    }
-  },
 };
 
 window.addEventListener('DOMContentLoaded', function() {
-  EasyPointsUI.Note.addSubmitListener();
-  EasyPointsUI.Note.addValuesChangedListener();
-
-  var redirectUrlEle = document.body.querySelector('input[data-loyal-target="redirect_url"]');
-  if (redirectUrlEle) {
-    redirectUrlEle.value = window.location.pathname;
-  }
-
   var custId = null;
   if (window.EasyPointsAppBlockData.customer !== null) {
     custId = window.EasyPointsAppBlockData.customer.id;
