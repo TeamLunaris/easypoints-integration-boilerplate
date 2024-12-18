@@ -31,14 +31,15 @@
             name="customer[note][birthday]"
             />
           </div>
-          {%- else -%}
-            <input
-              class="{{ class_input }}"
-              type="text" onfocus="(this.type='date')"
-              placeholder="{{ 'easypoints.note_form.birthday' | t }}"
-              value=""
-              name="customer[note][birthday]"
-            />
+        {%- else -%}
+          <input
+            class="{{ class_input }}"
+            type="text" 
+            onfocus="(this.type='date')"
+            placeholder="{{ 'easypoints.note_form.birthday' | t }}"
+            value=""
+            name="customer[note][birthday]"
+          />
         {%- endif -%}
       </epi-birthday-form>
     {%- endif -%}
