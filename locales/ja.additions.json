@@ -23,7 +23,7 @@
       "highest_rank_html": "最高ランク{{ rank }}を獲得します",
       "current_rank_title": "現在の会員ランク",
       "spend_additional_html": "あと{{ amount }}のご利用で{{ rank }}にランクアップできます",
-      "date_rollover_html": "(期限: {{ year }}-{{ month }}-{{ day }})"
+      "date_rollover_html": "(期限: {{ year }}年{{ month }}月{{ day }}日)"
     },
     "widget": {
       "program_name": "ロイヤリティーポイント",
