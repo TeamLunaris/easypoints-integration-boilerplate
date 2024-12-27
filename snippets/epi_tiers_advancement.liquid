@@ -30,7 +30,17 @@
               }}
             </span>
           </span>
-        </epi-tier-advancement>
+
+          <span style="display: none;" data-loyal-target="tier-rollover-date">
+            {{
+              'easypoints.tiers.date_rollover_html' | t:
+                day: '<strong data-loyal-target="tier-rollover-day">-</strong>',
+                month: '<strong data-loyal-target="tier-rollover-month">-</strong>',
+                year: '<strong data-loyal-target="tier-rollover-year">-</strong>'
+            }}
+          </span>
+        </span>
+      </epi-tier-advancement>
       {%- endif -%}
     {%- endif -%}
   {%- endunless -%}
