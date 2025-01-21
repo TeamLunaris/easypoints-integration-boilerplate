@@ -1,13 +1,10 @@
-var EASY_POINTS_INTEGRATION_VERSION = 210;
+var EASY_POINTS_INTEGRATION_VERSION = 220;
 
 var EPI_SETTING_CART_DRAWER = false; // options: true, false
 var EPI_SETTING_CART_RENDERER = 'WebComponents'; // options: 'WebComponents', 'Fallback'
 
 /**
- * v2.1.0
- *
- * Only supported from `easy_points.js`
- * Tiers, Notes & Order Details
+ * v2.2.0
  *
  * Supported in easyPointsSDK:
  * insertPointValue
@@ -29,6 +26,9 @@ var EPI_SETTING_CART_RENDERER = 'WebComponents'; // options: 'WebComponents', 'F
  * Shopify.routes
  * Shopify.fetchSections
  * Shopify.fetchTemplate
+ * Tier advancement custom element
+ * Birthday form custom element
+ * Order History custom element
  *
  */
 
@@ -242,7 +242,7 @@ var EasyPoints = {
      * @param {Document | HTMLElement} [el=document] - The root element to start the search from.
      * @returns {number} - The total bonus points.
      */
-     getTotalBonusPoints(el = document) {
+    getTotalBonusPoints(el = document) {
       var total =
         Array.from(el.querySelectorAll('[data-loyal-bonus-points]:not([data-loyal-target="total-points-value"])'))
           .reduce((acc, node) => {

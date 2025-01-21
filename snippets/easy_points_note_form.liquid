@@ -17,21 +17,23 @@
         assign class_button = class_button | default: 'button'
       -%}
       <h2>{{ 'easypoints.note_form.birthday' | t }}</h2>
-      <div class="{{ class_container }}">
-        <div id="easypoints-note-update" class="easy-points__note-form">
-          <input class="{{ class_input }}" type="date" value="{{ customer.metafields.loyalty['birthday'] }}" name="customer[easypoints_birthday]" aria-label="Birthday">
-          <input type="hidden" name="customer[id]" value="{{ customer.id }}">
-          <input type="hidden" name="redirect_route" data-loyal-target="redirect_url">
-          <button
-            id="easypoints-note-update-submit"
-            class="{{ class_button }}"
-            name="commit"
-            type="button"
-          >
-            {{ 'easypoints.note_form.update' | t }}
-          </button>
+      <epi-birthday-form>
+        <div class="{{ class_container }}">
+          <div id="easypoints-note-update" class="easy-points__note-form">
+            <input class="{{ class_input }}" type="date" value="{{ customer.metafields.loyalty['birthday'] }}" name="customer[easypoints_birthday]" aria-label="Birthday">
+            <input type="hidden" name="customer[id]" value="{{ customer.id }}">
+            <input type="hidden" name="redirect_route" data-loyal-target="redirect_url">
+            <button
+              id="easypoints-note-update-submit"
+              class="{{ class_button }}"
+              name="commit"
+              type="button"
+            >
+              {{ 'easypoints.note_form.update' | t }}
+            </button>
+          </div>
         </div>
-      </div>
+      </epi-birthday-form>
     {%- endif -%}
   {%- endunless -%}
 {%- comment -%} END EASYPOINTS {%- endcomment -%}
