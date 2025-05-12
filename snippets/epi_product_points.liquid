@@ -7,9 +7,16 @@
     (optional) `price`: Override the price that is otherwise fetched from the `product` or `line_item`.
 {%- endcomment -%}
 {%- unless shop.metafields.loyalty.easy_points_attributes.value.stealth_mode -%}
-  {%- if product.metafields.loyalty.easy_points_attributes.value.point_exchange -%}
+  {%- if product.metafields.loyalty.easy_points_attributes.value.point_exchange
+    or line_item.product.metafields.loyalty.easy_points_attributes.value.point_exchange
+  -%}
     <div class="easy-points easy-points__point-exchange-product">
-      {%- assign point_exchange_metafield = product.metafields.loyalty.easy_points_attributes.value.point_exchange -%}
+      {%- liquid
+        assign point_exchange_metafield = product.metafields.loyalty.easy_points_attributes.value.point_exchange
+        if line_item.product.metafields.loyalty.easy_points_attributes.value.point_exchange
+          assign point_exchange_metafield = line_item.product.metafields.loyalty.easy_points_attributes.value.point_exchange
+        endif
+      -%}
 
       {%- if point_exchange_metafield -%}
         <span
