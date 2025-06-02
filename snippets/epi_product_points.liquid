@@ -24,12 +24,9 @@
         assign final_bpr_ratio = 0.0
         assign final_bpr_point_value = 0.0
 
-        for tag in product.tags
-          if tag == 'no-easy-points'
-            assign worth_points = false
-            break
-          endif
-        endfor
+        if product.tags contains 'no-easy-points'
+          assign worth_points = false
+        endif
 
         if worth_points
           for collection in product.collections
