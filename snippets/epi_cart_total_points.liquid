@@ -26,6 +26,9 @@
         for collection in item.product.collections
           if collection.handle == 'easy-points-point-exclusion'
             assign final_price_exclusion = final_price_exclusion | plus: item.final_line_price
+            assign tax_rate = 1.1
+            assign bpr_ratio = 0.0
+            assign final_bpr_ratio = 0.0
             break
           else
             assign metafield_bonus_points = collection.metafields.loyalty.bonus_points
