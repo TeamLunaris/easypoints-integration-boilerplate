@@ -2,7 +2,7 @@
 {%- unless shop.metafields.loyalty.easy_points_attributes.value.stealth_mode -%}
   {%- if customer -%}
     {%- assign customer_ep_metafield = customer.metafields.loyalty.easy_points_attributes.value -%}
-    {%- assign gift_balance = customer.metafields.loyalty.gift_balance.value -%}
+    {%- assign gift_balance_metafield = customer.metafields.loyalty.gift_balance.value -%}
 
     {%- liquid
       assign has_feature_tiers = false
@@ -23,7 +23,7 @@
       </div>
     {%- endif -%}
 
-    {%- if gift_balance.expiries.size > 0 -%}
+    {%- if gift_balance_metafield.expiries.size > 0 -%}
       <div class="easy-points-account" style="display: block; padding-bottom: 6rem;">
         <h2 class="easy-points-account__header" style="display: block; margin-bottom: 1rem;">
           <span data-loyal-block data-loyal-target="balance">
@@ -33,31 +33,25 @@
         </h2>
 
         {%- liquid
-          # Create an array to hold all expiration entries for sorting
           assign all_expirations = ''
           assign expiration_entries = ''
 
-          # Add gift balance expirations
-          if gift_balance.expiries
-            for expiry in gift_balance.expiries
-              if expiry.expires_at
-                assign expiry_timestamp = expiry.expires_at | date: '%s'
-                assign entry = expiry_timestamp | append: '|gift|' | append: expiry.amount | append: '|' | append: expiry.expires_at
-                if expiration_entries == ''
-                  assign expiration_entries = entry
-                else
-                  assign expiration_entries = expiration_entries | append: ',' | append: entry
-                endif
+          for expiry in gift_balance_metafield.expiries
+            if expiry.expires_at
+              assign expiry_timestamp = expiry.expires_at | date: '%s'
+              assign entry = expiry_timestamp | append: '|gift|' | append: expiry.amount | append: '|' | append: expiry.expires_at
+              if expiration_entries == ''
+                assign expiration_entries = entry
+              else
+                assign expiration_entries = expiration_entries | append: ',' | append: entry
               endif
-            endfor
-          endif
-
-          # Add regular balance expiration
-          if customer_ep_metafield.expiration_date
-            assign regular_balance = customer_ep_metafield.balance
-            if gift_balance.gift_balance
-              assign regular_balance = customer_ep_metafield.balance | minus: gift_balance.gift_balance
             endif
+          endfor
+
+
+          if customer_ep_metafield.expiration_date
+            assign regular_balance = customer_ep_metafield.balance | minus: gift_balance_metafield.gift_balance
+            assign gift_balance = gift_balance_metafield.gift_balance
             if regular_balance > 0
               assign regular_timestamp = customer_ep_metafield.expiration_date | date: '%s'
               assign regular_entry = regular_timestamp | append: '|regular|' | append: regular_balance | append: '|' | append: customer_ep_metafield.expiration_date
@@ -69,7 +63,6 @@
             endif
           endif
 
-          # Split and sort entries by timestamp
           assign entries_array = expiration_entries | split: ','
           assign sorted_entries = entries_array | sort
         -%}
