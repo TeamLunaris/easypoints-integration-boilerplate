@@ -1,28 +1,128 @@
 {%- comment -%} START EASYPOINTS - DO NOT MODIFY! 変更しないでください! INFO @ https://bit.ly/2Dn7ESM {%- endcomment -%}
-  {%- assign shop_ep_metafield = shop.metafields.loyalty.easy_points_attributes.value -%}
-  {%- unless shop_ep_metafield.stealth_mode -%}
-    {%- if customer -%}
-      {%- liquid
-        assign customer_ep_metafield = customer.metafields.loyalty.easy_points_attributes.value
-        assign has_feature_tiers = false
-        for key_value in shop.metafields.loyalty['features']
-          if key_value[0] == "tiers" and key_value[1] == true
-            assign has_feature_tiers = true
+{%- unless shop.metafields.loyalty.easy_points_attributes.value.stealth_mode -%}
+  {%- if customer -%}
+    {%- assign customer_ep_metafield = customer.metafields.loyalty.easy_points_attributes.value -%}
+    {%- assign gift_balance = customer.metafields.loyalty.gift_balance.value -%}
+
+    {%- liquid
+      assign has_feature_tiers = false
+      for key_value in shop.metafields.loyalty['features']
+        if key_value[0] == "tiers" and key_value[1] == true
+          assign has_feature_tiers = true
+        endif
+      endfor
+    -%}
+
+    {%- if has_feature_tiers and shop.metafields.loyalty['tiers_active'] == "true" -%}
+      <h2>{{ 'easypoints.tiers.current_rank_title' | t }}</h2>
+      <div class="easy-points__account">
+        <p class="easy-points-tiers__container">
+          {{ 'easypoints.tiers.current_rank_html' | t: rank: customer_ep_metafield.tier }}
+        </p>
+        {% render 'epi_tiers_advancement' %}
+      </div>
+    {%- endif -%}
+
+    {%- if gift_balance.expiries.size > 0 -%}
+      <div class="easy-points-account" style="display: block; padding-bottom: 6rem;">
+        <h2 class="easy-points-account__header" style="display: block; margin-bottom: 1rem;">
+          <span data-loyal-block data-loyal-target="balance">
+            {% render 'epi_format_number', number: customer_ep_metafield.balance %}
+          </span>
+          {{ 'easypoints.points_balance' | t }}
+        </h2>
+
+        {%- liquid
+          # Create an array to hold all expiration entries for sorting
+          assign all_expirations = ''
+          assign expiration_entries = ''
+
+          # Add gift balance expirations
+          if gift_balance.expiries
+            for expiry in gift_balance.expiries
+              if expiry.expires_at
+                assign expiry_timestamp = expiry.expires_at | date: '%s'
+                assign entry = expiry_timestamp | append: '|gift|' | append: expiry.amount | append: '|' | append: expiry.expires_at
+                if expiration_entries == ''
+                  assign expiration_entries = entry
+                else
+                  assign expiration_entries = expiration_entries | append: ',' | append: entry
+                endif
+              endif
+            endfor
           endif
-        endfor
-      -%}
 
-      {%- if has_feature_tiers and shop.metafields.loyalty['tiers_active'] == "true" -%}
-        <h2>{{ 'easypoints.tiers.current_rank_title' | t }}</h2>
+          # Add regular balance expiration
+          if customer_ep_metafield.expiration_date
+            assign regular_balance = customer_ep_metafield.balance
+            if gift_balance.gift_balance
+              assign regular_balance = customer_ep_metafield.balance | minus: gift_balance.gift_balance
+            endif
+            if regular_balance > 0
+              assign regular_timestamp = customer_ep_metafield.expiration_date | date: '%s'
+              assign regular_entry = regular_timestamp | append: '|regular|' | append: regular_balance | append: '|' | append: customer_ep_metafield.expiration_date
+              if expiration_entries == ''
+                assign expiration_entries = regular_entry
+              else
+                assign expiration_entries = expiration_entries | append: ',' | append: regular_entry
+              endif
+            endif
+          endif
+
+          # Split and sort entries by timestamp
+          assign entries_array = expiration_entries | split: ','
+          assign sorted_entries = entries_array | sort
+        -%}
+
         <div class="easy-points__account">
-          <p class="easy-points-tiers__container">
-            {{ 'easypoints.tiers.current_rank_html' | t: rank: customer_ep_metafield.tier }}
-          </p>
+          <div class="easy-points-account__balance" style="display: grid; grid-template-columns: max-content max-content; gap: 2rem;">
+            <div class="points-column">
+              {%- for entry in sorted_entries -%}
+                {%- assign entry_parts = entry | split: '|' -%}
+                {%- assign entry_type = entry_parts[1] -%}
+                {%- assign entry_amount = entry_parts[2] -%}
 
-          {% render 'epi_tiers_advancement' %}
+                <div style="padding: 0.25rem 0; text-align: left;">
+                  {%- if entry_type == 'gift' -%}
+                    {% liquid
+                      capture formatted_amount
+                        render 'epi_format_number', number: entry_amount
+                      endcapture
+                    %}
+                    {{ 'easypoints.gift_points_count' | t: count: formatted_amount }}
+                  {%- else -%}
+                    {% liquid
+                      capture formatted_amount
+                        render 'epi_format_number', number: entry_amount
+                      endcapture
+                    %}{{ 'easypoints.points_count' | t: count: formatted_amount }}
+                  {%- endif -%}
+                </div>
+              {%- endfor -%}
+            </div>
+
+            <div class="expiry-column" style="padding-left: 0.5rem;">
+              {%- for entry in sorted_entries -%}
+                {%- assign entry_parts = entry | split: '|' -%}
+                {%- assign entry_date = entry_parts[3] -%}
+
+                {%- liquid
+                  if entry_date
+                    assign exp_year = entry_date | date: "%Y"
+                    assign exp_month = entry_date | date: "%m"
+                    assign exp_day = entry_date | date: "%d"
+                  endif
+                -%}
+
+                <div style="padding: 0.25rem 0; text-align: left; opacity: 50%; white-space: nowrap;">
+                  {{ 'easypoints.expiration_date' | t }} {{ 'easypoints.date' | t: year: exp_year, month: exp_month, day: exp_day }}
+                </div>
+              {%- endfor -%}
+            </div>
+          </div>
         </div>
-      {%- endif -%}
-
+      </div>
+    {%- else -%}
       <h2>{{ 'easypoints.points_balance' | t }}</h2>
       <div class="easy-points__account">
         <p class="easy-points-balance__container">
@@ -46,5 +146,6 @@
         </p>
       </div>
     {%- endif -%}
-  {%- endunless -%}
+  {%- endif -%}
+{%- endunless -%}
 {%- comment -%} END EASYPOINTS {%- endcomment -%}
