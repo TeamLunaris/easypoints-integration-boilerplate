@@ -40,6 +40,7 @@
             if expiry.expires_at
               assign expiry_timestamp = expiry.expires_at | date: '%s'
               assign entry = expiry_timestamp | append: '|gift|' | append: expiry.amount | append: '|' | append: expiry.expires_at
+
               if expiration_entries == ''
                 assign expiration_entries = entry
               else
@@ -52,9 +53,11 @@
           if customer_ep_metafield.expiration_date
             assign regular_balance = customer_ep_metafield.balance | minus: gift_balance_metafield.gift_balance
             assign gift_balance = gift_balance_metafield.gift_balance
+
             if regular_balance > 0
               assign regular_timestamp = customer_ep_metafield.expiration_date | date: '%s'
               assign regular_entry = regular_timestamp | append: '|regular|' | append: regular_balance | append: '|' | append: customer_ep_metafield.expiration_date
+
               if expiration_entries == ''
                 assign expiration_entries = regular_entry
               else
@@ -82,13 +85,16 @@
                         render 'epi_format_number', number: entry_amount
                       endcapture
                     %}
+
                     {{ 'easypoints.gift_points_count' | t: count: formatted_amount }}
                   {%- else -%}
                     {% liquid
                       capture formatted_amount
                         render 'epi_format_number', number: entry_amount
                       endcapture
-                    %}{{ 'easypoints.points_count' | t: count: formatted_amount }}
+                    %}
+
+                    {{ 'easypoints.points_count' | t: count: formatted_amount }}
                   {%- endif -%}
                 </div>
               {%- endfor -%}
