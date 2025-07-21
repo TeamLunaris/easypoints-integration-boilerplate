@@ -70,53 +70,45 @@
         -%}
 
         <div class="easy-points__account">
-          <div class="easy-points-account__balance" style="display: grid; grid-template-columns: max-content max-content; gap: 2rem;">
-            <div class="points-column">
-              {%- for entry in sorted_entries -%}
-                {%- assign entry_parts = entry | split: '|' -%}
-                {%- assign entry_type = entry_parts[1] -%}
-                {%- assign entry_amount = entry_parts[2] -%}
+          <div class="easy-points-account__balance" style="display: grid; grid-template-columns: max-content 1fr;">
+            {%- for entry in sorted_entries -%}
+              {%- assign entry_parts = entry | split: '|' -%}
+              {%- assign entry_type = entry_parts[1] -%}
+              {%- assign entry_amount = entry_parts[2] -%}
+              {%- assign entry_date = entry_parts[3] -%}
 
-                <div style="padding: 0.25rem 0; text-align: left;">
-                  {%- if entry_type == 'gift' -%}
-                    {% liquid
-                      capture formatted_amount
-                        render 'epi_format_number', number: entry_amount
-                      endcapture
-                    %}
+              {%- liquid
+                if entry_date
+                  assign exp_year = entry_date | date: "%Y"
+                  assign exp_month = entry_date | date: "%m"
+                  assign exp_day = entry_date | date: "%d"
+                endif
+              -%}
 
-                    {{ 'easypoints.gift_points_count' | t: count: formatted_amount }}
-                  {%- else -%}
-                    {% liquid
-                      capture formatted_amount
-                        render 'epi_format_number', number: entry_amount
-                      endcapture
-                    %}
+              <div style="display: grid; grid-column: 1 / -1; grid-template-columns: subgrid; align-items: baseline;">
+                {%- if entry_type == 'gift' -%}
+                  {% liquid
+                    capture formatted_amount
+                  render 'epi_format_number', number: entry_amount
+                  endcapture
+                %}
 
-                    {{ 'easypoints.points_count' | t: count: formatted_amount }}
-                  {%- endif -%}
-                </div>
-              {%- endfor -%}
-            </div>
+                  {{ 'easypoints.gift_points_count' | t: count: formatted_amount }}
+                {%- else -%}
+                  {% liquid
+                    capture formatted_amount
+                      render 'epi_format_number', number: entry_amount
+                    endcapture
+                  %}
 
-            <div class="expiry-column" style="padding-left: 0.5rem;">
-              {%- for entry in sorted_entries -%}
-                {%- assign entry_parts = entry | split: '|' -%}
-                {%- assign entry_date = entry_parts[3] -%}
+                  {{ 'easypoints.points_count' | t: count: formatted_amount }}
+                {%- endif -%}
 
-                {%- liquid
-                  if entry_date
-                    assign exp_year = entry_date | date: "%Y"
-                    assign exp_month = entry_date | date: "%m"
-                    assign exp_day = entry_date | date: "%d"
-                  endif
-                -%}
-
-                <div style="padding: 0.25rem 0; text-align: left; opacity: 50%; white-space: nowrap;">
+                <span class="easy-points-text__muted" style="padding-left: 2rem;">
                   {{ 'easypoints.expiration_date' | t }} {{ 'easypoints.date' | t: year: exp_year, month: exp_month, day: exp_day }}
-                </div>
-              {%- endfor -%}
-            </div>
+                </span>
+              </div>
+            {%- endfor -%}
           </div>
         </div>
       </div>
