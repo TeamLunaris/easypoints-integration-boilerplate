@@ -18,13 +18,13 @@
       <div class="easy-points__account">
         <p class="easy-points-tiers__container">
           {{ 'easypoints.tiers.current_rank_html' | t: rank: customer_ep_metafield.tier }}
+          {% render 'epi_tiers_advancement' %}
         </p>
-        {% render 'epi_tiers_advancement' %}
       </div>
     {%- endif -%}
 
     {%- if gift_balance_metafield.expiries.size > 0 -%}
-      <div class="easy-points-account" style="display: block; padding-bottom: 6rem;">
+      <div class="easy-points-account" style="display: block;">
         <h2 class="easy-points-account__header" style="display: block; margin-bottom: 1rem;">
           <span data-loyal-block data-loyal-target="balance">
             {% render 'epi_format_number', number: customer_ep_metafield.balance %}
