@@ -7,7 +7,7 @@
     "points_earned": "ポイント\/円 還元",
     "points_earned_total": "獲得ポイント",
     "points_balance": "ポイント保有中",
-    "redemption_with_gift_points_first_portion": "{{ points }} + ",
+    "redemption_regular_points": "{{ points }} + ",
     "redemption": "{{ points }}ポイント利用可能",
     "cart_redeem": "ポイントを使う",
     "cart_reset": "リセット",
