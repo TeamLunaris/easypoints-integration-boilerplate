@@ -39,8 +39,8 @@
   padding-left: var(--ep-spacer-1);
 }
 
-.easy-points__account .easy-points-balance__container > span:first-child,
-.easy-points__account .easy-points-tiers__container > span:first-child {
+.easy-points__account .easy-points-balance__container>span:first-child,
+.easy-points__account .easy-points-tiers__container>span:first-child {
   display: inline-block;
   min-width: 100px;
 }
@@ -87,6 +87,7 @@
 }
 
 @media only screen and (max-width: 749px) {
+
   .easy-points-form__input input,
   .easy-points-form__discount {
     width: 100px;
@@ -123,7 +124,7 @@
   color: var(--ep-black);
 }
 
-.easy-points-form__discount:not(.easy-points-hide) + input {
+.easy-points-form__discount:not(.easy-points-hide)+input {
   display: none;
 }
 
@@ -210,3 +211,26 @@
   min-width: 140px;
   margin-left: var(--ep-spacer-1);
 } */
+
+.easy-points-login_rewards__button_container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.easy-points-login_rewards__inner {
+  padding-left: 2rem;
+}
+
+.easy-points-login_rewards__heading {
+  font-size: 1.8rem;
+  margin: 0px;
+}
+
+.easy-points-login_rewards__description {
+  margin: 0px;
+}
+
+.easy-points-login_rewards__claim_button {
+  margin: 0px;
+}

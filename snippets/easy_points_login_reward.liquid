@@ -1,0 +1,46 @@
+{%- comment -%} START EASYPOINTS - DO NOT MODIFY! 変更しないでください! INFO @ https://bit.ly/2Dn7ESM {%- endcomment -%}
+{%- assign shop_ep_metafield = shop.metafields.loyalty.easy_points_attributes.value -%}
+{%- unless shop_ep_metafield.stealth_mode and shop_ep_metafield.rewards.login_reward -%}
+  {%- if customer -%}
+    {% liquid
+      assign next_login_reward = customer.metafields.loyalty.next_login_reward.value 
+      assign login_reward_amount = shop_ep_metafield.reward_rules.login.point_value | json
+    %}
+
+    <div id="ep-block-login_rewards" class="easy-points-login_rewards__container" data-loyalty-next_login_reward="{{next_login_reward}}" data-loyalty-login_reward_amount="{{login_reward_amount}}">
+      <div class="easy-points-login_rewards__header">
+        <h3 class="easy-points-login_rewards__heading">
+          {{ 'easypoints.login_rewards.heading' | t }}
+        </h3>
+        <p class="easy-points-login_rewards__description">
+          {{ 'easypoints.login_rewards.description' | t }}
+        </p>
+      </div>
+
+      <div class="easy-points-login_rewards__button_container">
+        <button
+          id="ep-block-login_rewards-claim_button"
+          class="easy-points-login_rewards__claim_button button"
+          type="button"
+          data-i18n-submit-action="{{ 'easypoints.login_rewards.submit_action' | t }}"
+          data-i18n-success="{{ 'easypoints.login_rewards.success' | t }}"
+        >
+        </button>
+
+        <div 
+          style="display: none;" 
+          class="easy-points-login_rewards__inner"
+          id="ep-block-login_rewards-time_remaining"
+        >
+          <p 
+            id="ep-block-login_rewards-next_login_reward-text"
+            data-i18n-time-remaining="{{ 'easypoints.login_rewards.time_remaining' | t }}"
+          >
+            -
+          </p>
+        </div>
+      </div>
+    </div>
+  {%- endif -%}
+{%- endunless -%}
+{%- comment -%} END EASYPOINTS {%- endcomment -%}
