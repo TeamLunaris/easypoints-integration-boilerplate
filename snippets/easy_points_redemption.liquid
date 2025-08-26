@@ -3,13 +3,35 @@
   {%- unless shop_ep_metafield.stealth_mode -%}
     {%- if customer -%}
       {%- liquid
-        assign customer_ep_metafield = customer.metafields.loyalty.easy_points_attributes.value
+        assign gift_balance = customer.metafields.loyalty.gift_balance.value
+        assign regular_balance = customer.metafields.loyalty.easy_points_attributes.value.balance | minus: gift_balance.gift_balance
+
         assign class_button = class_button | default: 'button'
       -%}
       <epi-redemption-form>
         <div class="easy-points-form__container">
           <div class="easy-points-form__balance">
-            <span data-loyal-target="balance">{{ customer_ep_metafield.balance }}</span> {{ 'easypoints.points_balance' | t }}
+            {%- capture balance -%}
+              <span data-loyal-block>
+                {% render 'epi_format_number', number: regular_balance %}
+              </span>
+            {%- endcapture -%}
+
+            {%- if gift_balance.gift_balance > 0 -%}
+              {%- capture gift_balance_html -%}
+                <span data-loyal-block>
+                  {% render 'epi_format_number', number: gift_balance.gift_balance %}
+                </span>
+              {%- endcapture -%}
+
+              {{ 'easypoints.redemption_regular_points' | t: points: balance }}
+
+              <span style="display: inline-block; vertical-align: top; margin-top: 1px; margin-right: -2px;">
+                {% render 'epi_icon', svg-icons: 'gift-points', width: 14, height: 14 %}
+              </span>{{ 'easypoints.redemption' | t: points: gift_balance_html }}
+            {%- else -%}
+              {{ 'easypoints.redemption' | t: points: balance }}
+            {%- endif -%}
           </div>
           <div class="easy-points-form__inner">
             <div class="easy-points-form__input">
