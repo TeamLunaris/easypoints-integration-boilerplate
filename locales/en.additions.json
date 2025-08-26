@@ -3,6 +3,7 @@
     "points": "Points",
     "no_points": "No points will be rewarded",
     "gift_points_count": "{{ count }} Gift Points",
+    "total_points_html": "Total Points: {{ points }}",
     "points_count": "{{ count }} Points",
     "points_earned": "Points Earned",
     "points_earned_total": "Points Earned",
