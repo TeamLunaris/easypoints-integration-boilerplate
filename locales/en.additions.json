@@ -25,6 +25,15 @@
       "spend_additional_html": "Spend an additional {{ amount }} to rank up to {{ rank }} ",
       "date_rollover_html": "(Deadline: {{ month }}-{{ day }}-{{ year }})"
     },
+    "redemption": {
+      "missing_product_ids": "You must select a product",
+      "0_value_redemption": "You must use a number greater than zero",
+      "negative_value": "You must use a number greater than zero",
+      "insufficient_balance": "Insufficient points",
+      "no_discountable_products": "Selected product does not support coupon creation",
+      "request_already_in_progress": "Internal error creating coupon"
+    },
+    "unknown_error": "Something went wrong",
     "widget": {
       "program_name": "Loyalty Points Program",
       "points": "Points",

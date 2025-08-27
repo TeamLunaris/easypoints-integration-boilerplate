@@ -875,7 +875,10 @@ var EasyPoints = {
         checkoutBtn.forEach((node) => node.setAttribute('disabled', true));
 
         EasyPoints.sdk().applyDiscount(EasyPoints.sdk().getDiscountSession())
-          .then(() => {
+          .then((result) => {
+            if (typeof result !== 'number') {
+              window.location = window.location
+            }
             EasyPoints.fetchShopifyCartUI();
             EasyPoints.showDiscountUI();
             e.target.style.cursor = 'unset';
