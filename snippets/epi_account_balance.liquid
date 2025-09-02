@@ -1,6 +1,21 @@
 {%- comment -%} START EASYPOINTS - DO NOT MODIFY! 変更しないでください! INFO @ https://bit.ly/2Dn7ESM {%- endcomment -%}
 {%- unless shop.metafields.loyalty.easy_points_attributes.value.stealth_mode -%}
   {%- if customer -%}
+    <style type="text/css">
+      .easy-points-account__badge {
+        display: flex;
+        align-items: center;
+        border-radius: 24px;
+        padding: 4px 12px;
+        gap: 4px;
+        color: rgba(var(--color-foreground), .70);
+        background-color: rgba(var(--color-foreground), .1);
+        line-height: 1;
+        font-size: 1.3rem;
+      }
+
+    </style>
+
     {%- assign customer_ep_metafield = customer.metafields.loyalty.easy_points_attributes.value -%}
     {%- assign gift_balance_metafield = customer.metafields.loyalty.gift_balance.value -%}
 
@@ -24,103 +39,132 @@
       </div>
     {%- endif -%}
 
-    <div class="easy-points-account" style="display: block;">
-      <h2 class="easy-points-account__header" style="display: block; margin-bottom: 1rem;">
+    <div class="easy-points__account" style="display: block;">
+      <h2 class="easy-points-account__header" style="display: block;">
         {{ 'easypoints.points_balance' | t }}
       </h2>
 
-      {%- liquid
-        assign expiration_entries = ''
+      <div class="easy-points-account" style="display: block;">
+        {%- liquid
+          assign expiration_entries = ''
 
-        for expiry in gift_balance_metafield.expiries
-          if expiry.expires_at
-            assign expiry_timestamp = expiry.expires_at | date: '%s'
-            assign entry = expiry_timestamp | append: '|gift|' | append: expiry.amount | append: '|' | append: expiry.expires_at
+          for expiry in gift_balance_metafield.expiries
+            if expiry.expires_at
+              assign expiry_timestamp = expiry.expires_at | date: '%s'
+              assign entry = expiry_timestamp | append: '|gift|' | append: expiry.amount | append: '|' | append: expiry.expires_at
 
-            if expiration_entries == ''
-              assign expiration_entries = entry
-            else
-              assign expiration_entries = expiration_entries | append: ',' | append: entry
-            endif
-          endif
-        endfor
-
-
-        if customer_ep_metafield.expiration_date
-          assign regular_balance = customer_ep_metafield.balance | minus: gift_balance_metafield.gift_balance
-          assign gift_balance = gift_balance_metafield.gift_balance
-
-          if regular_balance > 0
-            assign regular_timestamp = customer_ep_metafield.expiration_date | date: '%s'
-            assign regular_entry = regular_timestamp | append: '|regular|' | append: regular_balance | append: '|' | append: customer_ep_metafield.expiration_date
-
-            if expiration_entries == ''
-              assign expiration_entries = regular_entry
-            else
-              assign expiration_entries = expiration_entries | append: ',' | append: regular_entry
-            endif
-          endif
-        endif
-
-        assign entries_array = expiration_entries | split: ','
-        assign sorted_entries = entries_array | sort
-      -%}
-
-      {%- capture balance -%}
-        <span data-loyal-block data-loyal-target="balance">
-          {% render 'epi_format_number', number: customer_ep_metafield.balance %}
-        </span>
-      {%- endcapture -%}
-
-      <div class="easy-points__account">
-        {%- if gift_balance_metafield.gift_balance > 0 -%}
-          <div data-loyal-block style="margin-bottom: 0.5rem;">
-            {{ 'easypoints.total_points_html' | t: points: balance }}
-          </div>
-        {%- endif -%}
-
-        <div class="easy-points-account__balance" style="display: grid; grid-template-columns: max-content 1fr;">
-          {%- for entry in sorted_entries -%}
-            {%- assign entry_parts = entry | split: '|' -%}
-            {%- assign entry_type = entry_parts[1] -%}
-            {%- assign entry_amount = entry_parts[2] -%}
-            {%- assign entry_date = entry_parts[3] -%}
-
-            {%- liquid
-              if entry_date
-                assign exp_year = entry_date | date: "%Y"
-                assign exp_month = entry_date | date: "%m"
-                assign exp_day = entry_date | date: "%d"
+              if expiration_entries == ''
+                assign expiration_entries = entry
+              else
+                assign expiration_entries = expiration_entries | append: ',' | append: entry
               endif
-            -%}
+            endif
+          endfor
 
-            <div style="display: grid; grid-column: 1 / -1; grid-template-columns: subgrid; align-items: baseline;">
-              {%- if entry_type == 'gift' -%}
-                {% liquid
-                  capture formatted_amount
-                render 'epi_format_number', number: entry_amount
-                endcapture
-              %}
+          if customer_ep_metafield.expiration_date
+            assign regular_balance = customer_ep_metafield.balance | minus: gift_balance_metafield.gift_balance
+            assign gift_balance = gift_balance_metafield.gift_balance
 
-                {{ 'easypoints.gift_points_count' | t: count: formatted_amount }}
-              {%- else -%}
-                {% liquid
-                  capture formatted_amount
-                    render 'epi_format_number', number: entry_amount
-                  endcapture
-                %}
+            if regular_balance > 0
+              assign regular_timestamp = customer_ep_metafield.expiration_date | date: '%s'
+              assign regular_entry = regular_timestamp | append: '|regular|' | append: regular_balance | append: '|' | append: customer_ep_metafield.expiration_date
 
-                {{ 'easypoints.points_count' | t: count: formatted_amount }}
-              {%- endif -%}
+              if expiration_entries == ''
+                assign expiration_entries = regular_entry
+              else
+                assign expiration_entries = expiration_entries | append: ',' | append: regular_entry
+              endif
+            endif
+          endif
 
-              <span class="easy-points-text__muted" style="padding-left: 2rem;">
-                {{ 'easypoints.expiration_date' | t }} {{ 'easypoints.date' | t: year: exp_year, month: exp_month, day: exp_day }}
+          assign entries_array = expiration_entries | split: ','
+          assign sorted_entries = entries_array | sort
+        -%}
+
+        {%- capture balance -%}
+          <span data-loyal-block data-loyal-target="balance">
+            {% render 'epi_format_number', number: customer_ep_metafield.balance %}
+          </span>
+        {%- endcapture -%}
+
+        <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 0.5rem;">
+          <div data-loyal-block>
+            <strong>
+              {{ 'easypoints.points_count_html' | t: count: balance }}
+            </strong>
+          </div>
+          {%- if gift_balance_metafield.gift_balance > 0 -%}
+            <div class="easy-points-account__badge">
+              <span>
+                {{ gift_balance_metafield.gift_balance }}
+              </span>
+              <span style="display: inline-block; vertical-align: top; margin-top: 1px; margin-right: -2px;">
+                {% render 'epi_icon', svg-icons: 'gift-points', width: 12, height: 12 %}
               </span>
             </div>
-          {%- endfor -%}
+          {%- elsif customer_ep_metafield.expiration_date %}
+              {%- liquid
+                assign expiration_date = customer_ep_metafield.expiration_date
+                if expiration_date
+                  assign exp_year = expiration_date | date: "%Y"
+                  assign exp_month = expiration_date | date: "%m"
+                  assign exp_day = expiration_date | date: "%d"
+                endif
+              -%}
+
+              <span
+              class="easy-points__expiration-date"
+              style="
+                font-size: 80%;
+                margin-left: 2rem;
+                opacity: {{ block.settings.text_opacity }};
+              "
+            >
+              {{ 'easypoints.expiration_date' | t }} {{ 'easypoints.date' | t: year: exp_year, month: exp_month, day: exp_day }}
+            </span>
+          {%- endif -%}
         </div>
+
+        {%- if gift_balance_metafield.gift_balance > 0 -%}
+          <div class="easy-points-account">
+            <div class="easy-points-account__balance" style="display: grid; grid-template-columns: max-content 1fr;">
+              {%- for entry in sorted_entries -%}
+                {%- assign entry_parts = entry | split: '|' -%}
+                {%- assign entry_type = entry_parts[1] -%}
+                {%- assign entry_amount = entry_parts[2] -%}
+                {%- assign entry_date = entry_parts[3] -%}
+
+                {%- liquid
+                  if entry_date
+                    assign exp_year = entry_date | date: "%Y"
+                    assign exp_month = entry_date | date: "%m"
+                    assign exp_day = entry_date | date: "%d"
+                  endif
+                -%}
+
+                <div style="display: grid; grid-column: 1 / -1; grid-template-columns: subgrid; align-items: baseline;">
+                      <span style="font-size: 1.3rem;">
+                        +{% render 'epi_format_number', number: entry_amount %}
+                      </span>
+
+                      <span
+                        class="easy-points__expiration-date"
+                        style="
+                          font-size: 80%;
+                          margin-left: 2rem;
+                          opacity: {{ block.settings.text_opacity }};
+                        "
+                      >
+                        {{ 'easypoints.expiration_date' | t }} {{ 'easypoints.date' | t: year: exp_year, month: exp_month, day: exp_day }}
+                      </span>
+                </div>
+              {%- endfor -%}
+            </div>
+          </div>
+        {%- endif -%}
       </div>
     </div>
   {%- endif -%}
 {%- endunless -%}
 {%- comment -%} END EASYPOINTS {%- endcomment -%}
+

@@ -2,9 +2,7 @@
   "easypoints": {
     "points": "ポイント",
     "no_points": "ポイント対象外",
-    "gift_points_count": "{{ count }}付与ポイント",
-    "total_points_html": "{{ points }}ポイント",
-    "points_count": "{{ count }}ポイント",
+    "points_count_html": "{{ count }}ポイント",
     "points_earned": "ポイント\/円 還元",
     "points_earned_total": "獲得ポイント",
     "points_balance": "ポイント保有中",
