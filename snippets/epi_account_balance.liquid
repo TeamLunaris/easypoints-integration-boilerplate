@@ -34,6 +34,7 @@
       <div class="easy-points__account">
         <p class="easy-points-tiers__container">
           {{ 'easypoints.tiers.current_rank_html' | t: rank: customer_ep_metafield.tier }}
+          
           {% render 'epi_tiers_advancement' %}
         </p>
       </div>
@@ -93,26 +94,28 @@
               {{ 'easypoints.points_count_html' | t: count: balance }}
             </strong>
           </div>
+
           {%- if gift_balance_metafield.gift_balance > 0 -%}
             <div class="easy-points-account__badge">
               <span>
                 {{ gift_balance_metafield.gift_balance }}
               </span>
+
               <span style="display: inline-block; vertical-align: top; margin-top: 1px; margin-right: -2px;">
                 {% render 'epi_icon', svg-icons: 'gift-points', width: 12, height: 12 %}
               </span>
             </div>
           {%- elsif customer_ep_metafield.expiration_date %}
-              {%- liquid
-                assign expiration_date = customer_ep_metafield.expiration_date
-                if expiration_date
-                  assign exp_year = expiration_date | date: "%Y"
-                  assign exp_month = expiration_date | date: "%m"
-                  assign exp_day = expiration_date | date: "%d"
-                endif
-              -%}
+            {%- liquid
+              assign expiration_date = customer_ep_metafield.expiration_date
+              if expiration_date
+                assign exp_year = expiration_date | date: "%Y"
+                assign exp_month = expiration_date | date: "%m"
+                assign exp_day = expiration_date | date: "%d"
+              endif
+            -%}
 
-              <span
+            <span
               class="easy-points__expiration-date"
               style="
                 font-size: 80%;
@@ -143,20 +146,20 @@
                 -%}
 
                 <div style="display: grid; grid-column: 1 / -1; grid-template-columns: subgrid; align-items: baseline;">
-                      <span style="font-size: 1.3rem;">
-                        +{% render 'epi_format_number', number: entry_amount %}
-                      </span>
+                  <span style="font-size: 1.3rem;">
+                    +{% render 'epi_format_number', number: entry_amount %}
+                  </span>
 
-                      <span
-                        class="easy-points__expiration-date"
-                        style="
-                          font-size: 80%;
-                          margin-left: 2rem;
-                          opacity: {{ block.settings.text_opacity }};
-                        "
-                      >
-                        {{ 'easypoints.expiration_date' | t }} {{ 'easypoints.date' | t: year: exp_year, month: exp_month, day: exp_day }}
-                      </span>
+                  <span
+                    class="easy-points__expiration-date"
+                    style="
+                      font-size: 80%;
+                      margin-left: 2rem;
+                      opacity: {{ block.settings.text_opacity }};
+                    "
+                  >
+                    {{ 'easypoints.expiration_date' | t }} {{ 'easypoints.date' | t: year: exp_year, month: exp_month, day: exp_day }}
+                  </span>
                 </div>
               {%- endfor -%}
             </div>
