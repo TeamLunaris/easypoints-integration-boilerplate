@@ -115,6 +115,15 @@
   box-shadow: none;
 }
 
+.easy-points-form__errors {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  padding-top: 8px;
+  color: rgba(199, 10, 36, 1);
+}
+
 .easy-points-form__discount {
   display: flex;
   align-items: center;
