@@ -887,8 +887,6 @@ var EasyPoints = {
             const uiUpdateCallback = () => {
               if (typeof result !== "string" && "error" in result) {
                 var el = EasyPoints.Selectors.getRedemptionFormEl(document);
-                console.log("el");
-                console.log(el);
                 if (el !== null) {
                   el.setAttribute('error', result.error.message);
                 }
