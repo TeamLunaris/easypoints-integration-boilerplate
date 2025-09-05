@@ -220,6 +220,10 @@ var EasyPoints = {
     getAdditionalCheckoutButtonEl: function(element, nodes = false) {
       return this.getElementBy$(element, '.additional-checkout-buttons', nodes);
     },
+
+    getRedemptionFormEl: function(element, nodes = false) {
+      return this.getElementBy$(element, 'epi-redemption-form', nodes);
+    },
   },
 
   Points: {
@@ -704,12 +708,15 @@ var EasyPoints = {
               section.selector
             );
           });
+
+          callback();
         })
         .catch((e) => {
           console.error(e);
         });
     } else {
       EasyPoints.sdk().Cart.replaceTargets();
+      callback();
     }
   },
 
@@ -876,10 +883,19 @@ var EasyPoints = {
 
         EasyPoints.sdk().applyDiscount(EasyPoints.sdk().getDiscountSession())
           .then((result) => {
-            if (typeof result !== 'number') {
-              window.location = window.location
+
+            const uiUpdateCallback = () => {
+              if (typeof result !== "string" && "error" in result) {
+                var el = EasyPoints.Selectors.getRedemptionFormEl(document);
+                console.log("el");
+                console.log(el);
+                if (el !== null) {
+                  el.setAttribute('error', result.error.message);
+                }
+              }
             }
-            EasyPoints.fetchShopifyCartUI();
+
+            EasyPoints.fetchShopifyCartUI(uiUpdateCallback);
             EasyPoints.showDiscountUI();
             e.target.style.cursor = 'unset';
             e.target.removeAttribute('disabled');
