@@ -606,13 +606,13 @@ var EasyPoints = {
      * @param {number|null} [subtotal=null] - The subtotal amount used to calculate the next tier. If null, the function will attempt to retrieve it from an HTML element.
      */
     recalculate: function(subtotal = null) {
-      var { rankAdvancementData } = getEasyPointsSession();
+      var { tierMaintenanceData: { rankAdvancementData } } = EasyPoints.sdk().Session.get();
 
       if (!rankAdvancementData || rankAdvancementData.raw_amount >= 0) {
         return;
       }
 
-      var discount = EasyPoints.getDiscountSession();
+      var discount = EasyPoints.sdk().getDiscountSession();
       var { multiplier } = EasyPointsCore.Currency.getFormatOptions() || { multiplier: 100 };
       var discountNoDecimal = Math.round(discount * EasyPointsCore.Currency.getRate() * multiplier)
 
