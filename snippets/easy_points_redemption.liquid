@@ -25,6 +25,18 @@
               {{ 'easypoints.cart_reset' | t }}
             </button>
           </div>
+          <div class="easy-points-form__errors">
+            <span data-loyal-error="errors" data-i18n-errors='{
+              "redemption: missing_product_ids": "{{ 'easypoints.redemption.missing_product_ids' | t }}",
+              "redemption: 0_value_redemption": "{{ 'easypoints.redemption.0_value_redemption' | t }}",
+              "redemption: negative_value": "{{ 'easypoints.redemption.negative_value' | t }}",
+              "redemption: insufficient_balance": "{{ 'easypoints.redemption.insufficient_balance' | t }}",
+              "redemption: no_discountable_products": "{{ 'easypoints.redemption.no_discountable_products' | t }}",
+              "redemption: request_already_in_progress": "{{ 'easypoints.redemption.request_already_in_progress' | t }}",
+              "unknown_error": "{{ 'easypoints.unknown_error' | t }}"
+              }'
+            />
+          </div>
         </div>
       </epi-redemption-form>
     {%- endif -%}
