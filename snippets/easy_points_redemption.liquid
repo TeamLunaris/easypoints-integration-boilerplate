@@ -18,7 +18,7 @@
          </span>
 
         {%- if gift_balance.gift_balance > 0 -%}
-          <span data-loyal-block>
+          <span>
             {%- capture gift_balance_html -%}
               {% render 'epi_format_number', number: gift_balance.gift_balance %}
             {%- endcapture -%}
@@ -45,7 +45,7 @@
           <button class="easy-points-button__redeem {{ class_button }}" type="button">
             {{ 'easypoints.cart_redeem' | t }}
           </button>
-          
+
           <button class="easy-points-button__reset {{ class_button }} easy-points-hide" type="button">
             {{ 'easypoints.cart_reset' | t }}
           </button>
