@@ -1,8 +1,8 @@
-{% case svg-icons %}
+{% case icon %}
   {% when 'gift' %}
     <svg
-      width="{{ width | default: '14' }}"
-      height="{{ height | default: '14' }}"
+      width="{{ size | default: '14' }}"
+      height="{{ size | default: '14' }}"
       viewBox="0 0 24 24"
       fill="currentColor"
       xmlns="http://www.w3.org/2000/svg"
@@ -12,8 +12,8 @@
 
   {% when 'gift-points' %}
     <svg
-      width="{{ width | default: '14' }}"
-      height="{{ height | default: '14' }}"
+      width="{{ size | default: '14' }}"
+      height="{{ size | default: '14' }}"
       viewBox="0 0 24 24"
       fill="currentColor"
       xmlns="http://www.w3.org/2000/svg"

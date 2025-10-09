@@ -1,25 +1,10 @@
 {%- comment -%} START EASYPOINTS - DO NOT MODIFY! 変更しないでください! INFO @ https://bit.ly/2Dn7ESM {%- endcomment -%}
 {%- unless shop.metafields.loyalty.easy_points_attributes.value.stealth_mode -%}
   {%- if customer -%}
-    <style type="text/css">
-      .easy-points-account__badge {
-        display: flex;
-        align-items: center;
-        border-radius: 24px;
-        padding: 4px 12px;
-        gap: 4px;
-        color: rgba(var(--color-foreground), .70);
-        background-color: rgba(var(--color-foreground), .1);
-        line-height: 1;
-        font-size: 1.3rem;
-      }
-
-    </style>
-
-    {%- assign customer_ep_metafield = customer.metafields.loyalty.easy_points_attributes.value -%}
-    {%- assign gift_balance_metafield = customer.metafields.loyalty.gift_balance.value -%}
-
     {%- liquid
+      assign customer_ep_metafield = customer.metafields.loyalty.easy_points_attributes.value
+      assign gift_balance_metafield = customer.metafields.loyalty.gift_balance.value
+
       assign has_feature_tiers = false
       for key_value in shop.metafields.loyalty['features']
         if key_value[0] == "tiers" and key_value[1] == true
@@ -34,18 +19,18 @@
       <div class="easy-points__account">
         <p class="easy-points-tiers__container">
           {{ 'easypoints.tiers.current_rank_html' | t: rank: customer_ep_metafield.tier }}
-          
+
           {% render 'epi_tiers_advancement' %}
         </p>
       </div>
     {%- endif -%}
 
-    <div class="easy-points__account" style="display: block;">
-      <h2 class="easy-points-account__header" style="display: block;">
+    <div class="easy-points__account">
+      <h2 class="easy-points-account__header">
         {{ 'easypoints.points_balance' | t }}
       </h2>
 
-      <div class="easy-points-account" style="display: block;">
+      <div class="easy-points-account">
         {%- liquid
           assign expiration_entries = ''
 
@@ -89,7 +74,7 @@
         {%- endcapture -%}
 
         <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 0.5rem;">
-          <div data-loyal-block>
+          <div>
             <strong>
               {{ 'easypoints.points_count_html' | t: count: balance }}
             </strong>
@@ -102,7 +87,7 @@
               </span>
 
               <span style="display: inline-block; vertical-align: top; margin-top: 1px; margin-right: -2px;">
-                {% render 'epi_icon', svg-icons: 'gift-points', width: 12, height: 12 %}
+                {% render 'epi_icons', icon: 'gift-points', size: 12 %}
               </span>
             </div>
           {%- elsif customer_ep_metafield.expiration_date %}
@@ -132,10 +117,12 @@
           <div class="easy-points-account">
             <div class="easy-points-account__balance" style="display: grid; grid-template-columns: max-content 1fr;">
               {%- for entry in sorted_entries -%}
-                {%- assign entry_parts = entry | split: '|' -%}
-                {%- assign entry_type = entry_parts[1] -%}
-                {%- assign entry_amount = entry_parts[2] -%}
-                {%- assign entry_date = entry_parts[3] -%}
+                {%- liquid
+                  assign entry_parts = entry | split: '|'
+                  assign entry_type = entry_parts[1]
+                  assign entry_amount = entry_parts[2]
+                  assign entry_date = entry_parts[3]
+                -%}
 
                 {%- liquid
                   if entry_date
@@ -170,4 +157,3 @@
   {%- endif -%}
 {%- endunless -%}
 {%- comment -%} END EASYPOINTS {%- endcomment -%}
-

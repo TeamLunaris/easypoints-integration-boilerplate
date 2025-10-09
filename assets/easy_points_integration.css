@@ -33,6 +33,18 @@
   margin-bottom: var(--ep-spacer-3);
 }
 
+.easy-points-account__badge {
+  display: flex;
+  align-items: center;
+  border-radius: 24px;
+  padding: 4px 12px;
+  gap: 4px;
+  color: rgba(var(--color-foreground), .70);
+  background-color: rgba(var(--color-foreground), .1);
+  line-height: 1;
+  font-size: 1.3rem;
+}
+
 .easy-points__account .easy-points-text__muted {
   font-size: 80%;
   opacity: 50%;
