@@ -1,32 +1,57 @@
 {%- comment -%} START EASYPOINTS - DO NOT MODIFY! 変更しないでください! INFO @ https://bit.ly/2Dn7ESM {%- endcomment -%}
-  {%- assign shop_ep_metafield = shop.metafields.loyalty.easy_points_attributes.value -%}
-  {%- unless shop_ep_metafield.stealth_mode -%}
-    {%- if customer -%}
-      {%- liquid
-        assign customer_ep_metafield = customer.metafields.loyalty.easy_points_attributes.value
-        assign class_button = class_button | default: 'button'
-      -%}
-      <epi-redemption-form>
-        <div class="easy-points-form__container">
-          <div class="easy-points-form__balance">
-            <span data-loyal-target="balance">{{ customer_ep_metafield.balance }}</span> {{ 'easypoints.points_balance' | t }}
-          </div>
-          <div class="easy-points-form__inner">
-            <div class="easy-points-form__input">
-              <div class="easy-points-form__discount hidden-unless-discount-applied easy-points-hide">
-                -&nbsp;<span data-loyal-target="applied-discount"></span>
-              </div>
-              <input type="number" name="redemption_point_value" min="0" autocomplete="off">
-            </div>
-            <button class="easy-points-button__redeem {{ class_button }}" type="button">
-              {{ 'easypoints.cart_redeem' | t }}
-            </button>
-            <button class="easy-points-button__reset {{ class_button }} easy-points-hide" type="button">
-              {{ 'easypoints.cart_reset' | t }}
-            </button>
-          </div>
+{%- assign shop_ep_metafield = shop.metafields.loyalty.easy_points_attributes.value -%}
+{%- unless shop_ep_metafield.stealth_mode -%}
+  {%- if customer -%}
+    {%- liquid
+      assign gift_balance = customer.metafields.loyalty.gift_balance.value
+      assign regular_balance = customer.metafields.loyalty.easy_points_attributes.value.balance | minus: gift_balance.gift_balance
+
+      assign class_button = class_button | default: 'button'
+    -%}
+    <epi-redemption-form>
+      <div class="easy-points-form__container">
+        <div class="easy-points-form__balance">
+          <span>
+            {%- capture balance -%}
+              {% render 'epi_format_number', number: regular_balance %}
+            {%- endcapture -%}
+         </span>
+
+        {%- if gift_balance.gift_balance > 0 -%}
+          <span>
+            {%- capture gift_balance_html -%}
+              {% render 'epi_format_number', number: gift_balance.gift_balance %}
+            {%- endcapture -%}
+          </span>
+
+          {{ 'easypoints.redemption_regular_points' | t: points: balance }}
+
+          <span style="display: inline-block; vertical-align: top; margin-top: 1px; margin-right: 4px;">
+            {% render 'epi_icons', icon: 'gift-points', size: 14 %}
+          </span>{{ 'easypoints.redemption' | t: points: gift_balance_html }}
+        {%- else -%}
+          {{ 'easypoints.redemption' | t: points: balance }}
+        {%- endif -%}
         </div>
-      </epi-redemption-form>
-    {%- endif -%}
-  {%- endunless -%}
+
+        <div class="easy-points-form__inner">
+          <div class="easy-points-form__input">
+            <div class="easy-points-form__discount hidden-unless-discount-applied easy-points-hide">
+              -&nbsp;<span data-loyal-target="applied-discount"></span>
+            </div>
+            <input type="number" name="redemption_point_value" min="0" autocomplete="off">
+          </div>
+
+          <button class="easy-points-button__redeem {{ class_button }}" type="button">
+            {{ 'easypoints.cart_redeem' | t }}
+          </button>
+
+          <button class="easy-points-button__reset {{ class_button }} easy-points-hide" type="button">
+            {{ 'easypoints.cart_reset' | t }}
+          </button>
+        </div>
+      </div>
+    </epi-redemption-form>
+  {%- endif -%}
+{%- endunless -%}
 {%- comment -%} END EASYPOINTS {%- endcomment -%}

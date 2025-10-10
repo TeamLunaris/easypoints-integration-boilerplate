@@ -2,9 +2,12 @@
   "easypoints": {
     "points": "Points",
     "no_points": "No points will be rewarded",
+    "points_count_html": "{{ count }} Points",
     "points_earned": "Points Earned",
     "points_earned_total": "Points Earned",
     "points_balance": "Points Available",
+    "redemption_regular_points": "{{ points }} + ",
+    "redemption": "{{ points }} points available",
     "cart_redeem": "Redeem",
     "cart_reset": "Reset",
     "expiration_date": "Expires",
