@@ -220,10 +220,6 @@ var EasyPoints = {
     getAdditionalCheckoutButtonEl: function(element, nodes = false) {
       return this.getElementBy$(element, '.additional-checkout-buttons', nodes);
     },
-
-    getRedemptionFormEl: function(element, nodes = false) {
-      return this.getElementBy$(element, 'epi-redemption-form', nodes);
-    },
   },
 
   Points: {
