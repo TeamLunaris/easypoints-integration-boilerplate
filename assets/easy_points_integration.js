@@ -700,23 +700,29 @@ var EasyPoints = {
         .then((response) => response.json())
         .then((updatedSections) => {
           cartItemsClass.getSectionsToRender().forEach((section) => {
+            const redemptionFormSelector = 'epi-redemption-form';
+
             const elementToReplace =
               document.getElementById(section.id).querySelector(section.selector) || document.getElementById(section.id);
 
-            elementToReplace.innerHTML = cartItemsClass.getSectionInnerHTML(
+            let newElementHTML = cartItemsClass.getSectionInnerHTML(
               updatedSections[section.section],
               section.selector
             );
-          });
 
-          callback();
+            const redemptionForm = elementToReplace.querySelector(redemptionFormSelector);
+            elementToReplace.innerHTML = newElementHTML
+
+            if (redemptionForm) {
+              elementToReplace.querySelector(redemptionFormSelector).replaceWith(redemptionForm);
+            }
+          });
         })
         .catch((e) => {
           console.error(e);
         });
     } else {
       EasyPoints.sdk().Cart.replaceTargets();
-      callback();
     }
   },
 
@@ -882,18 +888,8 @@ var EasyPoints = {
         checkoutBtn.forEach((node) => node.setAttribute('disabled', true));
 
         EasyPoints.sdk().applyDiscount(EasyPoints.sdk().getDiscountSession())
-          .then((result) => {
-
-            const uiUpdateCallback = () => {
-              if (typeof result !== "string" && "error" in result) {
-                var el = EasyPoints.Selectors.getRedemptionFormEl(document);
-                if (el !== null) {
-                  el.setAttribute('error', result.error.message);
-                }
-              }
-            }
-
-            EasyPoints.fetchShopifyCartUI(uiUpdateCallback);
+          .then(() => {
+            EasyPoints.fetchShopifyCartUI();
             EasyPoints.showDiscountUI();
             e.target.style.cursor = 'unset';
             e.target.removeAttribute('disabled');

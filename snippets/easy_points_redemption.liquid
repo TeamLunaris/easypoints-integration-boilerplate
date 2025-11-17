@@ -25,7 +25,7 @@
               {{ 'easypoints.cart_reset' | t }}
             </button>
           </div>
-          <div class="easy-points-form__errors">
+          <epi-error-line data-error-type='redemption' class="easy-points-form__errors">
             <span data-loyal-error="errors" data-i18n-errors='{
               "redemption: missing_product_ids": "{{ 'easypoints.redemption.missing_product_ids' | t }}",
               "redemption: 0_value_redemption": "{{ 'easypoints.redemption.0_value_redemption' | t }}",
@@ -36,7 +36,7 @@
               "unknown_error": "{{ 'easypoints.unknown_error' | t }}"
               }'
             />
-          </div>
+          </epi-error-line>
         </div>
       </epi-redemption-form>
     {%- endif -%}
