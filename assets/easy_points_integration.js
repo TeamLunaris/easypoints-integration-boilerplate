@@ -696,7 +696,7 @@ var EasyPoints = {
         .then((response) => response.json())
         .then((updatedSections) => {
           cartItemsClass.getSectionsToRender().forEach((section) => {
-            const redemptionFormSelector = 'epi-redemption-form';
+            const errorLineSelector = 'epi-error-line';
 
             const elementToReplace =
               document.getElementById(section.id).querySelector(section.selector) || document.getElementById(section.id);
@@ -706,12 +706,15 @@ var EasyPoints = {
               section.selector
             );
 
-            const redemptionForm = elementToReplace.querySelector(redemptionFormSelector);
-            elementToReplace.innerHTML = newElementHTML
+            const temp = document.createElement("div");
+            temp.innerHTML = newElementHTML;
 
-            if (redemptionForm) {
-              elementToReplace.querySelector(redemptionFormSelector).replaceWith(redemptionForm);
+            const errorLine = elementToReplace.querySelector(errorLineSelector);
+            if (errorLine) {
+              temp.querySelector(errorLineSelector).replaceWith(errorLine);
             }
+
+            elementToReplace.innerHTML = temp.innerHTML;
           });
         })
         .catch((e) => {
