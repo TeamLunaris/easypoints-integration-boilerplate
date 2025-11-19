@@ -706,7 +706,7 @@ var EasyPoints = {
               section.selector
             );
 
-            const temp = document.createElement("div");
+            const temp = document.createElement('div');
             temp.innerHTML = newElementHTML;
 
             const errorLine = elementToReplace.querySelector(errorLineSelector);
