@@ -696,13 +696,25 @@ var EasyPoints = {
         .then((response) => response.json())
         .then((updatedSections) => {
           cartItemsClass.getSectionsToRender().forEach((section) => {
+            const errorLineSelector = 'epi-error-line';
+
             const elementToReplace =
               document.getElementById(section.id).querySelector(section.selector) || document.getElementById(section.id);
 
-            elementToReplace.innerHTML = cartItemsClass.getSectionInnerHTML(
+            let newElementHTML = cartItemsClass.getSectionInnerHTML(
               updatedSections[section.section],
               section.selector
             );
+
+            const temp = document.createElement('div');
+            temp.innerHTML = newElementHTML;
+
+            const errorLine = elementToReplace.querySelector(errorLineSelector);
+            if (errorLine) {
+              temp.querySelector(errorLineSelector).replaceWith(errorLine);
+            }
+
+            elementToReplace.innerHTML = temp.innerHTML;
           });
         })
         .catch((e) => {
