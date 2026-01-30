@@ -39,8 +39,8 @@
   padding-left: var(--ep-spacer-1);
 }
 
-.easy-points__account .easy-points-balance__container > span:first-child,
-.easy-points__account .easy-points-tiers__container > span:first-child {
+.easy-points__account .easy-points-balance__container>span:first-child,
+.easy-points__account .easy-points-tiers__container>span:first-child {
   display: inline-block;
   min-width: 100px;
 }
@@ -87,6 +87,7 @@
 }
 
 @media only screen and (max-width: 749px) {
+
   .easy-points-form__input input,
   .easy-points-form__discount {
     width: 100px;
@@ -131,7 +132,7 @@
   color: var(--ep-black);
 }
 
-.easy-points-form__discount:not(.easy-points-hide) + input {
+.easy-points-form__discount:not(.easy-points-hide)+input {
   display: none;
 }
 
@@ -218,3 +219,20 @@
   min-width: 140px;
   margin-left: var(--ep-spacer-1);
 } */
+
+.epb-rewards-login__header h3 {
+  font-size: 1.8rem;
+  margin: 0px;
+}
+
+.epb-rewards-login__header p {
+  margin: 0px;
+}
+
+.epb-rewards-login__content {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-top: 1rem;
+  gap: 2rem;
+}
