@@ -10,6 +10,13 @@
     "expiration_date": "有効期限",
     "date": "{{ year }}年{{ month }}月{{ day }}日",
     "login_prompt": "ポイントのご利用にはログインしていただく必要がございます。",
+    "login_rewards": {
+      "heading": "ログイン特典を入手する",
+      "description": "1日1度まで、特典ポイントを獲得できます！",
+      "countdown": "{{ duration }}後に再入手可能です",
+      "submit_action": "{{ points }} ポイント獲得する",
+      "success": "獲得しました！"
+    },
     "note_form": {
       "birthday": "生年月日",
       "update": "更新"

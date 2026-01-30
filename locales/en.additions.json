@@ -13,7 +13,7 @@
     "login_rewards": {
       "heading": "Daily check in",
       "description": "Check in every day for a point reward",
-      "time_remaining": "Come back in {{ hours }}h and {{ minutes }}m",
+      "countdown": "Come back in {{ hours }}h and {{ minutes }}m",
       "submit_action": "Claim {{ points }} points",
       "success": "Claimed!"
     },

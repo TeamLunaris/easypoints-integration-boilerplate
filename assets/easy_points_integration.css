@@ -212,25 +212,19 @@
   margin-left: var(--ep-spacer-1);
 } */
 
-.easy-points-login_rewards__button_container {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-}
-
-.easy-points-login_rewards__inner {
-  padding-left: 2rem;
-}
-
-.easy-points-login_rewards__heading {
+.epb-rewards-login__header h3 {
   font-size: 1.8rem;
   margin: 0px;
 }
 
-.easy-points-login_rewards__description {
+.epb-rewards-login__header p {
   margin: 0px;
 }
 
-.easy-points-login_rewards__claim_button {
-  margin: 0px;
+.epb-rewards-login__content {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-top: 1rem;
+  gap: 2rem;
 }

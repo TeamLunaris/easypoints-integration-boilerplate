@@ -1,46 +1,57 @@
 {%- comment -%} START EASYPOINTS - DO NOT MODIFY! 変更しないでください! INFO @ https://bit.ly/2Dn7ESM {%- endcomment -%}
-{%- assign shop_ep_metafield = shop.metafields.loyalty.easy_points_attributes.value -%}
-{%- unless shop_ep_metafield.stealth_mode and shop_ep_metafield.rewards.login_reward -%}
+{%- unless shop.metafields.loyalty.easy_points_attributes.value.stealth_mode and shop.metafields.loyalty.easy_points_attributes.rewards.login_reward -%}
   {%- if customer -%}
-    {% liquid
-      assign next_login_reward = customer.metafields.loyalty.next_login_reward.value 
-      assign login_reward_amount = shop_ep_metafield.reward_rules.login.point_value | json
-    %}
+    {%- liquid
+      assign next_login_reward = customer.metafields.loyalty.next_login_reward.value
+      assign login_reward_amount = shop.metafields.loyalty.easy_points_attributes.value.reward_rules.login.point_value
+    -%}
 
-    <div id="ep-block-login_rewards" class="easy-points-login_rewards__container" data-loyalty-next_login_reward="{{next_login_reward}}" data-loyalty-login_reward_amount="{{login_reward_amount}}">
-      <div class="easy-points-login_rewards__header">
-        <h3 class="easy-points-login_rewards__heading">
+    {%- capture login_reward -%}
+      {
+        "nextTimestamp": {{ next_login_reward | json }},
+        "pointValue": {{ login_reward_amount | json }}
+      }
+    {%- endcapture -%}
+
+    {%- capture login_reward_i18n -%}
+      {
+        "submitAction": {{ "easypoints.login_rewards.submit_action" | t: points: login_reward_amount | json }},
+        "success": {{ "easypoints.login_rewards.success" | t | json }},
+        "countdown": {{ "easypoints.login_rewards.countdown" | t | json }},
+        "locale": {{ request.locale.iso_code | json }}
+      }
+    {%- endcapture -%}
+
+    <epb-login-reward
+      data-reward="{{ login_reward | strip_newlines | strip | escape }}"
+      data-i18n="{{ login_reward_i18n | strip_newlines | strip | escape }}"
+    >
+      <div class="epb-rewards-login__header">
+        <h3>
           {{ 'easypoints.login_rewards.heading' | t }}
         </h3>
-        <p class="easy-points-login_rewards__description">
+
+        <p>
           {{ 'easypoints.login_rewards.description' | t }}
         </p>
       </div>
 
-      <div class="easy-points-login_rewards__button_container">
+      <div class="epb-rewards-login__content">
         <button
-          id="ep-block-login_rewards-claim_button"
-          class="easy-points-login_rewards__claim_button button"
+          disabled
           type="button"
-          data-i18n-submit-action="{{ 'easypoints.login_rewards.submit_action' | t }}"
-          data-i18n-success="{{ 'easypoints.login_rewards.success' | t }}"
+          class="button"
+          data-loyalty-target="login-reward-submit"
         >
+          {{ 'easypoints.login_rewards.submit_action' | t: points: login_reward_amount }}
         </button>
 
-        <div 
-          style="display: none;" 
-          class="easy-points-login_rewards__inner"
-          id="ep-block-login_rewards-time_remaining"
-        >
-          <p 
-            id="ep-block-login_rewards-next_login_reward-text"
-            data-i18n-time-remaining="{{ 'easypoints.login_rewards.time_remaining' | t }}"
-          >
-            -
-          </p>
-        </div>
+        <div
+          style="display: none;"
+          data-loyalty-target="login-reward-countdown"
+        ></div>
       </div>
-    </div>
+    </epb-login-reward>
+
   {%- endif -%}
 {%- endunless -%}
-{%- comment -%} END EASYPOINTS {%- endcomment -%}
