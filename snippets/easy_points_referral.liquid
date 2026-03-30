@@ -1,0 +1,41 @@
+{%- comment -%} START EASYPOINTS - DO NOT MODIFY! 変更しないでください! INFO @ https://bit.ly/2Dn7ESM {%- endcomment -%}
+{%- assign shop_ep_metafield = shop.metafields.loyalty.easy_points_attributes.value -%}
+{%- unless shop_ep_metafield.stealth_mode -%}
+  {%- if customer -%}
+    {%- assign referral_rule = shop_ep_metafield.reward_rules.referral -%}
+
+    {%- if referral_rule and referral_rule.active -%}
+      {%- assign referral_link = shop.domain | append: '/apps/loyalty/ref/' | append: customer.id -%}
+
+      <div>
+        <p>
+          {{ 'easypoints.referral.prompt' | t: point_value: referral_rule.point_value }}
+        </p>
+
+        <div class="easy-points__referral">
+          <input
+            type="text"
+            id="easy-points-referral-link"
+            value="https://{{ referral_link }}"
+            readonly
+          >
+
+          <button
+            onclick="
+              const input = document.getElementById('easy-points-referral-link');
+              const copyText = {{ 'easypoints.referral.copy_button' | t | json }};
+              const copiedText = {{ 'easypoints.referral.copied_button' | t | json }};
+              navigator.clipboard.writeText(input.value).then(() => {
+                this.textContent = copiedText;
+                setTimeout(() => { this.textContent = copyText; }, 2000);
+              });
+            "
+          >
+            {{- 'easypoints.referral.copy_button' | t -}}
+          </button>
+        </div>
+      </div>
+    {%- endif -%}
+  {%- endif -%}
+{%- endunless -%}
+{%- comment -%} END EASYPOINTS {%- endcomment -%}
