@@ -16,7 +16,10 @@
     },
     "referral": {
       "header": "Referral",
-      "share": "Share"
+      "share": "Share",
+      "prompt": "Get {{ point_value }} points when your friend makes their first purchase through your referral link below.",
+      "copy_button": "Copy",
+      "copied_button": "Copied!"
     },
     "tiers": {
       "current_rank_html": "Rank {{ rank }}",
