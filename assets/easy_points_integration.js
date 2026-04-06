@@ -109,6 +109,7 @@ function afterEasyPointsSDK() {
   handleCartChanges();
 };
 
+window.easyPointsSDK = window.easyPointsSDK || {};
 window.easyPointsSDK.onReady = async () => {
   await EasyPoints.sdk().setup();
   afterEasyPointsSDK();
