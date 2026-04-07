@@ -93,7 +93,6 @@ function handleCartChanges() {
   // }
 };
 
-// COMBAK: maybe we can omit an event listener from the SDK
 function afterEasyPointsSDK() {
   if (EPI_SETTING_CART_DRAWER) {
     handleCartDrawerOpened();
@@ -110,27 +109,11 @@ function afterEasyPointsSDK() {
   handleCartChanges();
 };
 
-window.addEventListener('DOMContentLoaded', function() {
-  let tries = 0;
-  let interval;
-  interval = setInterval(() => {
-    if (tries > 100) {
-      console.warn('easyPointsSDK was not loaded.');
-      clearInterval(interval);
-      return;
-    }
-
-    if (window.easyPointsSDK !== undefined) {
-      clearInterval(interval);
-
-      EasyPoints.sdk().setup();
-      afterEasyPointsSDK();
-      return;
-    }
-
-    tries++;
-  }, 50);
-});
+window.easyPointsSDK = window.easyPointsSDK || {};
+window.easyPointsSDK.onReady = async () => {
+  await EasyPoints.sdk().setup();
+  afterEasyPointsSDK();
+};
 
 var EasyPoints = {
   sdk: function() {
