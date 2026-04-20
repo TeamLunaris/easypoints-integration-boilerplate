@@ -1,0 +1,57 @@
+{%- comment -%} START EASYPOINTS - DO NOT MODIFY! 変更しないでください! INFO @ https://bit.ly/2Dn7ESM {%- endcomment -%}
+{%- unless shop.metafields.loyalty.easy_points_attributes.value.stealth_mode and shop.metafields.loyalty.easy_points_attributes.rewards.login_reward -%}
+  {%- if customer -%}
+    {%- liquid
+      assign next_login_reward = customer.metafields.loyalty.next_login_reward.value
+      assign login_reward_amount = shop.metafields.loyalty.easy_points_attributes.value.reward_rules.login.point_value
+    -%}
+
+    {%- capture login_reward -%}
+      {
+        "nextTimestamp": {{ next_login_reward | json }},
+        "pointValue": {{ login_reward_amount | json }}
+      }
+    {%- endcapture -%}
+
+    {%- capture login_reward_i18n -%}
+      {
+        "submitAction": {{ "easypoints.login_rewards.submit_action" | t: points: login_reward_amount | json }},
+        "success": {{ "easypoints.login_rewards.success" | t | json }},
+        "countdown": {{ "easypoints.login_rewards.countdown" | t | json }},
+        "locale": {{ request.locale.iso_code | json }}
+      }
+    {%- endcapture -%}
+
+    <epb-login-reward
+      data-reward="{{ login_reward | strip_newlines | strip | escape }}"
+      data-i18n="{{ login_reward_i18n | strip_newlines | strip | escape }}"
+    >
+      <div class="epb-rewards-login__header">
+        <h3>
+          {{ 'easypoints.login_rewards.heading' | t }}
+        </h3>
+
+        <p>
+          {{ 'easypoints.login_rewards.description' | t }}
+        </p>
+      </div>
+
+      <div class="epb-rewards-login__content">
+        <button
+          disabled
+          type="button"
+          class="button"
+          data-loyalty-target="login-reward-submit"
+        >
+          {{ 'easypoints.login_rewards.submit_action' | t: points: login_reward_amount }}
+        </button>
+
+        <div
+          style="display: none;"
+          data-loyalty-target="login-reward-countdown"
+        ></div>
+      </div>
+    </epb-login-reward>
+
+  {%- endif -%}
+{%- endunless -%}
