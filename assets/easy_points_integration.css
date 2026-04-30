@@ -207,18 +207,25 @@
 
 .easy-points__referral {
   display: flex;
+  align-items: center;
   gap: 4px;
 }
 
+.easy-points__referral input,
+.easy-points__referral button {
+  box-sizing: border-box;
+  height: 40px;
+  min-height: 0;
+  padding: 0 12px;
+  line-height: 1.4;
+}
 .easy-points__referral input {
   flex: 1;
   min-width: 0;
-  padding: 8px 12px;
 }
 
 .easy-points__referral button {
-  padding: 8px 12px;
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
   margin: auto !important;
