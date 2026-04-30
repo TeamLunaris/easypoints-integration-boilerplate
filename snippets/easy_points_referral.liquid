@@ -1,42 +1,38 @@
 {%- comment -%} START EASYPOINTS - DO NOT MODIFY! 変更しないでください! INFO @ https://bit.ly/2Dn7ESM {%- endcomment -%}
-  {%- assign shop_ep_metafield = shop.metafields.loyalty.easy_points_attributes.value -%}
-  {%- unless shop_ep_metafield.stealth_mode -%}
-    {%- if customer -%}
-      {%- assign referral_rule = shop_ep_metafield.reward_rules.referral -%}
+{%- assign shop_ep_metafield = shop.metafields.loyalty.easy_points_attributes.value -%}
+{%- unless shop_ep_metafield.stealth_mode -%}
+  {%- if customer -%}
+    {%- assign referral_rule = shop_ep_metafield.reward_rules.referral -%}
 
-      {%- if referral_rule and referral_rule.active -%}
-        {%- assign referral_link = shop.domain | append: '/apps/loyalty/ref/' | append: customer.id -%}
+    {%- if referral_rule and referral_rule.active -%}
+      <h2>{{ 'easypoints.referral.header' | t }}</h2>
 
-        <div>
-          <p>
-            {{ 'easypoints.referral.prompt' | t: point_value: referral_rule.point_value }}
-          </p>
+      {%- assign completed_referrals = customer.metafields.loyalty.easy_points_attributes.value.completed_referrals | default: 0 -%}
+      <p>{{ 'easypoints.referral.completed_count' | t: count: completed_referrals }}</p>
 
-          <div class="easy-points__referral">
-            <input
-              aria-label="referral link"
-              id="easy-points-referral-link"
-              readonly
-              type="text"
-              value="https://{{ referral_link }}"
-            >
+      {%- assign referral_link = shop.domain | append: '/apps/loyalty/ref/' | append: customer.id -%}
 
-            <button
-              onclick="
-                const input = document.getElementById('easy-points-referral-link');
-                const copyText = {{ 'easypoints.referral.copy_button' | t | json }};
-                const copiedText = {{ 'easypoints.referral.copied_button' | t | json }};
-                navigator.clipboard.writeText(input.value).then(() => {
-                  this.textContent = copiedText;
-                  setTimeout(() => { this.textContent = copyText; }, 2000);
-                });
-              "
-            >
-              {{- 'easypoints.referral.copy_button' | t -}}
-            </button>
-          </div>
-        </div>
-      {%- endif -%}
+      <div class="easy-points__referral">
+        <p>
+          {{ 'easypoints.referral.prompt_html' | t: point_value: referral_rule.point_value }}
+        </p>
+
+        <button
+          data-referral-link="https://{{ referral_link }}"
+          data-copy-label="{{ 'easypoints.referral.copy_button' | t | escape }}"
+          data-copied-label="{{ 'easypoints.referral.copied_button' | t | escape }}"
+          onclick="
+            navigator.clipboard.writeText(this.dataset.referralLink).then(() => {
+              const copyLabel = this.dataset.copyLabel;
+              this.textContent = this.dataset.copiedLabel;
+              setTimeout(() => { this.textContent = copyLabel; }, 2000);
+            });
+          "
+        >
+          {{- 'easypoints.referral.copy_button' | t -}}
+        </button>
+      </div>
     {%- endif -%}
-  {%- endunless -%}
+  {%- endif -%}
+{%- endunless -%}
 {%- comment -%} END EASYPOINTS {%- endcomment -%}

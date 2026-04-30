@@ -208,26 +208,15 @@
 .easy-points__referral {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 16px;
 }
 
-.easy-points__referral input,
-.easy-points__referral button {
-  box-sizing: border-box;
-  height: 40px;
-  min-height: 0;
-  padding: 0 12px;
-  line-height: 1.4;
-}
-.easy-points__referral input {
-  flex: 1;
-  min-width: 0;
+.easy-points__referral p {
+  margin: 0 !important;
 }
 
 .easy-points__referral button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+  flex-shrink: 0;
   margin: auto !important;
 }
 /* [data-loyal-target="subtotal"] .easy-points,
