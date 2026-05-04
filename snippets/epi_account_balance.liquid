@@ -5,7 +5,7 @@
       {%- liquid
         assign customer_ep_metafield = customer.metafields.loyalty.easy_points_attributes.value
         assign has_feature_tiers = false
-        for key_value in shop.metafields.loyalty['features']
+        for key_value in shop.metafields.loyalty.features.value
           if key_value[0] == "tiers" and key_value[1] == true
             assign has_feature_tiers = true
           endif
