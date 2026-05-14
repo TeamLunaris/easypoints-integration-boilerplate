@@ -7,7 +7,9 @@
     {%- if referral_rule and referral_rule.active -%}
       <h2>{{ 'easypoints.referral.header' | t }}</h2>
 
-      {%- assign completed_referrals = customer.metafields.loyalty.easy_points_attributes.value.completed_referrals | default: 0 -%}
+      {%- assign completed_referrals = customer.metafields.loyalty.easy_points_attributes.value.completed_referrals
+        | default: 0
+      -%}
       <p>{{ 'easypoints.referral.completed_count' | t: count: completed_referrals }}</p>
 
       {%- assign referral_link = shop.domain | append: '/apps/loyalty/ref/' | append: customer.id -%}
@@ -17,20 +19,13 @@
           {{ 'easypoints.referral.prompt_html' | t: point_value: referral_rule.point_value }}
         </p>
 
-        <button
-          data-referral-link="https://{{ referral_link }}"
-          data-copy-label="{{ 'easypoints.referral.copy_button' | t | escape }}"
-          data-copied-label="{{ 'easypoints.referral.copied_button' | t | escape }}"
-          onclick="
-            navigator.clipboard.writeText(this.dataset.referralLink).then(() => {
-              const copyLabel = this.dataset.copyLabel;
-              this.textContent = this.dataset.copiedLabel;
-              setTimeout(() => { this.textContent = copyLabel; }, 2000);
-            });
-          "
+        <epi-referral-copy
+          referral-link="https://{{ referral_link }}"
+          copy-label="{{ 'easypoints.referral.copy_button' | t | escape }}"
+          copied-label="{{ 'easypoints.referral.copied_button' | t | escape }}"
         >
-          {{- 'easypoints.referral.copy_button' | t -}}
-        </button>
+          <button>{{- 'easypoints.referral.copy_button' | t -}}</button>
+        </epi-referral-copy>
       </div>
     {%- endif -%}
   {%- endif -%}
