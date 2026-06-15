@@ -14,19 +14,27 @@
 
       {%- assign referral_link = shop.domain | append: '/apps/loyalty/ref/' | append: customer.id -%}
 
-      <div class="easy-points__referral">
-        <p>
-          {{ 'easypoints.referral.prompt_html' | t: point_value: referral_rule.point_value }}
-        </p>
+      {%- capture referral_i18n -%}
+        {
+          "copy": {{ 'easypoints.referral.copy_button' | t | json }},
+          "copied": {{ 'easypoints.referral.copied_button' | t | json }}
+        }
+      {%- endcapture -%}
 
-        <epi-referral-copy
-          referral-link="https://{{ referral_link }}"
-          copy-label="{{ 'easypoints.referral.copy_button' | t | escape }}"
-          copied-label="{{ 'easypoints.referral.copied_button' | t | escape }}"
-        >
-          <button>{{- 'easypoints.referral.copy_button' | t -}}</button>
-        </epi-referral-copy>
-      </div>
+      <epi-referral-copy
+        referral-link="https://{{ referral_link }}"
+        data-i18n="{{ referral_i18n | strip_newlines | strip | escape }}"
+      >
+        <div class="easy-points__referral">
+          <p>
+            {{ 'easypoints.referral.prompt_html' | t: point_value: referral_rule.point_value }}
+          </p>
+
+          <button type="button" class="button">
+            {{- 'easypoints.referral.copy_button' | t -}}
+          </button>
+        </div>
+      </epi-referral-copy>
     {%- endif -%}
   {%- endif -%}
 {%- endunless -%}

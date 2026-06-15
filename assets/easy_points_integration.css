@@ -207,8 +207,8 @@
 
 .easy-points__referral {
   display: flex;
-  align-items: center;
-  gap: 16px;
+  flex-direction: column;
+  align-items: flex-start;
 }
 
 .easy-points__referral p {
@@ -216,8 +216,7 @@
 }
 
 .easy-points__referral button {
-  flex-shrink: 0;
-  margin: auto !important;
+  margin-bottom: 1.5rem;
 }
 /* [data-loyal-target="subtotal"] .easy-points,
 [data-loyal-target="subtotal"] [data-loyal-target="total_price"] {
