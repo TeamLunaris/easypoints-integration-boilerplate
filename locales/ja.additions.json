@@ -21,6 +21,7 @@
       "copy_button": "コピー",
       "copied_button": "コピーしました！",
       "completed_count": {
+        "one": "{{ count }}件の紹介が完了しました",
         "other": "{{ count }}件の紹介が完了しました"
       }
     },
