@@ -22,11 +22,11 @@
       }
     {%- endcapture -%}
 
-    <epb-login-reward
+    <epi-login-reward
       data-reward="{{ login_reward | strip_newlines | strip | escape }}"
       data-i18n="{{ login_reward_i18n | strip_newlines | strip | escape }}"
     >
-      <div class="epb-rewards-login__header">
+      <div class="epi-rewards-login__header">
         <h3>
           {{ 'easypoints.login_rewards.heading' | t }}
         </h3>
@@ -36,7 +36,7 @@
         </p>
       </div>
 
-      <div class="epb-rewards-login__content">
+      <div class="epi-rewards-login__content">
         <button
           disabled
           type="button"
@@ -51,7 +51,7 @@
           data-loyalty-target="login-reward-countdown"
         ></div>
       </div>
-    </epb-login-reward>
+    </epi-login-reward>
 
   {%- endif -%}
 {%- endunless -%}

@@ -212,16 +212,16 @@
   margin-left: var(--ep-spacer-1);
 } */
 
-.epb-rewards-login__header h3 {
+.epi-rewards-login__header h3 {
   font-size: 1.8rem;
   margin: 0px;
 }
 
-.epb-rewards-login__header p {
+.epi-rewards-login__header p {
   margin: 0px;
 }
 
-.epb-rewards-login__content {
+.epi-rewards-login__content {
   display: flex;
   flex-direction: row;
   align-items: center;
