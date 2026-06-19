@@ -1,9 +1,21 @@
 {%- comment -%} START EASYPOINTS - DO NOT MODIFY! 変更しないでください! INFO @ https://bit.ly/2Dn7ESM {%- endcomment -%}
-{%- unless shop.metafields.loyalty.easy_points_attributes.value.stealth_mode and shop.metafields.loyalty.easy_points_attributes.rewards.login_reward -%}
+{%- unless shop.metafields.loyalty.easy_points_attributes.value.stealth_mode
+  and shop.metafields.loyalty.easy_points_attributes.rewards.login_reward
+-%}
   {%- if customer -%}
     {%- liquid
+      assign login_reward_rules = shop.metafields.loyalty.easy_points_attributes.value.reward_rules.login.reward_point_rules
+      assign customer_tier_uid = customer.metafields.loyalty.easy_points_attributes.value.tier_uid
+
+      assign login_reward_amount = login_reward_rules[0].point_value
+      for rule in login_reward_rules
+        if rule.uid == customer_tier_uid
+          assign login_reward_amount = rule.point_value
+          break
+        endif
+      endfor
+
       assign next_login_reward = customer.metafields.loyalty.next_login_reward.value
-      assign login_reward_amount = shop.metafields.loyalty.easy_points_attributes.value.reward_rules.login.point_value
     -%}
 
     {%- capture login_reward -%}
@@ -18,6 +30,7 @@
         "submitAction": {{ "easypoints.login_rewards.submit_action" | t: points: login_reward_amount | json }},
         "success": {{ "easypoints.login_rewards.success" | t | json }},
         "countdown": {{ "easypoints.login_rewards.countdown" | t | json }},
+        "error": {{ "easypoints.login_rewards.error" | t | json }},
         "locale": {{ request.locale.iso_code | json }}
       }
     {%- endcapture -%}
@@ -27,12 +40,12 @@
       data-i18n="{{ login_reward_i18n | strip_newlines | strip | escape }}"
     >
       <div class="epi-rewards-login__header">
-        <h3>
+        <h2>
           {{ 'easypoints.login_rewards.heading' | t }}
-        </h3>
+        </h2>
 
         <p>
-          {{ 'easypoints.login_rewards.description' | t }}
+          {{ 'easypoints.login_rewards.description' | t: points: login_reward_amount }}
         </p>
       </div>
 
@@ -51,7 +64,14 @@
           data-loyalty-target="login-reward-countdown"
         ></div>
       </div>
-    </epi-login-reward>
 
+      <p
+        role="alert"
+        style="display: none;"
+        class="epi-rewards-login__error"
+        data-loyalty-target="login-reward-error"
+      ></p>
+    </epi-login-reward>
   {%- endif -%}
 {%- endunless -%}
+{%- comment -%} END EASYPOINTS {%- endcomment -%}

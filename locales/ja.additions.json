@@ -12,10 +12,11 @@
     "login_prompt": "ポイントのご利用にはログインしていただく必要がございます。",
     "login_rewards": {
       "heading": "ログイン特典を入手する",
-      "description": "1日1度まで、特典ポイントを獲得できます！",
+      "description": "1日1度まで、{{ points }} ポイントを獲得できます！",
       "countdown": "{{ duration }}後に再入手可能です",
       "submit_action": "{{ points }} ポイント獲得する",
-      "success": "獲得しました！"
+      "success": "獲得しました！",
+      "error": "エラーが発生しました。もう一度お試しください。"
     },
     "note_form": {
       "birthday": "生年月日",

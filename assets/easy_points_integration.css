@@ -212,19 +212,27 @@
   margin-left: var(--ep-spacer-1);
 } */
 
-.epi-rewards-login__header h3 {
-  font-size: 1.8rem;
+.epi-rewards-login__header h2 {
   margin: 0px;
 }
 
 .epi-rewards-login__header p {
-  margin: 0px;
+  margin: 0.25rem 0px 0px;
 }
 
 .epi-rewards-login__content {
   display: flex;
   flex-direction: row;
   align-items: center;
-  margin-top: 1rem;
+  margin-top: 0.75rem;
   gap: 2rem;
+}
+
+.epi-rewards-login__content .button {
+  margin: 0;
+}
+
+.epi-rewards-login__error {
+  margin: 0.5rem 0px 0px;
+  color: var(--ep-red);
 }
