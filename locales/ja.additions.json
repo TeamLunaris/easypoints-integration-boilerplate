@@ -16,7 +16,14 @@
     },
     "referral": {
       "header": "紹介",
-      "share": "シェア"
+      "share": "シェア",
+      "prompt_html": "お友達があなたの紹介リンクから初めて購入すると、<strong>{{ point_value }}ポイント</strong>を獲得できます。",
+      "copy_button": "コピー",
+      "copied_button": "コピーしました！",
+      "completed_count": {
+        "one": "{{ count }}件の紹介が完了しました",
+        "other": "{{ count }}件の紹介が完了しました"
+      }
     },
     "tiers": {
       "current_rank_html": "{{ rank }}",
