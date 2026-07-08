@@ -6,7 +6,6 @@
 
     {%- if referral_rule and referral_rule.active -%}
       {%- liquid
-        # Resolve the point value to the customer's tier; reward_point_rules[0] is the lowest tier.
         assign customer_tier_uid = customer.metafields.loyalty.easy_points_attributes.value.tier_uid
         assign referral_point_value = referral_rule.reward_point_rules[0].point_value
         for rule in referral_rule.reward_point_rules
