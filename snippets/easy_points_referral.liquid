@@ -5,6 +5,18 @@
     {%- assign referral_rule = shop_ep_metafield.reward_rules.referral -%}
 
     {%- if referral_rule and referral_rule.active -%}
+      {%- liquid
+        # Resolve the point value to the customer's tier; reward_point_rules[0] is the lowest tier.
+        assign customer_tier_uid = customer.metafields.loyalty.easy_points_attributes.value.tier_uid
+        assign referral_point_value = referral_rule.reward_point_rules[0].point_value
+        for rule in referral_rule.reward_point_rules
+          if rule.uid == customer_tier_uid
+            assign referral_point_value = rule.point_value
+            break
+          endif
+        endfor
+      -%}
+
       <h2>{{ 'easypoints.referral.header' | t }}</h2>
 
       {%- assign completed_referrals = customer.metafields.loyalty.easy_points_attributes.value.completed_referrals | default: 0 -%}
@@ -25,7 +37,7 @@
       >
         <div class="easy-points__referral">
           <p>
-            {{ 'easypoints.referral.prompt_html' | t: point_value: referral_rule.point_value }}
+            {{ 'easypoints.referral.prompt_html' | t: point_value: referral_point_value }}
           </p>
 
           <button type="button" class="button">
