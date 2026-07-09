@@ -23,8 +23,15 @@
       "update": "Update"
     },
     "referral": {
-      "header": "Referral",
-      "share": "Share"
+      "header": "Invite a friend",
+      "share": "Share",
+      "prompt_html": "Get <strong>{{ point_value }} points</strong> when your friend makes their first purchase!",
+      "copy_button": "Copy",
+      "copied_button": "Copied!",
+      "completed_count": {
+        "one": "{{ count }} referral completed",
+        "other": "{{ count }} referrals completed"
+      }
     },
     "tiers": {
       "current_rank_html": "Rank {{ rank }}",

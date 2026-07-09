@@ -93,7 +93,6 @@ function handleCartChanges() {
   // }
 };
 
-// COMBAK: maybe we can omit an event listener from the SDK
 function afterEasyPointsSDK() {
   if (EPI_SETTING_CART_DRAWER) {
     handleCartDrawerOpened();
@@ -110,27 +109,11 @@ function afterEasyPointsSDK() {
   handleCartChanges();
 };
 
-window.addEventListener('DOMContentLoaded', function() {
-  let tries = 0;
-  let interval;
-  interval = setInterval(() => {
-    if (tries > 100) {
-      console.warn('easyPointsSDK was not loaded.');
-      clearInterval(interval);
-      return;
-    }
-
-    if (window.easyPointsSDK !== undefined) {
-      clearInterval(interval);
-
-      EasyPoints.sdk().setup();
-      afterEasyPointsSDK();
-      return;
-    }
-
-    tries++;
-  }, 50);
-});
+window.easyPointsSDK = window.easyPointsSDK || {};
+window.easyPointsSDK.onReady = async () => {
+  await EasyPoints.sdk().setup();
+  afterEasyPointsSDK();
+};
 
 var EasyPoints = {
   sdk: function() {
@@ -606,13 +589,13 @@ var EasyPoints = {
      * @param {number|null} [subtotal=null] - The subtotal amount used to calculate the next tier. If null, the function will attempt to retrieve it from an HTML element.
      */
     recalculate: function(subtotal = null) {
-      var { rankAdvancementData } = getEasyPointsSession();
+      var { tierMaintenanceData: { rankAdvancementData } } = EasyPoints.sdk().Session.get();
 
       if (!rankAdvancementData || rankAdvancementData.raw_amount >= 0) {
         return;
       }
 
-      var discount = EasyPoints.getDiscountSession();
+      var discount = EasyPoints.sdk().getDiscountSession();
       var { multiplier } = EasyPointsCore.Currency.getFormatOptions() || { multiplier: 100 };
       var discountNoDecimal = Math.round(discount * EasyPointsCore.Currency.getRate() * multiplier)
 
@@ -696,13 +679,25 @@ var EasyPoints = {
         .then((response) => response.json())
         .then((updatedSections) => {
           cartItemsClass.getSectionsToRender().forEach((section) => {
+            const errorLineSelector = 'epi-error-line';
+
             const elementToReplace =
               document.getElementById(section.id).querySelector(section.selector) || document.getElementById(section.id);
 
-            elementToReplace.innerHTML = cartItemsClass.getSectionInnerHTML(
+            let newElementHTML = cartItemsClass.getSectionInnerHTML(
               updatedSections[section.section],
               section.selector
             );
+
+            const temp = document.createElement('div');
+            temp.innerHTML = newElementHTML;
+
+            const errorLine = elementToReplace.querySelector(errorLineSelector);
+            if (errorLine) {
+              temp.querySelector(errorLineSelector).replaceWith(errorLine);
+            }
+
+            elementToReplace.innerHTML = temp.innerHTML;
           });
         })
         .catch((e) => {
