@@ -7,10 +7,10 @@
       assign login_reward_rules = shop.metafields.loyalty.easy_points_attributes.value.reward_rules.login.reward_point_rules
       assign customer_tier_uid = customer.metafields.loyalty.easy_points_attributes.value.tier_uid
 
-      assign login_reward_amount = login_reward_rules[0].point_value
+      assign login_reward_amount = login_reward_rules[0].point_value | default: 0
       for rule in login_reward_rules
         if rule.uid == customer_tier_uid
-          assign login_reward_amount = rule.point_value
+          assign login_reward_amount = rule.point_value | default: 0
           break
         endif
       endfor
