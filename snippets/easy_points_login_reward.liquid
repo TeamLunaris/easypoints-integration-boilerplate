@@ -30,7 +30,6 @@
         "submitAction": {{ "easypoints.login_rewards.submit_action" | t: points: login_reward_amount | json }},
         "success": {{ "easypoints.login_rewards.success" | t | json }},
         "countdown": {{ "easypoints.login_rewards.countdown" | t | json }},
-        "error": {{ "easypoints.login_rewards.error" | t | json }},
         "locale": {{ request.locale.iso_code | json }}
       }
     {%- endcapture -%}
@@ -65,13 +64,20 @@
         ></div>
       </div>
 
-      <p
-        role="alert"
-        style="display: none;"
+      <epi-error-line
+        data-error-type="login_rewards"
+        data-translation-selector='[data-loyalty-login-reward-block="i18n"]'
         class="epi-rewards-login__error"
-        data-loyalty-target="login-reward-error"
-      ></p>
+      ></epi-error-line>
     </epi-login-reward>
+
+    <script data-loyalty-login-reward-block="i18n" type="application/json">
+      {
+        "errors": {
+          "unknown_error": {{ 'easypoints.login_rewards.error' | t | json }}
+        }
+      }
+    </script>
   {%- endif -%}
 {%- endunless -%}
 {%- comment -%} END EASYPOINTS {%- endcomment -%}
