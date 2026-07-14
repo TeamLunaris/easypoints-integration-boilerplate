@@ -1,0 +1,29 @@
+snippets/easy_points_redemption.liquid
+  h_19104d8a96b2bd 53-54
+snippets/epi_account_balance.liquid
+  h_19104d8a96b2bd 9
+assets/easy_points_integration.js
+  s_599ab1c9ebf0be::t_6a22a5ef23bf2a 112-113
+  s_599ab1c9ebf0be::t_77b3026e246147 114-116
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.13",
+  "base_commit_sha": "f78b19c67aec0691f5d1c1520512bb2c6c8bfc1b",
+  "prompts": {},
+  "humans": {
+    "h_19104d8a96b2bd": {
+      "author": "Harry Lording <helording@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_599ab1c9ebf0be": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "e69d6941-ced3-4f06-bce6-ee805f0f3104",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Harry Lording <helording@gmail.com>"
+    }
+  }
+}
