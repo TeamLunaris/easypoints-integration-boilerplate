@@ -1,19 +1,13 @@
 {%- comment -%} START EASYPOINTS - DO NOT MODIFY! 変更しないでください! INFO @ https://bit.ly/2Dn7ESM {%- endcomment -%}
-{%- unless shop.metafields.loyalty.easy_points_attributes.value.stealth_mode
-  and shop.metafields.loyalty.easy_points_attributes.rewards.login_reward
--%}
-  {%- if customer -%}
+{%- assign shop_ep_metafield = shop.metafields.loyalty.easy_points_attributes.value -%}
+{%- unless shop_ep_metafield.stealth_mode -%}
+  {%- assign login_rule = shop_ep_metafield.reward_rules.login -%}
+  {%- if customer and login_rule.active -%}
     {%- liquid
-      assign login_reward_rules = shop.metafields.loyalty.easy_points_attributes.value.reward_rules.login.reward_point_rules
-      assign customer_tier_uid = customer.metafields.loyalty.easy_points_attributes.value.tier_uid
-
-      assign login_reward_amount = login_reward_rules[0].point_value | default: 0
-      for rule in login_reward_rules
-        if rule.uid == customer_tier_uid
-          assign login_reward_amount = rule.point_value | default: 0
-          break
-        endif
-      endfor
+      capture login_reward_amount_html
+        render 'epi_reward_value', reward_type: 'login'
+      endcapture
+      assign login_reward_amount = login_reward_amount_html | strip_html | strip | plus: 0
 
       assign next_login_reward = customer.metafields.loyalty.next_login_reward.value
     -%}
