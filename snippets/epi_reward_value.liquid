@@ -1,0 +1,46 @@
+{%- comment -%}
+  Renders the effective point value for the given `reward_type`, resolved to the
+  current customer's tier (or the default tier when no customer is logged in).
+
+  Parameters:
+    - reward_type {String} - The reward type key (e.g. 'birthday', 'signup', 'login').
+
+  Outputs a plain integer point value. Use when displaying the tier-aware reward
+  value for a specific action on the storefront, e.g. in "how to earn" sections.
+{%- endcomment -%}
+{%- liquid
+  assign easy_points = shop.metafields.loyalty.easy_points_attributes.value
+
+  assign reward_point_rules = nil
+  for entry in easy_points.reward_rules
+    if entry[0] == reward_type
+      assign reward_point_rules = entry[1].reward_point_rules
+      break
+    endif
+  endfor
+
+  assign customer_tier_uid = customer.metafields.loyalty.easy_points_attributes.value.tier_uid
+
+  assign default_tier_uid = nil
+  assign min_requirement = -1
+  for entry in easy_points.tier_rules
+    assign tier_uid = entry[0]
+    assign tier_rule = entry[1]
+    if min_requirement == -1 or tier_rule.currency_spent_requirement < min_requirement
+      assign min_requirement = tier_rule.currency_spent_requirement
+      assign default_tier_uid = tier_uid
+    endif
+  endfor
+
+  assign resolved_tier_uid = customer_tier_uid | default: default_tier_uid
+
+  assign reward_value = reward_point_rules[0].point_value
+  for rule in reward_point_rules
+    if rule.uid == resolved_tier_uid
+      assign reward_value = rule.point_value
+      break
+    endif
+  endfor
+
+  echo reward_value
+-%}

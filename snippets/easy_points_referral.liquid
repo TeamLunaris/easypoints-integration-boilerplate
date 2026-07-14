@@ -6,14 +6,10 @@
 
     {%- if referral_rule and referral_rule.active -%}
       {%- liquid
-        assign customer_tier_uid = customer.metafields.loyalty.easy_points_attributes.value.tier_uid
-        assign referral_point_value = referral_rule.reward_point_rules[0].point_value
-        for rule in referral_rule.reward_point_rules
-          if rule.uid == customer_tier_uid
-            assign referral_point_value = rule.point_value
-            break
-          endif
-        endfor
+        capture referral_point_value_html
+          render 'epi_reward_value', reward_type: 'referral'
+        endcapture
+        assign referral_point_value = referral_point_value_html | strip_html | strip | plus: 0
       -%}
 
       <h2>{{ 'easypoints.referral.header' | t }}</h2>
