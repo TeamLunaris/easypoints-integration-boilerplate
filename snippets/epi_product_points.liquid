@@ -19,33 +19,30 @@
 
     {%- if point_exchange_metafield -%}
       {%- comment -%}
-        The SDK's `epi-point-exchange-product` element fills the point cost, hides the
-        theme's native money price, and gates the purchase controls by the customer's
-        available balance.
+        This renders the point cost only. Wrap the theme's price with the
+        `<epi-point-exchange-product>` element so the SDK can replace the price,
+        and gate the purchase controls by the customer's available balance, e.g.:
 
-        Hiding the native price needs no config on mainstream themes (Dawn etc.) — the
-        SDK auto-hides common price classes. For a theme it can't detect, EITHER:
-          - wrap the theme's price markup inside this element, or
-          - add `data-loyal-target="native-price"` to the theme's price element.
-        Both are hidden automatically; nothing else to configure.
+          <epi-point-exchange-product{% if line_item %} data-loyal-item-id="{{ line_item.id }}"{% endif %}>
+            {{ theme's price markup }}
+            {% render 'epi_product_points', product: product %}
+          </epi-point-exchange-product>
+
+        Wrapping is safe around every product: for non-exchange products the
+        element finds no cost marker and does nothing.
       {%- endcomment -%}
-      <epi-point-exchange-product
-        class="easy-points easy-points__point-exchange-product"
-        {%- if line_item %} data-loyal-item-id="{{ line_item.id }}"{% endif -%}
-      >
-        <span data-loyal-target="point-exchange-cost">
-          <span
-            data-loyal-target="point-exchange-product"
-            data-loyal-point-cost="{{ point_exchange_metafield.point_cost }}"
-          >
-            <span data-loyal-target="point-value-location"></span>
-          </span>
-
-          <span class="easy-points__text easy-points__text--suffix">
-            {{ 'easypoints.points' | t }}
-          </span>
+      <span data-loyal-target="point-exchange-cost" class="easy-points easy-points__point-exchange-product">
+        <span
+          data-loyal-target="point-exchange-product"
+          data-loyal-point-cost="{{ point_exchange_metafield.point_cost }}"
+        >
+          <span data-loyal-target="point-value-location"></span>
         </span>
-      </epi-point-exchange-product>
+
+        <span class="easy-points__text easy-points__text--suffix">
+          {{ 'easypoints.points' | t }}
+        </span>
+      </span>
     {%- endif -%}
   {%- elsif product or line_item -%}
     <div class="easy-points easy-points__product-points">
