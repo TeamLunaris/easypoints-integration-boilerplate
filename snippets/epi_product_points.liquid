@@ -19,17 +19,17 @@
 
     {%- if point_exchange_metafield -%}
       {%- comment -%}
-        This renders the point cost only. Wrap the theme's price with the
-        `<epi-point-exchange-product>` element so the SDK can replace the price,
-        and gate the purchase controls by the customer's available balance, e.g.:
+        This renders the point cost only. Wrap the theme's PRICE in
+        `<epi-point-exchange-product>` so the SDK replaces the price with the cost
+        and (on product/collection pages) gates the add-to-cart button:
 
-          <epi-point-exchange-product{% if line_item %} data-loyal-item-id="{{ line_item.id }}"{% endif %}>
+          <epi-point-exchange-product>
             {{ theme's price markup }}
             {% render 'epi_product_points', product: product %}
           </epi-point-exchange-product>
 
-        Wrapping is safe around every product: for non-exchange products the
-        element finds no cost marker and does nothing.
+        On the CART page, wrap the price the same way, rendering with `line_item`:
+        `{% render 'epi_product_points', line_item: item %}`.
       {%- endcomment -%}
       <span data-loyal-target="point-exchange-cost" class="easy-points easy-points__point-exchange-product">
         <span

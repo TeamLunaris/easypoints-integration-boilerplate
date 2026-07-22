@@ -1,0 +1,26 @@
+{%- comment -%}
+  Gates the point-exchange quantity buttons for the cart page. Render this next to a
+  cart line's quantity stepper (inside the same cell): for a point-exchange
+  product it outputs `<epi-point-exchange-cart>`, which disables the "+" button
+  once the customer can't afford another unit; for any other product it outputs
+  nothing.
+
+  Args:
+    (required) `line_item`: the cart line item.
+
+  Example (in the cart's quantity cell, beside the stepper):
+    <td class="cart-item__quantity">
+      {% render 'epi_point_exchange_quantity', line_item: item %}
+      {{ theme's quantity stepper (button name="plus"/"minus") }}
+    </td>
+{%- endcomment -%}
+{%- unless shop.metafields.loyalty.easy_points_attributes.value.stealth_mode -%}
+  {%- assign point_exchange_metafield = line_item.product.metafields.loyalty.easy_points_attributes.value.point_exchange -%}
+
+  {%- if point_exchange_metafield -%}
+    <epi-point-exchange-cart
+      data-loyal-point-cost="{{ point_exchange_metafield.point_cost }}"
+      data-loyal-item-id="{{ line_item.id }}"
+    ></epi-point-exchange-cart>
+  {%- endif -%}
+{%- endunless -%}
