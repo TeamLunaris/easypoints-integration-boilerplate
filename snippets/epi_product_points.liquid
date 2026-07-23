@@ -36,7 +36,9 @@
           data-loyal-target="point-exchange-product"
           data-loyal-point-cost="{{ point_exchange_metafield.point_cost }}"
         >
-          <span data-loyal-target="point-value-location"></span>
+          <span data-loyal-target="point-value-location">
+            {%- render 'epi_format_number', number: point_exchange_metafield.point_cost -%}
+          </span>
         </span>
 
         <span class="easy-points__text easy-points__text--suffix">
