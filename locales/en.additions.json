@@ -30,7 +30,8 @@
       "highest_rank_html": "You will achieve the highest rank {{ rank }}",
       "current_rank_title": "Current rank",
       "spend_additional_html": "Spend an additional {{ amount }} to rank up to {{ rank }} ",
-      "date_rollover_html": "(Deadline: {{ month }}-{{ day }}-{{ year }})"
+      "date_rollover_html": "(Deadline: {{ month }}-{{ day }}-{{ year }})",
+      "tier_rank_up_reward_html": "Earn <strong>{{ points }} points</strong> when you rank up to <strong>{{ tierName }}</strong>"
     },
     "widget": {
       "program_name": "Loyalty Points Program",

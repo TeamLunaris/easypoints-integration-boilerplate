@@ -38,6 +38,49 @@
                   year: '<strong data-loyal-target="tier-rollover-year">-</strong>'
               }}
             </span>
+
+
+            {% liquid
+              assign multiplier = 1
+              assign currencies = 'JPY,KRW,BIF,CLP,DJF,GNF,ISK,KMF,PYG,RWF,UGX,VND,VUV,XAF,XOF,XPF'
+              assign currencies = currencies | split: ','
+              if currencies contains shop.currency
+                assign multiplier = 100
+              endif
+
+              assign subtotal = cart.items_subtotal_price
+              assign customer_ep_metafield = customer.metafields.loyalty.easy_points_attributes.value
+              assign tiers = customer_ep_metafield.tier_maintenance_data.advancement_data.tiers | sort: 'raw_amount' | reverse
+
+              if tiers.size > 0
+                for tier in tiers
+                  assign diff = tier.raw_amount | times: multiplier | minus: subtotal
+                  if diff > 0
+                    assign next_tier = tier
+                    break
+                  endif
+                endfor
+              endif
+              
+              assign rank_up_rule = shop_ep_metafield.reward_rules.tier_rank_up
+              if rank_up_rule and rank_up_rule.active
+                for point_rule in rank_up_rule.reward_point_rules
+                  if point_rule.uid == next_tier.uid
+                    assign tier_rank_up_reward_rule = point_rule
+                  endif
+                endfor
+              endif
+            %}
+            
+            {%- if tier_rank_up_reward_rule -%}
+              <span style="display: block">
+                {{ 
+                  'easypoints.tiers.tier_rank_up_reward_html' | t: 
+                  points: tier_rank_up_reward_rule.point_value, 
+                  tierName: tier_rank_up_reward_rule.name 
+                }}
+              </span>
+            {%- endif -%}
           </span>
         </epi-tier-advancement>
       {%- endif -%}
