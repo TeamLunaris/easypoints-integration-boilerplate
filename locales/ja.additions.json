@@ -31,7 +31,7 @@
       "current_rank_title": "現在の会員ランク",
       "spend_additional_html": "あと{{ amount }}のご利用で{{ rank }}にランクアップできます",
       "date_rollover_html": "(期限: {{ year }}年{{ month }}月{{ day }}日)",
-      "tier_rank_up_reward_html": "<strong>{{ tierName }}</strong>に昇格で<strong>{{ points }}</strong>を獲得"
+      "tier_rank_up_reward_html": "{{ tierName }}に昇格で{{ points }}を獲得"
     },
     "widget": {
       "program_name": "ロイヤリティーポイント",

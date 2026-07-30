@@ -589,15 +589,16 @@ var EasyPoints = {
      * @param {number|null} [subtotal=null] - The subtotal amount used to calculate the next tier. If null, the function will attempt to retrieve it from an HTML element.
      */
     recalculate: function(subtotal = null) {
-      var { tierMaintenanceData: { rankAdvancementData } } = EasyPoints.sdk().Session.get();
+      var sdk = EasyPoints.sdk();
+      var { tierMaintenanceData: { advancementData }, tierUid } = sdk.Session.get();
 
-      if (!rankAdvancementData || rankAdvancementData.raw_amount >= 0) {
+      if (!advancementData || advancementData.rawAmount >= 0) {
         return;
       }
 
-      var discount = EasyPoints.sdk().getDiscountSession();
-      var { multiplier } = EasyPointsCore.Currency.getFormatOptions() || { multiplier: 100 };
-      var discountNoDecimal = Math.round(discount * EasyPointsCore.Currency.getRate() * multiplier)
+      var discount = sdk.getDiscountSession();
+      var { multiplier } = sdk.Currency.getFormatOptions() || { multiplier: 100 };
+      var discountNoDecimal = Math.round(discount * sdk.Currency.getRate() * multiplier)
 
       if (subtotal === null) {
         var priceEl = document.querySelector('[data-loyal-target="total_price"]');
@@ -611,7 +612,11 @@ var EasyPoints = {
       }
 
       try {
-        var nextTier = EasyPointsCore.Tiers.getNextTier(subtotal - discountNoDecimal);
+          const nextTier = rankAdvancementData.tiers
+          .find((tier) => {
+            const diff = (tier.rawAmount * (100 * sdk.Currency.getRate())) - subtotal;
+            return tier.uid !== tierUid && Math.max(diff, 0) > 0;
+          });
 
         if (nextTier) {
           Array.prototype.slice.call(
@@ -623,8 +628,30 @@ var EasyPoints = {
           Array.prototype.slice.call(
             document.querySelectorAll('[data-loyal-target="rank-advancement-amount"]')
           ).forEach((target) => {
-            target.innerHTML = EasyPointsCore.Currency.format(nextTier.advancementAmountMultiplied);
+            target.innerHTML = sdk.Currency.format(nextTier.advancementAmountMultiplied);
           });
+
+
+          const rewards = window.EasyPointsAppBlockData.shop.rewards;
+          const rankUpReward = rewards.tier_rank_up;
+          if (rankUpReward && rankUpReward.active) {
+            const rewardValue = rankUpReward.reward_point_rules.find(rule => rule.uid === nextTier.uid);
+
+            if (rewardValue) {
+                Array.prototype.slice.call(
+                    document.querySelectorAll('[data-loyal-target="rank-advancement-rank-up-reward-amount"]')
+                ).forEach((target) => {
+                    target.textContent = rewardValue.point_value;
+                });
+
+                Array.prototype.slice.call(
+                    document.querySelectorAll('[data-loyal-target="rank-advancement-tier-rank-up-reward"]')
+                ).forEach((target) => {
+                    target.style.display = '';
+                });
+            }
+          }
+
         } else {
           Array.prototype.slice.call(
             document.querySelectorAll('[data-loyal-target="rank-advancement-data"] > span')
@@ -635,7 +662,7 @@ var EasyPoints = {
           });
         }
       } catch {
-        EasyPoints.Debug.print('EasyPoints Tiers: error getting next tier.', 'error')
+        EasyPoints.Debug.print('EasyPoints Tiers: error getting next tier.', 'error');
         return;
       }
     },
