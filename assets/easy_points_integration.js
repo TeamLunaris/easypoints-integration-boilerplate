@@ -612,11 +612,7 @@ var EasyPoints = {
       }
 
       try {
-          const nextTier = rankAdvancementData.tiers
-          .find((tier) => {
-            const diff = (tier.rawAmount * (100 * sdk.Currency.getRate())) - subtotal;
-            return tier.uid !== tierUid && Math.max(diff, 0) > 0;
-          });
+        const nextTier = sdk.Tiers.getNextTier(advancementData.tiers, tierUid, subtotal);
 
         if (nextTier) {
           Array.prototype.slice.call(
