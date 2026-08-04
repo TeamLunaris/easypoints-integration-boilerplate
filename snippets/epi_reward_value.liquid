@@ -11,7 +11,7 @@
 {%- liquid
   assign easy_points = shop.metafields.loyalty.easy_points_attributes.value
 
-  assign reward_point_rules = nil
+  assign reward_point_rules = null
   for entry in easy_points.reward_rules
     if entry[0] == reward_type
       assign reward_point_rules = entry[1].reward_point_rules
@@ -21,7 +21,7 @@
 
   assign customer_tier_uid = customer.metafields.loyalty.easy_points_attributes.value.tier_uid
 
-  assign default_tier_uid = nil
+  assign default_tier_uid = null
   assign min_requirement = -1
   for entry in easy_points.tier_rules
     assign tier_uid = entry[0]

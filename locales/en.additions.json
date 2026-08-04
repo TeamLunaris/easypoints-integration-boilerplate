@@ -10,6 +10,14 @@
     "expiration_date": "Expires",
     "date": "{{ year }}/{{ month }}/{{ day }}",
     "login_prompt": "You must be logged in to use points.",
+    "login_rewards": {
+      "heading": "Daily check-in",
+      "description": "Check in every day to earn {{ points }} points",
+      "countdown": "Come back in {{ duration }}",
+      "submit_action": "Claim {{ points }} points",
+      "success": "Claimed!",
+      "error": "Something went wrong. Please try again."
+    },
     "note_form": {
       "birthday": "Birthday",
       "update": "Update"
