@@ -28,6 +28,13 @@
                   amount: '<strong data-loyal-target="rank-advancement-amount">-</strong>',
                   rank: '<strong data-loyal-target="rank-advancement-tier-name">-</strong>'
               }}
+
+              <span style="display: none;" data-loyal-target="rank-advancement-tier-rank-up-reward">
+                {{
+                  'easypoints.tiers.tier_rank_up_reward_html' | t:
+                    points: '<span data-loyal-target="rank-advancement-rank-up-reward-amount">-</span>'
+                }}
+              </span>
             </span>
 
             <span style="display: none;" data-loyal-target="tier-rollover-date">
@@ -36,14 +43,6 @@
                   day: '<strong data-loyal-target="tier-rollover-day">-</strong>',
                   month: '<strong data-loyal-target="tier-rollover-month">-</strong>',
                   year: '<strong data-loyal-target="tier-rollover-year">-</strong>'
-              }}
-            </span>
-
-            <span style="display: none;" data-loyal-target="rank-advancement-tier-rank-up-reward">
-              {{ 
-                'easypoints.tiers.tier_rank_up_reward_html' | t: 
-                points: '<strong data-loyal-target="rank-advancement-rank-up-reward-amount">-</strong>', 
-                tierName: '<strong data-loyal-target="rank-advancement-tier-name">-</strong>'
               }}
             </span>
           </span>

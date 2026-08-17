@@ -626,28 +626,6 @@ var EasyPoints = {
           ).forEach((target) => {
             target.innerHTML = sdk.Currency.format(nextTier.advancementAmountMultiplied);
           });
-
-
-          const rewards = window.EasyPointsAppBlockData.shop.rewards;
-          const rankUpReward = rewards.tier_rank_up;
-          if (rankUpReward && rankUpReward.active) {
-            const rewardValue = rankUpReward.reward_point_rules.find(rule => rule.uid === nextTier.uid);
-
-            if (rewardValue) {
-                Array.prototype.slice.call(
-                    document.querySelectorAll('[data-loyal-target="rank-advancement-rank-up-reward-amount"]')
-                ).forEach((target) => {
-                    target.textContent = rewardValue.point_value;
-                });
-
-                Array.prototype.slice.call(
-                    document.querySelectorAll('[data-loyal-target="rank-advancement-tier-rank-up-reward"]')
-                ).forEach((target) => {
-                    target.style.display = '';
-                });
-            }
-          }
-
         } else {
           Array.prototype.slice.call(
             document.querySelectorAll('[data-loyal-target="rank-advancement-data"] > span')
