@@ -5,6 +5,13 @@
     {%- assign referral_rule = shop_ep_metafield.reward_rules.referral -%}
 
     {%- if referral_rule and referral_rule.active -%}
+      {%- liquid
+        capture referral_point_value_html
+          render 'epi_reward_value', reward_type: 'referral'
+        endcapture
+        assign referral_point_value = referral_point_value_html | strip_html | strip | plus: 0
+      -%}
+
       <h2>{{ 'easypoints.referral.header' | t }}</h2>
 
       {%- assign completed_referrals = customer.metafields.loyalty.easy_points_attributes.value.completed_referrals | default: 0 -%}
@@ -25,7 +32,7 @@
       >
         <div class="easy-points__referral">
           <p>
-            {{ 'easypoints.referral.prompt_html' | t: point_value: referral_rule.point_value }}
+            {{ 'easypoints.referral.prompt_html' | t: point_value: referral_point_value }}
           </p>
 
           <button type="button" class="button">
