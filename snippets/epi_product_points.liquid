@@ -7,7 +7,46 @@
     (optional) `price`: Override the price that is otherwise fetched from the `product` or `line_item`.
 {%- endcomment -%}
 {%- unless shop.metafields.loyalty.easy_points_attributes.value.stealth_mode -%}
-  {%- if product or line_item -%}
+  {%- if product.metafields.loyalty.easy_points_attributes.value.point_exchange
+    or line_item.product.metafields.loyalty.easy_points_attributes.value.point_exchange
+  -%}
+    {%- liquid
+      assign point_exchange_metafield = product.metafields.loyalty.easy_points_attributes.value.point_exchange
+      if line_item.product.metafields.loyalty.easy_points_attributes.value.point_exchange
+        assign point_exchange_metafield = line_item.product.metafields.loyalty.easy_points_attributes.value.point_exchange
+      endif
+    -%}
+
+    {%- if point_exchange_metafield -%}
+      {%- comment -%}
+        This renders the point cost only. Wrap the theme's PRICE in
+        `<epi-point-exchange-product>` so the SDK replaces the price with the cost
+        and (on product/collection pages) gates the add-to-cart button:
+
+          <epi-point-exchange-product>
+            {{ theme's price markup }}
+            {% render 'epi_product_points', product: product %}
+          </epi-point-exchange-product>
+
+        On the CART page, wrap the price the same way, rendering with `line_item`:
+        `{% render 'epi_product_points', line_item: item %}`.
+      {%- endcomment -%}
+      <span data-loyal-target="point-exchange-cost" class="easy-points easy-points__point-exchange-product">
+        <span
+          data-loyal-target="point-exchange-product"
+          data-loyal-point-cost="{{ point_exchange_metafield.point_cost }}"
+        >
+          <span data-loyal-target="point-value-location">
+            {%- render 'epi_format_number', number: point_exchange_metafield.point_cost -%}
+          </span>
+        </span>
+
+        <span class="easy-points__text easy-points__text--suffix">
+          {{ 'easypoints.points' | t }}
+        </span>
+      </span>
+    {%- endif -%}
+  {%- elsif product or line_item -%}
     <div class="easy-points easy-points__product-points">
       {%- liquid
         assign product = product | default: product

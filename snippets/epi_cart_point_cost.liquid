@@ -1,0 +1,41 @@
+{%- comment -%}
+  Total point cost of the point-exchange products in the cart.
+{%- endcomment -%}
+{%- unless shop.metafields.loyalty.easy_points_attributes.value.stealth_mode -%}
+  {%- if cart -%}
+    {%- liquid
+      assign total_point_cost = 0
+
+      for item in cart.items
+        assign point_exchange = item.product.metafields.loyalty.easy_points_attributes.value.point_exchange
+
+        if point_exchange
+          assign line_point_cost = point_exchange.point_cost | times: item.quantity
+          assign total_point_cost = total_point_cost | plus: line_point_cost
+        endif
+      endfor
+    -%}
+
+    <div
+      class="easy-points__cart-point-cost totals{% if total_point_cost == 0 %} easy-points-hide{% endif %}"
+      data-loyal-target="point-cost-total"
+      {% if total_point_cost == 0 %}
+        hidden
+      {% endif %}
+    >
+      <h3 class="totals__subtotal">
+        {{ 'easypoints.point_cost_total' | t }}
+      </h3>
+
+      <p class="easy-points easy-points__total-points totals__subtotal-value">
+        <span class="easy-points-total__point__value">
+          {%- render 'epi_format_number', number: total_point_cost -%}
+        </span>
+
+        <span class="easy-points-total__point__label easy-points__text easy-points__text--suffix">
+          {{ 'easypoints.points' | t }}
+        </span>
+      </p>
+    </div>
+  {%- endif -%}
+{%- endunless -%}
