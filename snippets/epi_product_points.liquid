@@ -7,21 +7,20 @@
     (optional) `price`: Override the price that is otherwise fetched from the `product` or `line_item`.
 {%- endcomment -%}
 {%- unless shop.metafields.loyalty.easy_points_attributes.value.stealth_mode -%}
-  {%- if product.metafields.loyalty.easy_points_attributes.value.point_exchange
-    or line_item.product.metafields.loyalty.easy_points_attributes.value.point_exchange
+  {%- liquid
+    assign price = price | default: product.selected_or_first_available_variant.price
+
+    if line_item
+      assign product = line_item.product
+      assign price = price | default: line_item.final_price
+    endif
   -%}
-    {%- render 'epi_point_exchange_product_cost', product: product, line_item: line_item -%}
-  {%- elsif product or line_item -%}
+
+  {%- if product.metafields.loyalty.easy_points_attributes.value.point_exchange -%}
+    {%- render 'epi_point_exchange_product_cost', product: product -%}
+  {%- elsif product -%}
     <div class="easy-points easy-points__product-points">
       {%- liquid
-        assign product = product | default: product
-        assign price = price | default: product.selected_or_first_available_variant.price
-
-        if line_item
-          assign product = line_item.product
-          assign price = price | default: line_item.final_price
-        endif
-
         assign tax_rate = 1.1
         assign worth_points = true
         assign bpr_ratio = 0.0

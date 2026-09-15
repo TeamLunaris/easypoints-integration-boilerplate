@@ -2,12 +2,7 @@
   The point cost of a point-exchange product, in place of its price.
 {%- endcomment -%}
 {%- unless shop.metafields.loyalty.easy_points_attributes.value.stealth_mode -%}
-  {%- liquid
-    assign point_exchange_metafield = product.metafields.loyalty.easy_points_attributes.value.point_exchange
-    if line_item.product.metafields.loyalty.easy_points_attributes.value.point_exchange
-      assign point_exchange_metafield = line_item.product.metafields.loyalty.easy_points_attributes.value.point_exchange
-    endif
-  -%}
+  {%- assign point_exchange_metafield = product.metafields.loyalty.easy_points_attributes.value.point_exchange -%}
 
   {%- if point_exchange_metafield -%}
     <span data-loyal-target="point-exchange-cost" class="easy-points easy-points__point-exchange-product">
