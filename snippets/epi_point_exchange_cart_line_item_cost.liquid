@@ -1,0 +1,45 @@
+{%- comment -%}
+  The total point cost of one cart line: the product's point cost times the
+  line's quantity. Render it in place of the theme's line item TOTAL price on the
+  cart page and in the cart drawer, where a point-exchange product would
+  otherwise show a 0 price.
+
+  Pass the price as markup (`price_html`) to keep the theme's wrapper
+  element, or as a plain string (`price`) when there isn't one.
+
+  Args:
+    (required) `line_item`: the cart line item.
+    (optional) `price_html`: the theme's price markup, rendered as-is.
+    (optional) `price`: the theme's formatted price, when it has no markup.
+
+  Example (Tinker's cart line item price cell):
+    {%- capture price_html -%}
+      <text-component value="{{ price | strip_html }}">{{ price }}</text-component>
+    {%- endcapture -%}
+    {% render 'epi_point_exchange_cart_line_item_cost', line_item: item, price_html: price_html %}
+{%- endcomment -%}
+{%- liquid
+  assign point_exchange = line_item.product.metafields.loyalty.easy_points_attributes.value.point_exchange
+  assign stealth_mode = shop.metafields.loyalty.easy_points_attributes.value.stealth_mode
+-%}
+
+{%- if point_exchange and stealth_mode != true -%}
+  {%- assign line_point_cost = point_exchange.point_cost | times: line_item.quantity -%}
+
+  <span
+    class="easy-points easy-points__point-exchange-line-cost"
+    data-loyal-item-id="{{ line_item.id }}"
+  >
+    <span class="easy-points-total__point__value">
+      {%- render 'epi_format_number', number: line_point_cost -%}
+    </span>
+
+    <span class="easy-points__text easy-points__text--suffix">
+      {{ 'easypoints.points' | t }}
+    </span>
+  </span>
+{%- elsif price_html != blank -%}
+  {{ price_html }}
+{%- else -%}
+  {{ price }}
+{%- endif -%}

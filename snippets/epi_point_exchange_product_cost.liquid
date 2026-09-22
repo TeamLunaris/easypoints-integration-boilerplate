@@ -1,0 +1,23 @@
+{%- comment -%}
+  The point cost of a point-exchange product, in place of its price.
+{%- endcomment -%}
+{%- unless shop.metafields.loyalty.easy_points_attributes.value.stealth_mode -%}
+  {%- assign point_exchange_metafield = product.metafields.loyalty.easy_points_attributes.value.point_exchange -%}
+
+  {%- if point_exchange_metafield -%}
+    <span data-loyal-target="point-exchange-cost" class="easy-points easy-points__point-exchange-product">
+      <span
+        data-loyal-target="point-exchange-product"
+        data-loyal-point-cost="{{ point_exchange_metafield.point_cost }}"
+      >
+        <span data-loyal-target="point-value-location">
+          {%- render 'epi_format_number', number: point_exchange_metafield.point_cost -%}
+        </span>
+      </span>
+
+      <span class="easy-points__text easy-points__text--suffix">
+        {{ 'easypoints.points' | t }}
+      </span>
+    </span>
+  {%- endif -%}
+{%- endunless -%}

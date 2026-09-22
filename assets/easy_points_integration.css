@@ -19,6 +19,22 @@
   color: var(--ep-color-points);
 }
 
+/*
+ * Hide the theme's native price for a point-exchange product so the points cost
+ * (rendered by epi_product_points) shows in its place.
+ */
+epi-point-exchange-product:has(> [data-loyal-target="point-exchange-cost"]) > :not([data-loyal-target="point-exchange-cost"]),
+epi-point-exchange-product :has(> [data-loyal-target="point-exchange-cost"]) > :not([data-loyal-target="point-exchange-cost"]) {
+  display: none;
+}
+/*
+ * Matches the theme with no JavaScript (and never restyles on a re-render). 
+ * Adjust here if a theme needs a specific size/weight.
+ */
+epi-point-exchange-product [data-loyal-target="point-exchange-cost"] {
+  color: inherit;
+  font: inherit;
+}
 /* .easy-points [data-loyal-target="point-exclusion"] + .easy-points__text {
   display: none;
 }
