@@ -870,9 +870,16 @@ var EasyPoints = {
         checkoutBtn.forEach((node) => node.setAttribute('disabled', true));
 
         EasyPoints.sdk().applyDiscount(EasyPoints.sdk().getDiscountSession())
-          .then(() => {
+          .then((result) => {
             EasyPoints.fetchShopifyCartUI();
-            EasyPoints.showDiscountUI();
+
+            if (result && result.error) {
+              EasyPoints.Debug.print('Redemption failed: ' + result.error.message, 'error');
+              EasyPoints.hideDiscountUI();
+            } else {
+              EasyPoints.showDiscountUI();
+            }
+
             e.target.style.cursor = 'unset';
             e.target.removeAttribute('disabled');
             checkoutBtn.forEach((node) => node.removeAttribute('disabled'));
