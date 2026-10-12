@@ -28,6 +28,19 @@
                   amount: '<strong data-loyal-target="rank-advancement-amount">-</strong>',
                   rank: '<strong data-loyal-target="rank-advancement-tier-name">-</strong>'
               }}
+
+              <span style="display: none;" data-loyal-target="rank-advancement-tier-rank-up-reward">
+                {%- capture rank_up_points -%}
+                  {%- if shop_ep_metafield.reward_rules.tier_rank_up.point_type == 'gift' -%}
+                    <span style="display: inline-block; vertical-align: top; margin-top: 1px; margin-right: 2px;">
+                      {% render 'epi_icons', icon: 'gift-points', size: 14 %}
+                    </span>
+                  {%- endif -%}
+                  <span data-loyal-target="rank-advancement-rank-up-reward-amount">-</span>
+                {%- endcapture -%}
+
+                {{ 'easypoints.tiers.tier_rank_up_reward_html' | t: points: rank_up_points }}
+              </span>
             </span>
 
             <span style="display: none;" data-loyal-target="tier-rollover-date">
