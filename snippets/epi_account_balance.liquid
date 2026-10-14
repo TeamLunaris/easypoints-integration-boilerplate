@@ -3,7 +3,7 @@
   {%- if customer -%}
     {%- liquid
       assign customer_ep_metafield = customer.metafields.loyalty.easy_points_attributes.value
-      assign bonus_balance = customer.metafields.loyalty.bonus_balance.value.bonus_balance | default: 0
+      assign bonus_balance = customer.metafields.loyalty.bonus_balance.value.amount | default: 0
       assign bonus_expiries = customer.metafields.loyalty.bonus_balance.value.expiries
 
       assign has_feature_tiers = false

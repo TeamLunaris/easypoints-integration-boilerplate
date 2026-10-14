@@ -3,7 +3,7 @@
 {%- unless shop_ep_metafield.stealth_mode -%}
   {%- if customer -%}
     {%- liquid
-      assign bonus_balance = customer.metafields.loyalty.bonus_balance.value.bonus_balance | default: 0
+      assign bonus_balance = customer.metafields.loyalty.bonus_balance.value.amount | default: 0
       assign regular_balance = customer.metafields.loyalty.easy_points_attributes.value.balance | minus: bonus_balance
 
       assign class_button = class_button | default: 'button'
