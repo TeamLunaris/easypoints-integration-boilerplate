@@ -3,8 +3,8 @@
 {%- unless shop_ep_metafield.stealth_mode -%}
   {%- if customer -%}
     {%- liquid
-      assign gift_balance = customer.metafields.loyalty.gift_balance.value
-      assign regular_balance = customer.metafields.loyalty.easy_points_attributes.value.balance | minus: gift_balance.gift_balance
+      assign bonus_balance = customer.metafields.loyalty.bonus_balance.value.amount | default: 0
+      assign regular_balance = customer.metafields.loyalty.easy_points_attributes.value.balance | minus: bonus_balance
 
       assign class_button = class_button | default: 'button'
     -%}
@@ -17,10 +17,10 @@
             {%- endcapture -%}
          </span>
 
-        {%- if gift_balance.gift_balance > 0 -%}
+        {%- if bonus_balance > 0 -%}
           <span>
-            {%- capture gift_balance_html -%}
-              {% render 'epi_format_number', number: gift_balance.gift_balance %}
+            {%- capture bonus_balance_html -%}
+              {% render 'epi_format_number', number: bonus_balance %}
             {%- endcapture -%}
           </span>
 
@@ -28,7 +28,7 @@
 
           <span style="display: inline-block; vertical-align: top; margin-top: 1px; margin-right: 4px;">
             {% render 'epi_icons', icon: 'gift-points', size: 14 %}
-          </span>{{ 'easypoints.redemption' | t: points: gift_balance_html }}
+          </span>{{ 'easypoints.redemption' | t: points: bonus_balance_html }}
         {%- else -%}
           {{ 'easypoints.redemption' | t: points: balance }}
         {%- endif -%}

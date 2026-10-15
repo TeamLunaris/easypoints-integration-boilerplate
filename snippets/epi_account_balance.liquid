@@ -3,7 +3,8 @@
   {%- if customer -%}
     {%- liquid
       assign customer_ep_metafield = customer.metafields.loyalty.easy_points_attributes.value
-      assign gift_balance_metafield = customer.metafields.loyalty.gift_balance.value
+      assign bonus_balance = customer.metafields.loyalty.bonus_balance.value.amount | default: 0
+      assign bonus_expiries = customer.metafields.loyalty.bonus_balance.value.expiries
 
       assign has_feature_tiers = false
       for key_value in shop.metafields.loyalty.features.value
@@ -34,7 +35,7 @@
         {%- liquid
           assign expiration_entries = ''
 
-          for expiry in gift_balance_metafield.expiries
+          for expiry in bonus_expiries
             if expiry.expires_at
               assign expiry_timestamp = expiry.expires_at | date: '%s'
               assign entry = expiry_timestamp | append: '|gift|' | append: expiry.amount | append: '|' | append: expiry.expires_at
@@ -48,8 +49,7 @@
           endfor
 
           if customer_ep_metafield.expiration_date
-            assign regular_balance = customer_ep_metafield.balance | minus: gift_balance_metafield.gift_balance
-            assign gift_balance = gift_balance_metafield.gift_balance
+            assign regular_balance = customer_ep_metafield.balance | minus: bonus_balance
 
             if regular_balance > 0
               assign regular_timestamp = customer_ep_metafield.expiration_date | date: '%s'
@@ -80,10 +80,10 @@
             </strong>
           </div>
 
-          {%- if gift_balance_metafield.gift_balance > 0 -%}
+          {%- if bonus_balance > 0 -%}
             <div class="easy-points-account__badge">
               <span>
-                {{ gift_balance_metafield.gift_balance }}
+                {{ bonus_balance }}
               </span>
 
               <span style="display: inline-block; vertical-align: top; margin-top: 1px; margin-right: -2px;">
@@ -113,7 +113,7 @@
           {%- endif -%}
         </div>
 
-        {%- if gift_balance_metafield.gift_balance > 0 -%}
+        {%- if bonus_balance > 0 -%}
           <div class="easy-points-account">
             <div class="easy-points-account__balance" style="display: grid; grid-template-columns: max-content 1fr;">
               {%- for entry in sorted_entries -%}
