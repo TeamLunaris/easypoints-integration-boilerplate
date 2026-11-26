@@ -7,6 +7,7 @@
     "points_earned_total": "Points Earned",
     "point_cost_total": "Total Point Cost",
     "points_balance": "Points Available",
+    "redemption_regular_points_html": "{{ points }} + ",
     "redemption_html": "{{ points }} points available",
     "cart_redeem": "Redeem",
     "cart_reset": "Reset",

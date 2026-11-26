@@ -7,6 +7,7 @@
     "points_earned_total": "獲得ポイント",
     "point_cost_total": "必要ポイント合計",
     "points_balance": "ポイント保有中",
+    "redemption_regular_points_html": "{{ points }} + ",
     "redemption_html": "{{ points }}ポイント利用可能",
     "cart_redeem": "ポイントを使う",
     "cart_reset": "リセット",
